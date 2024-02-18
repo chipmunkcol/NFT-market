@@ -5,7 +5,9 @@
     "hardhat": "^2.19.5"
   },
   "scripts": {
-    "dev": "cd dapp_react && npm run dev"
+    "dev": "cd dapp_react && npm run dev",
+    "server": "npx hardhat node",
+    "remix": "remixd -s . --remix-ide https://remix.ethereum.org"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.1",

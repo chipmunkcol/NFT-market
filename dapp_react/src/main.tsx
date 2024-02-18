@@ -5,6 +5,7 @@ import MyPage from "../pages/MyPage.jsx";
 import MarketPlace from "../pages/MarketPlace.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // import { ChakraProvider } from "@chakra-ui/react";
+import GlobalProvider from "../context/GlobalContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,8 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
   // <ChakraProvider>
-  <RouterProvider router={router} />
+  <GlobalProvider>
+    <RouterProvider router={router} />
+  </GlobalProvider>
   // </ChakraProvider>
 );

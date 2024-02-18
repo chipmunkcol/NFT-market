@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useContext, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { MintContract } from "../contracts/index";
 import NftCard from "../components/NftCard";
+import { GlobalContext } from "../context/GlobalContext";
 
 // Detect the MetaMask Ethereum provider
 
 function Home() {
   //state to store and show the connected account
-  const [account, setAccount] =
-    useState("연결된 계정이 없습니다");
+  // const [account, setAccount] =
+  //   useState("연결된 계정이 없습니다");
+  const { account, setAccount } = useContext(GlobalContext);
   const [nftType, setNftType] = useState(null);
 
   const onClickMint = async () => {

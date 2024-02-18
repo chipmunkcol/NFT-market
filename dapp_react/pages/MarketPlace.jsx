@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { SaleNftContract, web3 } from "../contracts/index";
 import styled from "styled-components";
 import OnsaleNftCard from "../components/OnsaleNftCard";
+import { GlobalContext } from "../context/GlobalContext";
 
 const MarketPlace = () => {
-  const [onsaleNftList, setOnsaleNftList] = useState([]);
+  const { onsaleNftList, setOnsaleNftList, trigger } = useContext(GlobalContext);
 
   async function getOnsaleNftList() {
     const res = await SaleNftContract.methods
@@ -26,12 +27,13 @@ const MarketPlace = () => {
         nftPrice: etherPrice,
       });
     });
-    setOnsaleNftList(prev => [...prev, ...onsaleNftList]);
+    // setOnsaleNftList(prev => [...prev, ...onsaleNftList]);
+    setOnsaleNftList(onsaleNftList);
   }
 
   useEffect(() => {
     getOnsaleNftList();
-  }, []);
+  }, [trigger]);
 
   return (
     <div>
@@ -41,7 +43,7 @@ const MarketPlace = () => {
           <MarketWrap>
             {
               onsaleNftList.map(onsaleNft => (
-                <OnsaleNftCard nft={onsaleNft} />
+                <OnsaleNftCard key={onsaleNft.nftId} nft={onsaleNft} />
               ))
             }
           </MarketWrap>
@@ -55,7 +57,6 @@ const MarketWrap = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  /* align-items: center; */
 `;
 
 export default MarketPlace;

@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { MintContract, SaleAddress, web3 } from "../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 // import NftCard from "../components/NftCard";
 import styled from "styled-components";
 import SaleNftCard from "../components/SaleNftCard";
+import { GlobalContext } from "../context/GlobalContext";
 
 const MyPage = () => {
   // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
   const initialState = "";
   const [account, setAccount] = useState(initialState);
   // console.log("account: ", account);
-  const [myNfts, setMyNfts] = useState([]);
+  // const [myNfts, setMyNfts] = useState([]);
+  const { myNfts, setMyNfts } = useContext(GlobalContext);
   const [approvedState, setApprovedState] = useState(false);
 
   const getApprovedStatus = async () => {
-    // if (!account || myNfts.ids.length < 1) return;
+    if (!account) return;
+
     try {
       const res = await MintContract.methods
         .isApprovedForAll(account, SaleAddress).call();
@@ -74,6 +77,8 @@ const MyPage = () => {
   }, [account]);
 
   const getNft = async () => {
+    if (!account) return;
+
     try {
       const myNfts = await MintContract.methods.getNfts(account).call();
       if (myNfts.length < 1) return;
@@ -88,15 +93,25 @@ const MyPage = () => {
         newMyNfts.push({ nftId: parsedId, nftType: parsedType, nftPrice: etherPrice });
       });
 
-      setMyNfts(prev => [...prev, ...newMyNfts]);
+      setMyNfts(newMyNfts);
     } catch (error) {
       console.log(error);
     }
   };
 
+  async function connectSaleNftOnMintContract() {
+    await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
+  }
+
+  async function init() {
+    await connectSaleNftOnMintContract();
+    await getNft();
+    await getApprovedStatus();
+  }
+
   useEffect(() => {
-    getNft();
-    getApprovedStatus();
+    init();
+    setMyNfts([]);
   }, [account]);
 
 
