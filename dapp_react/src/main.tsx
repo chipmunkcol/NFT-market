@@ -1,11 +1,15 @@
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import Home from "../pages/Home.jsx";
-import MyPage from "../pages/MyPage.jsx";
-import MarketPlace from "../pages/MarketPlace.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+// import router from "./route/Router.js";
 // import { ChakraProvider } from "@chakra-ui/react";
-import GlobalProvider from "../context/GlobalContext.jsx";
+import GlobalProvider from "./context/GlobalContext.jsx";
+import GlobalStyle from "./styles/global.js";
+import theme from "./styles/theme.js";
+import { ThemeProvider } from "styled-components";
+import App from "./App";
+import Home from "./pages/Home";
+import MarketPlace from "./pages/MarketPlace";
+import MyPage from "./pages/MyPage";
 
 const router = createBrowserRouter([
   {
@@ -32,8 +36,13 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
   // <ChakraProvider>
-  <GlobalProvider>
-    <RouterProvider router={router} />
-  </GlobalProvider>
+  <>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <GlobalProvider>
+        <RouterProvider router={router} />
+      </GlobalProvider>
+    </ThemeProvider>
+  </>
   // </ChakraProvider>
 );

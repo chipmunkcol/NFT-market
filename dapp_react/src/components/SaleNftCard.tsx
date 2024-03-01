@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { FC, useRef, useState } from "react";
-import { SaleNftContract, web3 } from "../contracts/index";
+import { SaleNftContract, web3 } from "../../contracts/index";
 // import { toWei } from "web3-utils";
 import NftCard from "./NftCard";
 

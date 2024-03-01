@@ -2,9 +2,11 @@
 import { useContext, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
-import { MintContract } from "../contracts/index";
+import { MintContract } from "../../contracts/index";
 import NftCard from "../components/NftCard";
 import { GlobalContext } from "../context/GlobalContext";
+import styled from "styled-components";
+import bgMain from '../assets/images/bg-main.png';
 
 // Detect the MetaMask Ethereum provider
 
@@ -55,16 +57,30 @@ function Home() {
   }
 
   return (
-    <>
-      {/* Button to trigger Metamask connection */}
-      <button onClick={() => connectMetamask()}>Connect to Metamask</button>
-
-      {/* Display the connected account */}
-      <h2>{account}</h2>
-      <button onClick={onClickMint}>Mint 버튼</button>
-      {nftType && <NftCard nftType={nftType} />}
-    </>
+    <></>
   );
 }
-
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+const Background = styled.div`
+  height: 100%;
+  padding-top: 100px;
+  background-image: url(${bgMain});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+`;
+const Slider = styled.div`
+  height: 300px;
+  background-color: rgba(0, 0, 0, 0.5);
+`;
 export default Home;
+{/* Button to trigger Metamask connection */ }
+{/* <button onClick={() => connectMetamask()}>Connect to Metamask</button> */ }
+
+{/* Display the connected account */ }
+{/* <h2>{account}</h2>
+      <button onClick={onClickMint}>Mint 버튼</button>
+      {nftType && <NftCard nftType={nftType} />} */}

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { SaleNftContract, web3 } from "../contracts/index";
+import { SaleNftContract, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import OnsaleNftCard from "../components/OnsaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";

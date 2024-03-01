@@ -3,7 +3,7 @@ import React, { FC, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import NftCard from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
-import { SaleNftContract, MintContract, web3 } from "../contracts/index";
+import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
 // interface props {
 //   nft: {
 //     nftId: number;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { MintContract, SaleAddress, web3 } from "../contracts/index";
+import { MintContract, SaleAddress, web3 } from "../../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 // import NftCard from "../components/NftCard";
 import styled from "styled-components";
