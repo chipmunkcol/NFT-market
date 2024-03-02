@@ -3,7 +3,7 @@ import { createContext, useMemo, useState } from "react";
 export const GlobalContext = createContext({});
 
 const GlobalProvider = ({ children }) => {
-  const [account, setAccount] = useState("연결된 계정이 없습니다");
+  const [account, setAccount] = useState(null);
   const [myNfts, setMyNfts] = useState([]);
   const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [trigger, setTrigger] = useState(false);

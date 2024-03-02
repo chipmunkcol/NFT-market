@@ -3,6 +3,12 @@ import { Link, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import bgMain from './assets/images/bg-main.png';
+import { GlobalContext } from "./context/GlobalContext";
+import { useContext } from "react";
+
+import detectEthereumProvider from "@metamask/detect-provider";
+import { Web3 } from "web3";
+import Slider from "./components/Slider";
 
 // Detect the MetaMask Ethereum provider
 
@@ -23,13 +29,13 @@ function App() {
   const handleScroll = e => {
     const scrollPosition = e.currentTarget.scrollY;
     const $header = document.getElementById('header');
-    if (scrollPosition > lastScrollTop && $header.style.opacity !== 0) {
+    if (scrollPosition > 100 && scrollPosition > lastScrollTop && $header.style.opacity !== 0) {
       $header.style.opacity = '0';
       $header.style.visibility = 'hidden';
     } else if (scrollPosition < lastScrollTop && $header.style.opacity !== '1') {
       $header.style.opacity = '1';
       $header.style.visibility = 'visible';
-      $header.style.transition = 'opacity 2s ease-in-out, visibility 2s ease-in-out';
+      $header.style.transition = 'opacity 1s ease-in-out, visibility 1s ease-in-out';
     }
     setLastScrollTop(scrollPosition);
   };
@@ -41,17 +47,70 @@ function App() {
     };
   }, [lastScrollTop]);
 
+  /**
+   * connectMetamask
+   */
+  const { account, setAccount } = useContext(GlobalContext);
+
+  /**
+   * onClick 지갑 연결
+   */
+  async function connectMetamask() {
+    //check metamask is installed
+    if (window.ethereum) {
+      // instantiate Web3 with the injected provider
+      const web3 = new Web3(window.ethereum);
+
+      //request user to connect accounts (Metamask will prompt)
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      //get the connected accounts
+      const accounts = await web3.eth.getAccounts();
+
+      //show the first connected account in the react page
+      setAccount(accounts[0]);
+    } else {
+      alert("Please download metamask");
+    }
+  }
+
+  /**
+   * 자동 metamast 지갑 확인
+   */
+  useEffect(() => {
+    const refreshAccount = (account) => {
+      if (account?.length > 0) {
+        setAccount(account);
+      } else {
+        // if length 0, user is disconnected
+        setAccount("연결된 계정이 없습니다");
+      }
+    };
+
+    const getProvider = async () => {
+      const provider = await detectEthereumProvider({ silent: true });
+      if (provider) {
+        const accounts = await window.ethereum.request({
+          method: "eth_accounts",
+        });
+        refreshAccount(accounts[0]);
+        window.ethereum.on("accountsChanged", refreshAccount);
+      }
+    };
+
+    getProvider();
+    return () => {
+      window.ethereum?.removeListener("accountsChanged", refreshAccount);
+    };
+  }, [account]);
+
   return (
     <Container>
       <Header id="header">
-        <Logo>
-          <Link to={'/'}>
-            <img src="vite.svg" alt="logo" />
-          </Link>
-        </Logo>
+
         <Navbar>
           <Link to={'/'}>
-            <Nav>Home</Nav>
+            <img src="vite.svg" alt="logo" />
           </Link>
           <Link to={'/market_place'}>
             <Nav>Marketplace</Nav>
@@ -60,30 +119,34 @@ function App() {
             <Nav>MyPage</Nav>
           </Link>
         </Navbar>
-        <div>
-          <button style={{ color: '#F6F9F0' }}>Connect Wallet</button>
-        </div>
+        {!account ? (
+          <ButtonWrap>
+            <Button onClick={connectMetamask}>Connect Wallet</Button>
+          </ButtonWrap>) : (<div>{account}</div>)
+        }
+        <Menubar>
+          ☰
+        </Menubar>
       </Header>
       {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
       <ContainerHome>
         <Background>
 
-          <div>
-            <h1>NFT 구매부터 판매, 전시까지</h1>
-            <h3>인기 크리에이터와 각종 브랜드 NFT를 다양하게 만나보세요</h3>
-            <h4>Logo 만의 오리지널 NFT 민팅</h4>
-            <div>
-              <button>마켓플레이스 보기</button>
-              <button>NFT 민팅하기</button>
-            </div>
+          <div style={{ textAlign: 'center', padding: '20px 0px' }}>
+            <h1 style={{ fontSize: '36px' }}>NFT 구매부터 판매, 전시까지</h1>
+            <h3 style={{ fontSize: '24px', marginTop: '20px' }}>인기 크리에이터와 각종 브랜드 NFT를 다양하게 만나보세요</h3>
+            {/* <h4 style={{ fontSize: '18px', marginTop: '10px' }}>Nft.com 만의 오리지널 NFT 민팅</h4>
+            <div style={{ width: '100%', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '50px' }}>
+              <Button>마켓플레이스 보기</Button>
+              <Button>NFT 민팅하기</Button>
+            </div> */}
           </div>
-          <Slider>
-            Slider 캐러셀 영역
-          </Slider>
-          <div>
-            <h1>인기 크리에이터</h1>
+          {/* Slider 컴포넌트 */}
+          <Slider />
+          <div style={{ width: '100%' }} >
+            <h2 style={{ fontSize: '24px' }}>인기 크리에이터</h2>
             {
-              <ul style={{ display: 'flex', gap: '10px' }}>
+              <ul style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '20px' }}>
                 {[1, 2, 3, 4].map((_, index) => {
                   return (<div key={`top-creator-${index}`} style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
                     <div style={{ width: '150px', height: '150px' }}>
@@ -97,7 +160,7 @@ function App() {
             }
           </div>
           <div>
-            <h1>인기 NFT</h1>
+            <h2 style={{ fontSize: '24px' }}>인기 NFT</h2>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
                 <span>정렬 기준</span>
@@ -141,53 +204,75 @@ function App() {
 
 const ContainerHome = styled.div`
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
 `;
 const Background = styled.div`
-  height: 100%;
+  /* height: 100%; */
   padding-top: 100px;
+  width: 100%;
   background-image: url(${bgMain});
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
 `;
-const Slider = styled.div`
-  height: 300px;
-  background-color: rgba(0, 0, 0, 0.5);
+const Button = styled.button`
+  background-color: tomato;
+  border-radius: 8px;
+  height: 40px;
 `;
 
 const Container = styled.div`
   /* position: relative; */
+  /* width: 100vw; */
 `;
 
 const Header = styled.div`
   position: fixed;
+  top: 0;
   height: 100px;
-  width: 100%;
+  width: 100vw;
   z-index: 999;
   /* margin-top: 100px; */
-  padding: 0 10px;
+  padding: 0 30px;
   background-color: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
+const Menubar = styled.div`
+  display: none;
+  font-size: 36px;
+  cursor: pointer;
+
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: block;
+  }
+`;
+const ButtonWrap = styled.div`
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
+`;
 
 const Navbar = styled.div`
   display: flex;
-  gap: 100px;
+  gap: 50px;
+  
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+    gap: 30px;
+  }
 `;
 
 const Nav = styled.div`
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-`;
 
-const Logo = styled.div`
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const Footer = styled.div`
