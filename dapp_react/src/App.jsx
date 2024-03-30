@@ -8,7 +8,9 @@ import { useContext } from "react";
 
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
-import Slider from "./components/Slider";
+import { S_Button } from "./styles/styledComponent";
+// import Slider from "./components/Slider";
+// import { useRef } from "react";
 
 // Detect the MetaMask Ethereum provider
 
@@ -83,7 +85,8 @@ function App() {
         setAccount(account);
       } else {
         // if length 0, user is disconnected
-        setAccount("연결된 계정이 없습니다");
+        // setAccount("연결된 계정이 없습니다");
+        setAccount(null);
       }
     };
 
@@ -104,6 +107,12 @@ function App() {
     };
   }, [account]);
 
+  function truncateAccount(account) {
+    if (!account) return null;
+    return `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
+  }
+
+
   return (
     <Container>
       <Header id="header">
@@ -121,8 +130,14 @@ function App() {
         </Navbar>
         {!account ? (
           <ButtonWrap>
-            <Button onClick={connectMetamask}>Connect Wallet</Button>
-          </ButtonWrap>) : (<div>{account}</div>)
+            <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
+          </ButtonWrap>) : (
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
+            <div style={{ fontSize: '11px' }}>{truncateAccount(account)}</div>
+            <div>|</div>
+            <div>Cart</div>
+          </div>
+        )
         }
         <Menubar>
           ☰
@@ -131,70 +146,10 @@ function App() {
       {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
       <ContainerHome>
         <Background>
-
-          <div style={{ textAlign: 'center', padding: '20px 0px' }}>
-            <h1 style={{ fontSize: '36px' }}>NFT 구매부터 판매, 전시까지</h1>
-            <h3 style={{ fontSize: '24px', marginTop: '20px' }}>인기 크리에이터와 각종 브랜드 NFT를 다양하게 만나보세요</h3>
-            {/* <h4 style={{ fontSize: '18px', marginTop: '10px' }}>Nft.com 만의 오리지널 NFT 민팅</h4>
-            <div style={{ width: '100%', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '50px' }}>
-              <Button>마켓플레이스 보기</Button>
-              <Button>NFT 민팅하기</Button>
-            </div> */}
-          </div>
-          {/* Slider 컴포넌트 */}
-          <Slider />
-          <div style={{ width: '100%' }} >
-            <h2 style={{ fontSize: '24px' }}>인기 크리에이터</h2>
-            {
-              <ul style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                {[1, 2, 3, 4].map((_, index) => {
-                  return (<div key={`top-creator-${index}`} style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-                    <div style={{ width: '150px', height: '150px' }}>
-                      <img style={{ width: '100%', height: '100%', borderRadius: '50%' }} src="https://via.placeholder.com/150" alt="크리에이터 이미지" />
-                    </div>
-                    <h4>크리에이터 이름</h4>
-                    <h5>$2,000,000+</h5>
-                  </div>)
-                })}
-              </ul>
-            }
-          </div>
-          <div>
-            <h2 style={{ fontSize: '24px' }}>인기 NFT</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <span>정렬 기준</span>
-                <select>
-                  <option>최신순</option>
-                  <option>인기순</option>
-                  <option>낮은 가격순</option>
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <div>오늘</div>
-                <div>지난 7일</div>
-                <div>지난 30일</div>
-                <div>전체</div>
-              </div>
-            </div>
-            {
-              <ul style={{ display: 'flex', gap: '10px', justifyContent: 'center', overflow: 'hidden' }}>
-                {[1, 2, 3, 4].map((_, index) => {
-                  return (<div key={`top-nft-${index}`} style={{ display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-                    <div style={{ width: '150px', height: '150px' }}>
-                      <img style={{ width: '100%', height: '100%' }} src="https://via.placeholder.com/150" alt="NFT 이미지" />
-                    </div>
-                    <h4>NFT 이름</h4>
-                    <h5>$2,000,000+</h5>
-                  </div>)
-                })}
-              </ul>
-            }
-          </div>
+          {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
+          <Outlet />
         </Background>
       </ContainerHome>
-      <Outlet />
-      {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
       <Footer>
         Footer 영역입니다
       </Footer>
@@ -214,11 +169,6 @@ const Background = styled.div`
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-`;
-const Button = styled.button`
-  background-color: tomato;
-  border-radius: 8px;
-  height: 40px;
 `;
 
 const Container = styled.div`

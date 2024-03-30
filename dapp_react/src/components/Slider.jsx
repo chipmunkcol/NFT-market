@@ -1,28 +1,44 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar, A11y, EffectCube } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+import 'swiper/css/effect-cube';
 import Banner1 from "../assets/images/banner-main2.gif";
 import Banner2 from "../assets/images/banner-main3.gif";
 import Banner3 from "../assets/images/banner-main1.png";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 
-const Slider = () => {
+const Slider = ({ sliderRef }) => {
+  // const [slider, setSlider] = useState(null);
+  // const sliderRef = useRef(null);
+
+  // useEffect(() => {
+  //   if (slider) {
+
+  //   }
+  // }, [slider])
+
   return (
     <Container>
       <Swiper
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
+        // modules={[Navigation, Pagination, Scrollbar, A11y]}
+        modules={[EffectCube]}
+        effect="cube"
         style={{ height: '300px' }}
         spaceBetween={50}
         slidesPerView={1}
-        onSlideChange={() => console.log('slide change')}
-        onSwiper={(swiper) => console.log(swiper)}
+        onActiveIndexChange={(e) => console.log(e.realIndex)}
+        onSwiper={(swiper) => sliderRef.current = swiper}
         loop={true}
-        navigation
+        speed={1000}
+        autoplay={{ delay: 3000 }}
         pagination={{ clickable: true }}
         scrollbar={{ draggable: true }}
       >
@@ -79,6 +95,8 @@ height: 100%;
 width: 100%;
 `;
 const Container = styled.div`
+  width: 80%;
+  margin: 0 auto;
 `;
 
 export default Slider;
