@@ -17,7 +17,7 @@ function Home() {
   // const [account, setAccount] =
   //   useState("연결된 계정이 없습니다");
   const { account, setAccount } = useContext(GlobalContext);
-  const [nftType, setNftType] = useState(null);
+  const [nftUrl, setnftUrl] = useState(null);
 
   const onClickMint = async () => {
     try {
@@ -30,9 +30,9 @@ function Home() {
 
         const nftId = await MintContract.methods.tokenOfOwnerByIndex(account, parseInt(balanceLenth, 10) - 1).call();
 
-        const nftType = await MintContract.methods.nftTypes(nftId).call();
+        const nftUrl = await MintContract.methods.nftUrls(nftId).call();
 
-        setNftType(parseInt(nftType, 10));
+        setnftUrl(parseInt(nftUrl, 10));
       }
     } catch (err) {
       console.log("Error: ", err);
@@ -140,4 +140,4 @@ export default Home;
 {/* Display the connected account */ }
 {/* <h2>{account}</h2>
       <button onClick={onClickMint}>Mint 버튼</button>
-      {nftType && <NftCard nftType={nftType} />} */}
+      {nftUrl && <NftCard nftUrl={nftUrl} />} */}

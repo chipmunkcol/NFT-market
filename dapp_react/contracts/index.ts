@@ -13,24 +13,6 @@ export const web3 = new Web3("http://localhost:8545");
 // const MintABI:AbiStruct[]
 const MintABI = [
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "approve",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -210,95 +192,6 @@ const MintABI = [
     type: "event",
   },
   {
-    inputs: [],
-    name: "mintAnimalToken",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "safeTransferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-    ],
-    name: "safeTransferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "operator",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "approved",
-        type: "bool",
-      },
-    ],
-    name: "setApprovalForAll",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_saleNft",
-        type: "address",
-      },
-    ],
-    name: "setSaleNft",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -327,11 +220,6 @@ const MintABI = [
     inputs: [
       {
         internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
         name: "to",
         type: "address",
       },
@@ -341,7 +229,7 @@ const MintABI = [
         type: "uint256",
       },
     ],
-    name: "transferFrom",
+    name: "approve",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -402,9 +290,9 @@ const MintABI = [
             type: "uint256",
           },
           {
-            internalType: "uint256",
-            name: "nftType",
-            type: "uint256",
+            internalType: "string",
+            name: "nftUrl",
+            type: "string",
           },
           {
             internalType: "uint256",
@@ -446,6 +334,26 @@ const MintABI = [
   },
   {
     inputs: [],
+    name: "mintAnimalToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "ipfsUrl",
+        type: "string",
+      },
+    ],
+    name: "mintByUser",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "name",
     outputs: [
       {
@@ -465,12 +373,12 @@ const MintABI = [
         type: "uint256",
       },
     ],
-    name: "nftTypes",
+    name: "nftUrls",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "string",
         name: "",
-        type: "uint256",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -496,6 +404,57 @@ const MintABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "saleNft",
     outputs: [
@@ -506,6 +465,37 @@ const MintABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_saleNft",
+        type: "address",
+      },
+    ],
+    name: "setSaleNft",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -615,6 +605,29 @@ const MintABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ] as const;
 const SaleNftABI = [
   {
@@ -672,9 +685,9 @@ const SaleNftABI = [
             type: "uint256",
           },
           {
-            internalType: "uint256",
-            name: "nftType",
-            type: "uint256",
+            internalType: "string",
+            name: "nftUrl",
+            type: "string",
           },
           {
             internalType: "uint256",
@@ -774,8 +787,8 @@ const SaleNftABI = [
   },
 ] as const;
 
-const MintAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-export const SaleAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+const MintAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+export const SaleAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 export const SaleNftContract = new web3.eth.Contract(SaleNftABI, SaleAddress);

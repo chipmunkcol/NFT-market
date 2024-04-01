@@ -7,7 +7,7 @@ import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
 // interface props {
 //   nft: {
 //     nftId: number;
-//     nftType: number;
+//     nftUrl: number;
 //     nftPrice: string;
 //   }
 // }
@@ -15,7 +15,7 @@ import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
 
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
 const OnsaleNftCard = ({ nft }) => {
-  const { nftId, nftType, nftPrice } = nft;
+  const { nftId, nftUrl, nftPrice } = nft;
   const { myNfts, account, setTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
 
@@ -45,7 +45,7 @@ const OnsaleNftCard = ({ nft }) => {
 
   return (
     <Box>
-      <NftCard nftType={nftType} />
+      <NftCard nftUrl={nftUrl} />
 
       <OnsalePriceWrap>
         가격 : {nftPrice} ETH ($

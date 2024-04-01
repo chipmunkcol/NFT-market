@@ -82,7 +82,7 @@ function App() {
   useEffect(() => {
     const refreshAccount = (account) => {
       if (account?.length > 0) {
-        setAccount(account);
+        setAccount(account[0]);
       } else {
         // if length 0, user is disconnected
         // setAccount("연결된 계정이 없습니다");
@@ -96,7 +96,7 @@ function App() {
         const accounts = await window.ethereum.request({
           method: "eth_accounts",
         });
-        refreshAccount(accounts[0]);
+        refreshAccount(accounts);
         window.ethereum.on("accountsChanged", refreshAccount);
       }
     };
@@ -107,10 +107,12 @@ function App() {
     };
   }, [account]);
 
-  function truncateAccount(account) {
-    if (!account) return null;
-    return `${account.substring(0, 6)}...${account.substring(account.length - 4)}`;
-  }
+  // truncate account
+  const [truncatedAccount, setTruncatedAccount] = useState(null);
+  useEffect(() => {
+    if (!account) return;
+    setTruncatedAccount(`${account?.substring(0, 6)}...${account?.substring(account?.length - 4)}`);
+  }, [account]);
 
 
   return (
@@ -122,7 +124,7 @@ function App() {
             <img src="vite.svg" alt="logo" />
           </Link>
           <Link to={'/market_place'}>
-            <Nav>Marketplace</Nav>
+            <Nav>Marketplace</Nav>j
           </Link>
           <Link to={'/mypage'}>
             <Nav>MyPage</Nav>
@@ -133,7 +135,7 @@ function App() {
             <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
           </ButtonWrap>) : (
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
-            <div style={{ fontSize: '11px' }}>{truncateAccount(account)}</div>
+            <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
             <div>|</div>
             <div>Cart</div>
           </div>

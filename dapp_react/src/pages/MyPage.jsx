@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { MintContract, SaleAddress, web3 } from "../../contracts/index";
-import detectEthereumProvider from "@metamask/detect-provider";
 // import NftCard from "../components/NftCard";
 import styled from "styled-components";
 import SaleNftCard from "../components/SaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 
-const MyPage = () => {
+const MyPage = ({ account }) => {
   // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
-  const initialState = "";
-  const [account, setAccount] = useState(initialState);
+
   // console.log("account: ", account);
   // const [myNfts, setMyNfts] = useState([]);
   const { myNfts, setMyNfts } = useContext(GlobalContext);
@@ -49,32 +47,6 @@ const MyPage = () => {
     }
   };
 
-  useEffect(() => {
-    const refreshAccount = (account) => {
-      if (account?.length > 0) {
-        setAccount(account);
-      } else {
-        // if length 0, user is disconnected
-        setAccount(initialState);
-      }
-    };
-
-    const getProvider = async () => {
-      const provider = await detectEthereumProvider({ silent: true });
-      if (provider) {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        refreshAccount(accounts[0]);
-        window.ethereum.on("accountsChanged", refreshAccount);
-      }
-    };
-
-    getProvider();
-    return () => {
-      window.ethereum?.removeListener("accountsChanged", refreshAccount);
-    };
-  }, [account]);
 
   const getNft = async () => {
     if (!account) return;
@@ -85,12 +57,12 @@ const MyPage = () => {
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { nftId, nftType, nftPrice } = myNft;
+        const { nftId, nftUrl, nftPrice } = myNft;
         const parsedId = parseInt(nftId, 10);
-        const parsedType = parseInt(nftType, 10);
+        const parsedType = parseInt(nftUrl, 10);
         const parsedPrice = parseInt(nftPrice, 10);
         const etherPrice = web3.utils.fromWei(parsedPrice.toString(), 'ether');
-        newMyNfts.push({ nftId: parsedId, nftType: parsedType, nftPrice: etherPrice });
+        newMyNfts.push({ nftId: parsedId, nftUrl: parsedType, nftPrice: etherPrice });
       });
 
       setMyNfts(newMyNfts);

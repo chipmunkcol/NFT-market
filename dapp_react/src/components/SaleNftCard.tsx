@@ -7,14 +7,14 @@ import NftCard from "./NftCard";
 interface props {
   nft: {
     nftId: number;
-    nftType: number;
+    nftUrl: number;
     nftPrice: string;
   };
   account: string;
 }
 
 const SaleNftCard: FC<props> = ({ nft, account }) => {
-  const { nftId, nftType, nftPrice } = nft;
+  const { nftId, nftUrl, nftPrice } = nft;
   const priceRef = useRef<HTMLInputElement>(null);
   const [onsalePrice, setOnsalePrice] = useState(nftPrice);
 
@@ -33,7 +33,7 @@ const SaleNftCard: FC<props> = ({ nft, account }) => {
 
   return (
     <Box>
-      <NftCard nftType={nftType} />
+      <NftCard nftUrl={nftUrl} />
       {parseInt(onsalePrice, 0) ? (
         <OnsalePriceWrap>
           가격 : {onsalePrice} ETH ($

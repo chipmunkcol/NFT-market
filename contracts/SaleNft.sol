@@ -14,7 +14,7 @@ contract SaleNft {
 
     struct OnsaleNftList {
         uint256 nftId;
-        uint256 nftType;
+        string nftUrl;
         uint256 price;
     }
 
@@ -67,10 +67,10 @@ contract SaleNft {
 
         for (uint256 i = 0; i < onsaleNftLength; i++) {
             uint256 nftId = onsaleNftIds[i];
-            uint256 nftType = mintAddress.nftTypes(nftId);
+            string memory nftUrl = mintAddress.nftUrls(nftId);
             uint256 price = nftPrices[nftId];
 
-            onsaleNftList[i] = OnsaleNftList(nftId, nftType, price);
+            onsaleNftList[i] = OnsaleNftList(nftId, nftUrl, price);
         }
         return onsaleNftList;
         

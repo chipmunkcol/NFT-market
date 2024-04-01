@@ -3,7 +3,7 @@ import { createContext, useMemo, useState } from "react";
 export const GlobalContext = createContext({});
 
 const GlobalProvider = ({ children }) => {
-  const [account, setAccount] = useState(null);
+  const [account, setAccount] = useState("");
   const [myNfts, setMyNfts] = useState([]);
   const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [trigger, setTrigger] = useState(false);
