@@ -9,6 +9,7 @@ import { ThemeProvider } from "styled-components";
 import App from "./App";
 import Home from "./pages/Home";
 import MarketPlace from "./pages/MarketPlace";
+import CreateNft from "./pages/CreateNft";
 import MyPage from "./pages/MyPage";
 
 const router = createBrowserRouter([
@@ -21,8 +22,12 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "market_place",
+        path: "market-place",
         element: <MarketPlace />,
+      },
+      {
+        path: "create-nft",
+        element: <CreateNft />,
       },
       {
         path: "mypage",

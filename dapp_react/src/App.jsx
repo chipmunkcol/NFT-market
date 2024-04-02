@@ -118,24 +118,26 @@ function App() {
   return (
     <Container>
       <Header id="header">
-
         <Navbar>
           <Link to={'/'}>
             <img src="vite.svg" alt="logo" />
           </Link>
-          <Link to={'/market_place'}>
-            <Nav>Marketplace</Nav>j
+          <Link to={'/market-place'}>
+            <Nav>Marketplace</Nav>
           </Link>
-          <Link to={'/mypage'}>
-            <Nav>MyPage</Nav>
+          <Link to={'/create-nft'}>
+            <Nav>Create NFT</Nav>
           </Link>
         </Navbar>
         {!account ? (
           <ButtonWrap>
             <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
           </ButtonWrap>) : (
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
             <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
+            <Link to={'/mypage'}>
+              <Nav>MyPage</Nav>
+            </Link>
             <div>|</div>
             <div>Cart</div>
           </div>
@@ -147,10 +149,10 @@ function App() {
       </Header>
       {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
       <ContainerHome>
-        <Background>
-          {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
-          <Outlet />
-        </Background>
+        {/* <Background> */}
+        {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
+        <Outlet />
+        {/* </Background> */}
       </ContainerHome>
       <Footer>
         Footer 영역입니다
@@ -163,15 +165,15 @@ const ContainerHome = styled.div`
   width: 100%;
   /* height: 100%; */
 `;
-const Background = styled.div`
-  /* height: 100%; */
-  padding-top: 100px;
-  width: 100%;
-  background-image: url(${bgMain});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-`;
+// const Background = styled.div`
+//   /* height: 100%; */
+//   padding-top: 100px;
+//   width: 100%;
+//   background-image: url(${bgMain});
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: cover;
+// `;
 
 const Container = styled.div`
   /* position: relative; */
@@ -185,8 +187,8 @@ const Header = styled.div`
   width: 100vw;
   z-index: 999;
   /* margin-top: 100px; */
-  padding: 0 30px;
-  background-color: rgba(0, 0, 0, 0.2);
+  padding: 0 50px 0 30px;
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: space-between;

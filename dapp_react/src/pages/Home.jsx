@@ -50,7 +50,7 @@ function Home() {
   // }
 
   return (
-    <>
+    <Background>
 
       <div style={{ textAlign: 'center', padding: '20px 0px' }}>
         <h1 style={{ fontSize: '36px' }}>NFT 구매부터 판매, 전시까지</h1>
@@ -113,9 +113,19 @@ function Home() {
           </ul>
         }
       </div>
-    </>
+    </Background>
   );
 }
+
+const Background = styled.div`
+  /* height: 100%; */
+  padding-top: 100px;
+  width: 100%;
+  background-image: url(${bgMain});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+`;
 
 // const Container = styled.div`
 //   width: 100%;
