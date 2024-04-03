@@ -9,17 +9,23 @@ import { GlobalContext } from "../context/GlobalContext";
 
 function CreateNft() {
   const { account } = useContext(GlobalContext);
-  const dataRef = useRef({
-    name: null,
-    desc: null,
+  const [data, setData] = useState({
+    name: '',
+    desc: '',
   });
   const [file, setFile] = useState(null);
   const [tags, setTags] = useState('');
-  const onchangeNameDataRef = (e) => {
-    dataRef.current.name = e.target.value;
+  const onchangeNameData = (e) => {
+    setData(prev => ({
+      ...prev,
+      name: e.target.value
+    }));
   }
-  const onchangeDescDataRef = (e) => {
-    dataRef.current.desc = e.target.value;
+  const onchangeDescData = (e) => {
+    setData(prev => ({
+      ...prev,
+      desc: e.target.value
+    }));
   }
   const onchangeHandler = (e) => {
     setFile(e.target.files[0]);
@@ -35,11 +41,11 @@ function CreateNft() {
       alert("지갑을 연결해주세요");
       return false;
     }
-    if (!dataRef.current.name) {
+    if (!data.name) {
       alert("이름을 입력해주세요");
       return false;
     }
-    if (!dataRef.current.desc) {
+    if (!data.desc) {
       alert("설명을 입력해주세요");
       return false;
     }
@@ -51,9 +57,12 @@ function CreateNft() {
   }
 
   const resetFormData = () => {
-    dataRef.current.name = null;
-    dataRef.current.desc = null;
+    setData({
+      name: '',
+      desc: '',
+    });
     setFile(null);
+    setTags('');
   }
 
   const handleSubmission = async () => {
@@ -63,9 +72,9 @@ function CreateNft() {
       const formData = new FormData();
 
       const jsonData = JSON.stringify({
-        name: dataRef.current.name,
+        name: data.name,
         keyvalues: {
-          description: dataRef.current.desc,
+          description: data.desc,
           tags: tags,
         }
       });
@@ -95,6 +104,7 @@ function CreateNft() {
         if (mintResult.status) {
           alert("NFT 발행 성공");
           resetFormData();
+
         }
       }
     } catch (error) {
@@ -133,9 +143,9 @@ function CreateNft() {
           </LeftPart>
           <RightPart>
             <InputLabel>이름 *</InputLabel>
-            <InputText type="text" value={dataRef.current.name} onChange={onchangeNameDataRef} />
+            <InputText type="text" value={data.name} onChange={onchangeNameData} />
             <InputLabel>설명</InputLabel>
-            <InputText type="text" value={dataRef.current.name} onChange={onchangeDescDataRef} />
+            <InputText type="text" value={data.desc} onChange={onchangeDescData} />
             <InputLabel>태그</InputLabel>
             <p style={{ fontSize: '14px', marginBottom: '0.75rem' }}>태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로 표시되며 아이템 페이지에도 나열됩니다.</p>
             <select style={{ marginBottom: '5px' }} onChange={handleTags}>

@@ -3,11 +3,12 @@ import React, { FC, useRef, useState } from "react";
 import { SaleNftContract, web3 } from "../../contracts/index";
 // import { toWei } from "web3-utils";
 import NftCard from "./NftCard";
+import { S_Button } from "../styles/styledComponent";
 
 interface props {
   nft: {
     nftId: number;
-    nftUrl: number;
+    nftUrl: string;
     nftPrice: string;
   };
   account: string;
@@ -44,8 +45,13 @@ const SaleNftCard: FC<props> = ({ nft, account }) => {
         </OnsalePriceWrap>
       ) : (
         <OnsalePriceWrap>
-          <input type="number" ref={priceRef} />
-          <button onClick={registerForSaleHandler}>판매 등록</button>
+          <input
+            type="number"
+            ref={priceRef}
+            style={{ width: "90px" }}
+            placeholder="단위: ETH"
+          />
+          <Button onClick={registerForSaleHandler}>판매 등록</Button>
         </OnsalePriceWrap>
       )}
     </Box>
@@ -54,6 +60,20 @@ const SaleNftCard: FC<props> = ({ nft, account }) => {
 
 const Box = styled.div`
   /* height: 300px; */
+`;
+
+const Button = styled.button`
+  background-color: rgba(32, 129, 226, 1);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  height: 48px;
+  padding: 12px 18px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  &:hover {
+    background-color: rgba(32, 129, 226, 0.8);
+  }
 `;
 
 const OnsalePriceWrap = styled.div`

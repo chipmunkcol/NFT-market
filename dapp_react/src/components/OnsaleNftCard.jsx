@@ -4,6 +4,7 @@ import styled from "styled-components";
 import NftCard from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
+import { S_Button } from "../styles/styledComponent";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -55,7 +56,7 @@ const OnsaleNftCard = ({ nft }) => {
         )
       </OnsalePriceWrap>
       {!isMyNft && <ButtonWrap>
-        <button onClick={() => purchaseNftHandler(nftId)}>구매하기</button>
+        <S_Button onClick={() => purchaseNftHandler(nftId)}>구매하기</S_Button>
       </ButtonWrap>}
     </Box>
   );

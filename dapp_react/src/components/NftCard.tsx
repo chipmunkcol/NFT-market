@@ -2,13 +2,13 @@ import React, { FC } from "react";
 import styled from "styled-components";
 
 interface props {
-  nftUrl: number;
+  nftUrl: string;
 }
 
 const NftCard: FC<props> = ({ nftUrl }) => {
   return (
     <Box>
-      <Img src={`images/${nftUrl}.png`} alt="mint-image" />
+      <Img src={nftUrl} alt="mint-image" />
     </Box>
   );
 };

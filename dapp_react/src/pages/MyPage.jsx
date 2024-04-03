@@ -27,6 +27,10 @@ const MyPage = () => {
     }
   };
 
+  const alertAleadyApproved = () => {
+    alert('이미 승인되었습니다');
+  }
+
   const approvedNftHandler = async () => {
     if (!account) {
       alert('Please connect your wallet first!');
@@ -60,10 +64,9 @@ const MyPage = () => {
       myNfts.map(myNft => {
         const { nftId, nftUrl, nftPrice } = myNft;
         const parsedId = parseInt(nftId, 10);
-        const parsedType = parseInt(nftUrl, 10);
         const parsedPrice = parseInt(nftPrice, 10);
         const etherPrice = web3.utils.fromWei(parsedPrice.toString(), 'ether');
-        newMyNfts.push({ nftId: parsedId, nftUrl: parsedType, nftPrice: etherPrice });
+        newMyNfts.push({ nftId: parsedId, nftUrl, nftPrice: etherPrice });
       });
 
       setMyNfts(newMyNfts);
@@ -154,7 +157,9 @@ const MyPage = () => {
             </div>
           </LeftPart>
           <RightPart>
-            <div>0 deals</div>
+            <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '10px' }}>{myNfts.length > 0 ? myNfts.length : 0} deals</div>
+            <Button $isApproved={approvedState} onClick={!approvedState ? approvedNftHandler : alertAleadyApproved} >{approvedState ? 'Approved' : 'Not approved'}</Button>
+
             {myNfts.length > 0 && (
               <MyNftsWrap>
                 {myNfts.map((nft, index) => (
@@ -165,8 +170,6 @@ const MyPage = () => {
             {myNfts.length < 1 && <h2>No NFTs</h2>}
           </RightPart>
         </FlexWrap>
-
-        {/* <Button $isApproved={approvedState} onClick={approvedNftHandler} >{approvedState ? 'Approved' : 'Not approved'}</Button> */}
 
 
 
