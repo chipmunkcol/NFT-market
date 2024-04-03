@@ -26,28 +26,28 @@ function App() {
   //   })
   //   updateWallet(accounts)
   // }
-  const [lastScrollTop, setLastScrollTop] = useState(0);
+  // const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  const handleScroll = e => {
-    const scrollPosition = e.currentTarget.scrollY;
-    const $header = document.getElementById('header');
-    if (scrollPosition > 100 && scrollPosition > lastScrollTop && $header.style.opacity !== 0) {
-      $header.style.opacity = '0';
-      $header.style.visibility = 'hidden';
-    } else if (scrollPosition < lastScrollTop && $header.style.opacity !== '1') {
-      $header.style.opacity = '1';
-      $header.style.visibility = 'visible';
-      $header.style.transition = 'opacity 1s ease-in-out, visibility 1s ease-in-out';
-    }
-    setLastScrollTop(scrollPosition);
-  };
+  // const handleScroll = e => {
+  //   const scrollPosition = e.currentTarget.scrollY;
+  //   const $header = document.getElementById('header');
+  //   if (scrollPosition > 100 && scrollPosition > lastScrollTop && $header.style.opacity !== 0) {
+  //     $header.style.opacity = '0';
+  //     $header.style.visibility = 'hidden';
+  //   } else if (scrollPosition < lastScrollTop && $header.style.opacity !== '1') {
+  //     $header.style.opacity = '1';
+  //     $header.style.visibility = 'visible';
+  //     $header.style.transition = 'opacity 1s ease-in-out, visibility 1s ease-in-out';
+  //   }
+  //   setLastScrollTop(scrollPosition);
+  // };
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [lastScrollTop]);
+  // useEffect(() => {
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //   };
+  // }, [lastScrollTop]);
 
   /**
    * connectMetamask
@@ -183,12 +183,14 @@ const Container = styled.div`
 const Header = styled.div`
   position: fixed;
   top: 0;
-  height: 100px;
+  height: 72px;
   width: 100vw;
   z-index: 999;
   /* margin-top: 100px; */
-  padding: 0 50px 0 30px;
-  background-color: rgba(0, 0, 0, 0.7);
+  padding: 0 50px 0 2rem;
+  /* background-color: rgba(0, 0, 0, 0.7); */
+  background-color: #ffffff;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -211,6 +213,7 @@ const ButtonWrap = styled.div`
 
 const Navbar = styled.div`
   display: flex;
+  align-items: center;
   gap: 50px;
   
   @media (max-width: ${({ theme }) => theme.size.mobile}) {

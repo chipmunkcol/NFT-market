@@ -14,6 +14,7 @@ function CreateNft() {
     desc: null,
   });
   const [file, setFile] = useState(null);
+  const [tags, setTags] = useState('');
   const onchangeNameDataRef = (e) => {
     dataRef.current.name = e.target.value;
   }
@@ -65,6 +66,7 @@ function CreateNft() {
         name: dataRef.current.name,
         keyvalues: {
           description: dataRef.current.desc,
+          tags: tags,
         }
       });
       formData.append("pinataMetadata", jsonData);
@@ -86,7 +88,6 @@ function CreateNft() {
         }
       );
       const resData = await res.json();
-      // setCid(resData.IpfsHash);
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
         const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
@@ -99,6 +100,17 @@ function CreateNft() {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // 태그
+  const handleTags = (e) => {
+    let str = '#';
+    str = tags + str + e.target.value + ' ';
+    setTags(str);
+  }
+
+  const onChangeInputSpecific = (e) => {
+    setTags(e.target.value);
   }
 
   return (
@@ -124,10 +136,10 @@ function CreateNft() {
             <InputText type="text" value={dataRef.current.name} onChange={onchangeNameDataRef} />
             <InputLabel>설명</InputLabel>
             <InputText type="text" value={dataRef.current.name} onChange={onchangeDescDataRef} />
-            <InputLabel>특성</InputLabel>
-            <p style={{ fontSize: '14px', marginBottom: '0.75rem' }}>특성은 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로 표시되며 아이템 페이지에도 나열됩니다.</p>
-            <select style={{ marginBottom: '5px' }}>
-              <option>태그</option>
+            <InputLabel>태그</InputLabel>
+            <p style={{ fontSize: '14px', marginBottom: '0.75rem' }}>태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로 표시되며 아이템 페이지에도 나열됩니다.</p>
+            <select style={{ marginBottom: '5px' }} onChange={handleTags}>
+              <option style={{ display: 'none' }}>ex</option>
               <option>예술</option>
               <option>유명인</option>
               <option>게임</option>
@@ -135,7 +147,7 @@ function CreateNft() {
               <option>가상자산</option>
               <option>프로필 사진</option>
             </select>
-            <InputSpecific placeholder="#예술 #유명인 #게임" />
+            <InputSpecific placeholder="#예술 #유명인 #게임" value={tags} onChange={onChangeInputSpecific} />
             <S_Button onClick={handleSubmission} >생성</S_Button>
           </RightPart>
         </FlexBox>

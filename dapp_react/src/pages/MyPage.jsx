@@ -4,13 +4,14 @@ import { MintContract, SaleAddress, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import SaleNftCard from "../components/SaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
+import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
 
-const MyPage = ({ account }) => {
+const MyPage = () => {
   // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
 
   // console.log("account: ", account);
   // const [myNfts, setMyNfts] = useState([]);
-  const { myNfts, setMyNfts } = useContext(GlobalContext);
+  const { account, myNfts, setMyNfts } = useContext(GlobalContext);
   const [approvedState, setApprovedState] = useState(false);
 
   const getApprovedStatus = async () => {
@@ -87,31 +88,179 @@ const MyPage = ({ account }) => {
   }, [account]);
 
 
+  // truncate account
+  const [truncatedAccount, setTruncatedAccount] = useState(null);
+  useEffect(() => {
+    if (!account) return;
+    setTruncatedAccount(`${account?.substring(0, 6)}...${account?.substring(account?.length - 4)}`);
+  }, [account]);
+
+
   return (
-    <div>
-      <h1>My Page</h1>
-      <div>
-        <h2>판매 승인 상태</h2>
-        <S_Button $isApproved={approvedState} onClick={approvedNftHandler} >{approvedState ? 'Approved' : 'Not approved'}</S_Button>
-      </div>
-      {myNfts.length > 0 && (
-        <MyNftsWrap>
-          {myNfts.map((nft, index) => (
-            <SaleNftCard key={index} nft={nft} account={account} />
-          ))}
-        </MyNftsWrap>
-      )}
-      {myNfts.length < 1 && <h2>No NFTs</h2>}
-    </div>
+    <Background>
+      <Container>
+        <ProfileContainer>
+          <P_Background />
+          <P_Img>
+            <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" alt="profile" />
+          </P_Img>
+          <P_Info>
+            <h1>name</h1>
+            <FlexWrap>
+              <P_IconWrap>
+                <IconEther />
+              </P_IconWrap>
+              <p>{truncatedAccount}</p>
+            </FlexWrap>
+          </P_Info>
+        </ProfileContainer>
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '1rem 2rem', gap: '30px', marginTop: "20px" }}>
+          <div>
+            <NavButton>
+              Collected
+            </NavButton>
+          </div>
+          <div>
+            <NavButton>
+              Favorited
+            </NavButton>
+          </div>
+          <div style={{ position: 'absolute', bottom: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
+
+        </div>
+
+        <FlexWrap $justifyContent={'space-between'} style={{ padding: '1rem 2rem' }}>
+          <LeftPart>
+            <div>
+              <NavButton>
+                All
+              </NavButton>
+            </div>
+            <div>
+              <NavButton>
+                Non sale
+              </NavButton>
+            </div>
+            <div>
+              <NavButton>
+                On sale
+              </NavButton>
+            </div>
+            <div>
+              <NavButton>
+                Sold
+              </NavButton>
+            </div>
+          </LeftPart>
+          <RightPart>
+            <div>0 deals</div>
+            {myNfts.length > 0 && (
+              <MyNftsWrap>
+                {myNfts.map((nft, index) => (
+                  <SaleNftCard key={index} nft={nft} account={account} />
+                ))}
+              </MyNftsWrap>
+            )}
+            {myNfts.length < 1 && <h2>No NFTs</h2>}
+          </RightPart>
+        </FlexWrap>
+
+        {/* <Button $isApproved={approvedState} onClick={approvedNftHandler} >{approvedState ? 'Approved' : 'Not approved'}</Button> */}
+
+
+
+      </Container>
+    </Background>
   );
 };
 
+const NavButton = styled.button`
+  padding: 12px 24px;
+  display: inline-block;
+  border-radius: 0.75rem;
 
-// interface IsApprovedState {
-//   readonly approvedState: boolean;
-// };
+  &:hover {
+    background-color: rgba(18, 18, 18, 0.04);
+    /* border: 1px solid #f6f6f6; */
+  }
+`;
 
-const S_Button = styled.button`
+const LeftPart = styled.div`
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+const RightPart = styled.div`
+  width: 70%;
+`;
+
+const ProfileContainer = styled.div`
+  position: relative;
+  width: 100%;
+`;
+const P_Background = styled.div`
+  width: 100%;
+  height: 320px;
+  background-color: #f5f5f5;
+  margin-bottom: 50px;
+`;
+const P_Img = styled.div`
+  position: absolute;
+  top: 180px;
+  left: 2rem;
+  /* transform: translateX(-50%); */
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid white;
+  box-shadow:rgba(0, 0, 0, 0.08) 0px 4px 16px;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const P_Info = styled.div`
+  padding: 0 50px 0 2rem;
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  p {
+    font-size: 16px;
+    font-weight: 400;
+  }
+`;
+const FlexWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: ${props => props.$justifyContent ? props.$justifyContent : ''};
+`;
+
+const P_IconWrap = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  /* background-color: #f5f5f5; */
+  margin-right: 10px;
+  /* i {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    border-radius: 50%;
+  } */
+`;
+const IconEther = styled(iconEther)`
+  width: 20px;
+  height: 20px;
+`;
+
+const Button = styled.button`
   background-color: ${props => props.$isApproved ? 'green' : 'red'};
   color: white;
   border: none;
@@ -124,6 +273,22 @@ const MyNftsWrap = styled.ul`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+`;
+
+const Background = styled.div`
+  /* height: 100%; */
+  padding-top: 72px;
+  width: 100%;
+  background-color: #ffffff;
+  background-size: cover;
+`;
+
+
+const Container = styled.div`
+  min-height: 100vh;
+  overflow: hidden;
+  color: rgba(18, 18, 18, 1);
+  /* padding: 0 50px 0 30px; */
 `;
 
 export default MyPage;

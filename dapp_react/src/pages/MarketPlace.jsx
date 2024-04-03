@@ -41,15 +41,6 @@ const MarketPlace = () => {
   return (
     <Background>
       <Container>
-        {/* <S_Wallet_Button $account={account} onClick={handleSubmission}>Nft 발행하기</S_Wallet_Button> */}
-        {/* {cid && (
-        <img
-          src={`https://ipfs.io/ipfs/${cid}`}
-          alt="ipfs image"
-          width={100}
-          height={100}
-        />
-      )} */}
         <h1>MarketPlace</h1>
         {
           onsaleNftList.length < 1 ? (<div>판매중인 NFT가 없습니다.</div>) : (
@@ -70,7 +61,7 @@ const MarketPlace = () => {
 
 const Background = styled.div`
   /* height: 100%; */
-  padding-top: 100px;
+  padding-top: 72px;
   width: 100%;
   background-image: url(${bgMain});
   background-position: center;

@@ -119,7 +119,7 @@ function Home() {
 
 const Background = styled.div`
   /* height: 100%; */
-  padding-top: 100px;
+  padding-top: 72px;
   width: 100%;
   background-image: url(${bgMain});
   background-position: center;
