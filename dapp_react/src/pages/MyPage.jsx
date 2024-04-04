@@ -75,19 +75,19 @@ const MyPage = () => {
     }
   };
 
-  async function connectSaleNftOnMintContract() {
-    await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
-  }
+  // async function connectSaleNftOnMintContract() {
+  //   await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
+  // }
 
   async function init() {
-    await connectSaleNftOnMintContract();
+    // await connectSaleNftOnMintContract();
     await getNft();
     await getApprovedStatus();
   }
 
   useEffect(() => {
-    init();
     setMyNfts([]);
+    init();
   }, [account]);
 
 

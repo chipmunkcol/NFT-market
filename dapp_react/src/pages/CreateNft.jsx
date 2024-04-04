@@ -6,6 +6,7 @@ import { S_Button } from "../styles/styledComponent";
 import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../context/GlobalContext";
+import iconUpload from '../assets/images/icon-upload.png';
 
 function CreateNft() {
   const { account } = useContext(GlobalContext);
@@ -123,6 +124,11 @@ function CreateNft() {
     setTags(e.target.value);
   }
 
+  const cancelHandler = () => {
+    setFile(null);
+    inputFileRef.current.value = '';
+  }
+
   return (
     <Background>
       <Container>
@@ -132,13 +138,22 @@ function CreateNft() {
         </TitleBox>
         <FlexBox>
           <LeftPart>
-            <InputFileBox onClick={onClickFileHandler} onDrop={onchangeHandler}>
-              <div>svg</div>
-              <h2>미디어 파일 끌어다 놓기</h2>
-              <h3>파일 찾아보기</h3>
-              <h4>최대 크기: 50MB</h4>
-              <h4>JPG, PNG, GIF, SVG, MP4</h4>
-            </InputFileBox>
+            {!file ? (
+              <InputFileBox onClick={onClickFileHandler} onDrop={onchangeHandler}>
+                <div style={{ width: '40px', height: '40px' }}>
+                  <IconUpload />
+                </div>
+                <h2>미디어 파일 끌어다 놓기</h2>
+                <h3>파일 찾아보기</h3>
+                <h4>최대 크기: 50MB</h4>
+                <h4>JPG, PNG, GIF, SVG, MP4</h4>
+              </InputFileBox>) : (
+              <PreviewFile>
+                <img src={URL.createObjectURL(file)} alt="preview" />
+                <CancelWrap>
+                  <CancelBtn onClick={cancelHandler}>x</CancelBtn>
+                </CancelWrap>
+              </PreviewFile>)}
             <input type="file" ref={inputFileRef} style={{ display: 'none' }} onChange={onchangeHandler} />
           </LeftPart>
           <RightPart>
@@ -166,6 +181,28 @@ function CreateNft() {
   )
 }
 
+const CancelWrap = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+`;
+const CancelBtn = styled.button`
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  &:hover {
+    color: #cccccc;
+  }
+`;
+
+const IconUpload = styled.div`
+  background-image: url(${iconUpload});
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+`;
+
 const FlexBox = styled.div`
   display: flex;
   justify-content: space-between;
@@ -179,6 +216,22 @@ const LeftPart = styled.div`
     width: 100%;
   }
 `;
+
+
+const PreviewFile = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 425px;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.75rem;
+  }
+`;
+
 const InputFileBox = styled.div`
   width: 100%;
   height: 100%;

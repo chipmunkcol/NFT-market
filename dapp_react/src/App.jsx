@@ -2,10 +2,11 @@ import styled from "styled-components";
 import { Link, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
-import bgMain from './assets/images/bg-main.png';
+// import bgMain from './assets/images/bg-main.png';
 import { GlobalContext } from "./context/GlobalContext";
 import { useContext } from "react";
 
+import { MintContract, SaleAddress } from "../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
@@ -113,6 +114,16 @@ function App() {
     if (!account) return;
     setTruncatedAccount(`${account?.substring(0, 6)}...${account?.substring(account?.length - 4)}`);
   }, [account]);
+
+
+  async function connectSaleNftOnMintContract() {
+    await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
+  }
+
+  useEffect(() => {
+    if (!account) return;
+    connectSaleNftOnMintContract();
+  }, [account])
 
 
   return (

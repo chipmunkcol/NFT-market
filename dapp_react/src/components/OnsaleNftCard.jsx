@@ -17,7 +17,7 @@ import { S_Button } from "../styles/styledComponent";
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
 const OnsaleNftCard = ({ nft }) => {
   const { nftId, nftUrl, nftPrice } = nft;
-  const { myNfts, account, setTrigger } = useContext(GlobalContext);
+  const { myNfts, account, setPurchaseTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
 
   function checkMyNft(nftId) {
@@ -37,7 +37,7 @@ const OnsaleNftCard = ({ nft }) => {
       if (res.status) {
         alert('NFT 구매에 성공했습니다.');
       }
-      setTrigger(prev => !prev);
+      setPurchaseTrigger(prev => !prev);
 
     } catch (err) {
       console.log('err: ', err);
