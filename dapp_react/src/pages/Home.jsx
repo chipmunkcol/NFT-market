@@ -3,7 +3,7 @@ import { useContext, useRef, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { MintContract } from "../../contracts/index";
-import NftCard from "../components/NftCard";
+import NonSaleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import styled from "styled-components";
 import bgMain from '../assets/images/bg-main.png';
@@ -16,13 +16,17 @@ function Home() {
   //state to store and show the connected account
   // const [account, setAccount] =
   //   useState("연결된 계정이 없습니다");
-  const { account, setAccount } = useContext(GlobalContext);
-  const [nftUrl, setnftUrl] = useState(null);
+  const { account } = useContext(GlobalContext);
+  const [mintNft, setMintNft] = useState({
+    ipfsHash: "",
+    nftType: 0,
+  });
 
   const onClickMint = async () => {
     try {
+      const ipfsHash = `${import.meta.env.VITE_IPFS_MINT_HASH}`;
       const result = await MintContract.methods
-        .mintAnimalToken().send({ from: account });
+        .mintAnimalToken(ipfsHash).send({ from: account });
 
       console.log('result: ', result);
       if (result.status) {
@@ -30,9 +34,28 @@ function Home() {
 
         const nftId = await MintContract.methods.tokenOfOwnerByIndex(account, parseInt(balanceLenth, 10) - 1).call();
 
-        const nftUrl = await MintContract.methods.nftUrls(nftId).call();
+        const nftHashPlusType = await MintContract.methods.nftHashs(nftId).call();
+        const nftType = parseInt(nftHashPlusType.split('/')[1]);
+        setMintNft({
+          ipfsHash,
+          nftType,
+        });
+        const jsonKeyvalues = JSON.stringify({
+          ipfsPinHash: ipfsHash,
+          keyvalues: {
+            owner: account,
+            nftType,
+          },
+        });
+        const options = {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`, 'Content-Type': 'application/json' },
+          body: jsonKeyvalues
+        };
 
-        setnftUrl(parseInt(nftUrl, 10));
+        fetch('https://api.pinata.cloud/pinning/hashMetadata', options)
+          .then(response => console.log(response))
+          .catch(err => console.error(err));
       }
     } catch (err) {
       console.log("Error: ", err);
@@ -62,7 +85,7 @@ function Home() {
           <button style={{ color: 'tomato' }} onClick={handleNext}>{'->'}</button> */}
       <h4 style={{ fontSize: '18px', marginTop: '10px' }}>Nft.com 만의 오리지널 NFT 민팅</h4>
       <div style={{ width: '100%', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '50px' }}>
-        <S_Button>NFT 민팅하기</S_Button>
+        <S_Button onClick={onClickMint}>NFT 민팅하기</S_Button>
         <S_Button>마켓플레이스 보기</S_Button>
       </div>
       <div style={{ width: '100%' }} >
@@ -150,4 +173,4 @@ export default Home;
 {/* Display the connected account */ }
 {/* <h2>{account}</h2>
       <button onClick={onClickMint}>Mint 버튼</button>
-      {nftUrl && <NftCard nftUrl={nftUrl} />} */}
+      {nftHash && <NonSaleNftCard nftHash={nftHash} />} */}

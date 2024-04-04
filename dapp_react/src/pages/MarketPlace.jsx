@@ -23,13 +23,13 @@ const MarketPlace = () => {
 
     const onsaleNftList = [];
     res.map((onsaleNft) => {
-      const { nftId, nftUrl, price } = onsaleNft;
+      const { nftId, nftHash, price } = onsaleNft;
       const parsedId = parseInt(nftId, 10);
       const parsedPrice = parseInt(price, 10);
       const etherPrice = web3.utils.fromWei(parsedPrice.toString(), "ether");
       onsaleNftList.push({
         nftId: parsedId,
-        nftUrl,
+        nftHash,
         nftPrice: etherPrice,
       });
     });

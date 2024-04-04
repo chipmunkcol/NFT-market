@@ -6,40 +6,41 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./SaleNft.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+
 contract Mint is ERC721Enumerable {
   constructor() ERC721("Mint_Project", "MINT") {}
   
   SaleNft public saleNft;
 
-  mapping(uint256 => string) public nftUrls;
+  mapping(uint256 => string) public nftHashs;
 
   struct NftData {
     uint256 nftId;
-    string nftUrl;
+    string nftHash;
     uint256 nftPrice;
   }
 
   // function mintAnimalToken() public {
   //   uint256 nftId = totalSupply() + 1;
-  //   uint256 nftUrl = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nftId)))%5 + 1;
-  //   nftUrls[nftId] = nftUrl;
+  //   uint256 nftHash = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nftId)))%5 + 1;
+  //   nftHashs[nftId] = nftHash;
   //   _mint(msg.sender, nftId);
   // }
   
-  function mintAnimalToken() public {
+  function mintAnimalToken(string memory ipfsHash) public {
     uint256 nftId = totalSupply() + 1;
     uint256 random5 = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nftId)))%5 + 1;
     string memory strRandom5 = Strings.toString(random5);
-    string memory ipfsUrl = "https://ipfs.io/ipfs/Qme2RZqFzNvqgJS7qkCgzZbssJYHEvhFhcYuuMhYPT82tg";
-    string memory png = ".png"; 
-    string memory nftUrl = string(abi.encodePacked(ipfsUrl, '/', strRandom5, png));
-    nftUrls[nftId] = nftUrl;
+    // string memory png = ".png"; 
+    // string memory nftHash = string(abi.encodePacked(ipfsUrl, '/', strRandom5, png));
+    string memory mintHash = string(abi.encodePacked(ipfsHash, '/', strRandom5));
+    nftHashs[nftId] = mintHash;
     _mint(msg.sender, nftId);
   }
 
-  function mintByUser(string memory ipfsUrl) public {
+  function mintByUser(string memory ipfsHash) public {
     uint256 nftId = totalSupply() + 1;
-    nftUrls[nftId] = ipfsUrl;
+    nftHashs[nftId] = ipfsHash;
     _mint(msg.sender, nftId);
   }
 
@@ -51,10 +52,10 @@ contract Mint is ERC721Enumerable {
     
     for (uint256 i = 0; i < balanceLength; i++) {
       uint256 nftId = tokenOfOwnerByIndex(_nftOwner, i);
-      string memory nftUrl = nftUrls[nftId];
+      string memory nftHash = nftHashs[nftId];
       uint256 nftPrice = saleNft.getNftPrices(nftId);
 
-      nftData[i] = NftData(nftId, nftUrl, nftPrice);
+      nftData[i] = NftData(nftId, nftHash, nftPrice);
     }
     return nftData;
   }

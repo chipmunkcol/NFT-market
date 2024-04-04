@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { MintContract, SaleAddress, web3 } from "../../contracts/index";
-// import NftCard from "../components/NftCard";
+// import NonSaleNftCard from "../components/NonSaleNftCard";
 import styled from "styled-components";
-import SaleNftCard from "../components/SaleNftCard";
+import saleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
+import NonSaleNftCard from "../components/NonSaleNftCard";
 
 const MyPage = () => {
   // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
@@ -53,26 +54,40 @@ const MyPage = () => {
   };
 
 
+  // const getNft = async () => {
+  //   if (!account) return;
+
+  //   try {
+  //     const myNfts = await MintContract.methods.getNfts(account).call();
+  //     if (myNfts.length < 1) return;
+
+  //     const newMyNfts = [];
+  //     myNfts.map(myNft => {
+  //       const { nftId, nftHash, nftPrice } = myNft;
+  //       const parsedId = parseInt(nftId, 10);
+  //       const parsedPrice = parseInt(nftPrice, 10);
+  //       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+  //       newMyNfts.push({ nftId: parsedId, nftHash, nftPrice: etherPrice });
+  //     });
+
+  //     setMyNfts(newMyNfts);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const getNft = async () => {
     if (!account) return;
 
-    try {
-      const myNfts = await MintContract.methods.getNfts(account).call();
-      if (myNfts.length < 1) return;
+    const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
+    const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
+    fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
+      // fetch('https://api.pinata.cloud/data/pinList', options)
+      .then(response => response.json())
+      .then(response => {
+        console.log(response);
 
-      const newMyNfts = [];
-      myNfts.map(myNft => {
-        const { nftId, nftUrl, nftPrice } = myNft;
-        const parsedId = parseInt(nftId, 10);
-        const parsedPrice = parseInt(nftPrice, 10);
-        const etherPrice = web3.utils.fromWei(parsedPrice.toString(), 'ether');
-        newMyNfts.push({ nftId: parsedId, nftUrl, nftPrice: etherPrice });
-      });
-
-      setMyNfts(newMyNfts);
-    } catch (error) {
-      console.log(error);
-    }
+      })
+      .catch(err => console.error(err));
   };
 
   // async function connectSaleNftOnMintContract() {
@@ -163,7 +178,7 @@ const MyPage = () => {
             {myNfts.length > 0 && (
               <MyNftsWrap>
                 {myNfts.map((nft, index) => (
-                  <SaleNftCard key={index} nft={nft} account={account} />
+                  <NonSaleNftCard key={index} nft={nft} account={account} />
                 ))}
               </MyNftsWrap>
             )}
@@ -276,6 +291,7 @@ const MyNftsWrap = styled.ul`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  padding: 1rem 0;
 `;
 
 const Background = styled.div`

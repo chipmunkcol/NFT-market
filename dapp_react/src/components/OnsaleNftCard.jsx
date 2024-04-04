@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { FC, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import NftCard from "./NftCard";
+import * as Styled from './NftCard'
+// import NonSaleNftCard from "./NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
 // interface props {
 //   nft: {
 //     nftId: number;
-//     nftUrl: number;
+//     nftHash: number;
 //     nftPrice: string;
 //   }
 // }
@@ -16,7 +17,7 @@ import { S_Button } from "../styles/styledComponent";
 
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
 const OnsaleNftCard = ({ nft }) => {
-  const { nftId, nftUrl, nftPrice } = nft;
+  const { nftId, nftHash, nftPrice } = nft;
   const { myNfts, account, setPurchaseTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
 
@@ -45,9 +46,12 @@ const OnsaleNftCard = ({ nft }) => {
   }
 
   return (
-    <Box>
-      <NftCard nftUrl={nftUrl} />
-
+    <Styled.Container>
+      {/* <NonSaleNftCard nftHash={nftHash} /> */}
+      <Styled.ImgWrap>
+        <Styled.Img src={nftHash} alt="NFT image" />
+      </Styled.ImgWrap>
+      <Styled.Name>NFT {"#"}277</Styled.Name>
       <OnsalePriceWrap>
         가격 : {nftPrice} ETH ($
         {(Number(nftPrice) * 2928)
@@ -58,13 +62,10 @@ const OnsaleNftCard = ({ nft }) => {
       {!isMyNft && <ButtonWrap>
         <S_Button onClick={() => purchaseNftHandler(nftId)}>구매하기</S_Button>
       </ButtonWrap>}
-    </Box>
+    </Styled.Container>
   );
 };
 
-const Box = styled.div`
-  /* height: 300px; */
-`;
 const ButtonWrap = styled.div`
   display: flex;
   justify-content: center;

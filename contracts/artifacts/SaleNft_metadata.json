@@ -61,7 +61,7 @@
 							},
 							{
 								"internalType": "string",
-								"name": "nftUrl",
+								"name": "nftHash",
 								"type": "string"
 							},
 							{
@@ -293,19 +293,19 @@
 			]
 		},
 		"contracts/Mint.sol": {
-			"keccak256": "0x7c01a40a939d88a33af4dba06894822c16fe18cc9a51b91e419d111c11dcbc7a",
+			"keccak256": "0x2ce294a00e3fc668cb18ef49339f6562bdf0b9000a536379f6777208802b01ee",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4eb5774b09eabf17673a900bca05f5a9b892234bbb981224a7ce35818ac5f31f",
-				"dweb:/ipfs/QmNTfN1e6r44FS3ogtYEpMJHhXE6oXTsijuiRHXyQBpRoC"
+				"bzz-raw://346c88502c797ce48ea594f002255e05306a799bf2cc68a7df39305b226847ad",
+				"dweb:/ipfs/QmcbL538dKmboBM5HXeQkV54PrsKVVPdB5GjL8Beb3ZyKe"
 			]
 		},
 		"contracts/SaleNft.sol": {
-			"keccak256": "0x5d0f40785141002de90c18f60bbb1403bae5fa5f11ad473783f813a57fae07ae",
+			"keccak256": "0x0d8220275f49b74dc5aca7826e947bad307d16caebed4079b2cc39a4995f03f0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://66bd4cc0a7ae5382a7c77f1bb0bdbb6ee2aa7148429dff2ed6d8a833392e12f5",
-				"dweb:/ipfs/QmSngJdTdHKAVqDKakDXi9SyiMjLDj5KPKbTgeaFUDPvEQ"
+				"bzz-raw://2f3e22e36c68bab8bceb354cb9f3f02db0006ca4a6b87810f87f5f35333bb362",
+				"dweb:/ipfs/QmNVqgKQbxWokUG5cSP8d3KWZdo5pzceThr74F6LWdyAB7"
 			]
 		}
 	},

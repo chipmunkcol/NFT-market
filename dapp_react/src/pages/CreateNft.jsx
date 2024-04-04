@@ -75,6 +75,7 @@ function CreateNft() {
       const jsonData = JSON.stringify({
         name: data.name,
         keyvalues: {
+          owner: account,
           description: data.desc,
           tags: tags,
         }
@@ -100,8 +101,7 @@ function CreateNft() {
       const resData = await res.json();
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
-        const ipfsUrl = `https://ipfs.io/ipfs/${ipfsHash}`;
-        const mintResult = await MintContract.methods.mintByUser(ipfsUrl).send({ from: account });
+        const mintResult = await MintContract.methods.mintByUser(ipfsHash).send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");
           resetFormData();

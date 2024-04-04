@@ -2,28 +2,53 @@ import React, { FC } from "react";
 import styled from "styled-components";
 
 interface props {
-  nftUrl: string;
+  nftHash: string;
+  name: string;
 }
 
-const NftCard: FC<props> = ({ nftUrl }) => {
+const NftCard: FC<props> = ({ nftHash, name }) => {
   return (
-    <Box>
-      <Img src={nftUrl} alt="mint-image" />
-    </Box>
+    <Container>
+      <ImgWrap>
+        <Img
+          src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${nftHash}`}
+          alt="mint-image"
+        />
+      </ImgWrap>
+      <NftInfo>
+        {name ? <Name>{name}</Name> : <Name>NFT {"#"}277</Name>}
+      </NftInfo>
+    </Container>
   );
 };
-export const Img = styled.img`
+
+export const ImgWrap = styled.div`
   width: 200px;
+  height: 200px;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+`;
+export const NftInfo = styled.div`
+  padding: 1rem;
+`;
+export const Name = styled.div`
+  font-weight: bold;
+`;
+export const Img = styled.img`
+  width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
 `;
 
-export const Box = styled.div`
-  /* width: 200px; */
-  height: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+export const Container = styled.div`
+  position: relative;
+  max-width: 200px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 15px;
+  padding-bottom: 1rem;
+  font-size: 14px;
 `;
 
 export default NftCard;
