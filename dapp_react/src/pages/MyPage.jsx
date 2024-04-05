@@ -52,51 +52,31 @@ const MyPage = () => {
       console.log('err: ', err);
     }
   };
-
-
-  // const getNft = async () => {
-  //   if (!account) return;
-
-  //   try {
-  //     const myNfts = await MintContract.methods.getNfts(account).call();
-  //     if (myNfts.length < 1) return;
-
-  //     const newMyNfts = [];
-  //     myNfts.map(myNft => {
-  //       const { nftId, nftHash, nftPrice } = myNft;
-  //       const parsedId = parseInt(nftId, 10);
-  //       const parsedPrice = parseInt(nftPrice, 10);
-  //       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-  //       newMyNfts.push({ nftId: parsedId, nftHash, nftPrice: etherPrice });
-  //     });
-
-  //     setMyNfts(newMyNfts);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  const getNft = async () => {
+  
+  const getMyNftBySmartcontract = async () => {
     if (!account) return;
 
-    const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
-    const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
-    fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
-      // fetch('https://api.pinata.cloud/data/pinList', options)
-      .then(response => response.json())
-      .then(response => {
-        console.log(response);
+    try {
+      const myNfts = await MintContract.methods.getMyNftsByIfps(account).call();
+      if (myNfts.length < 1) return;
 
-      })
-      .catch(err => console.error(err));
+      const newMyNfts = [];
+      myNfts.map(myNft => {
+        const { nftId, nftHash, nftPrice } = myNft;
+        const parsedId = parseInt(nftId, 10);
+        const parsedPrice = parseInt(nftPrice, 10);
+        const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+        newMyNfts.push({ nftId: parsedId, nftHash, nftPrice: etherPrice });
+      });
+
+      setMyNfts(newMyNfts);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  // async function connectSaleNftOnMintContract() {
-  //   await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
-  // }
-
   async function init() {
-    // await connectSaleNftOnMintContract();
-    await getNft();
+    await getMyNftBySmartcontract();
     await getApprovedStatus();
   }
 
@@ -313,3 +293,36 @@ const Container = styled.div`
 export default MyPage;
 
 
+  // smartcontract 에서 가져오는게 맞는가?
+
+  
+  // const getMyNftByIpfs = async () => {
+  //   if (!account) return;
+
+  //   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
+  //   const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
+  //   fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
+  //     // fetch('https://api.pinata.cloud/data/pinList', options)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       console.log(response);
+
+  //     })
+  //     .catch(err => console.error(err));
+  // };
+
+  
+  // const getMyNftByIpfs = async () => {
+  //   if (!account) return;
+
+  //   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
+  //   const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
+  //   fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
+  //     // fetch('https://api.pinata.cloud/data/pinList', options)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       console.log(response);
+
+  //     })
+  //     .catch(err => console.error(err));
+  // };
