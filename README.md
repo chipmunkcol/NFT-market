@@ -143,3 +143,222 @@ contract Array {
    }
 }
 ```
+
+5. Enum[https://solidity-by-example.org/enum/]
+   // 열거형(enum)
+   // 상태추적, 모델선택, 컨트랙트 안, 밖 선언 가능
+
+```
+contract Enuum {
+   enum Status {
+      Pending,  //0 (uint 값은 자동으로 지정되고 Status의 명칭만 정해주면됨)
+      Shipped,  //1
+      Accepted, //2
+      Rejected, //3
+      Canceled  //4
+   }
+   Status public status; // 0
+   function set(Status _status) public {
+      status = _status; // 사용자로부터 Status 상태를 업데이트
+   }
+   function get() public view returns(Status) {
+      return status;
+   }
+   function cancel() public {
+      status = Status.Canceled;
+   }
+   function reset() public {
+      delete status; // 0으로 초기화
+   }
+}
+```
+
+6. Struct(구조체)
+
+```
+contract Struuct {
+   struct Todo {
+      string text;
+      bool completed;
+   }
+   Todo[] public todos;
+
+   // function getTargetTodo(uint _index) public view returns(string memory, bool) {
+   //      Todo storage todo = todos[_index];
+   //      return (todo.text, todo.completed);
+   // }
+   function createTodo(string calldata _text) public {
+      // 배열을 업데이트 하는 3가지 방법A
+      todos.push(Todo(_text, false));
+      // todos.push(Todo({text: _text, completed: false}));
+
+      // Todo memory todo;
+      // todo.text = _text;
+      // todos.push(todo);
+   }
+   function updateText(uint _index, string calldata _text) public {
+      Todo storage todo = todos[_index];
+      todo.text = _text;
+   }
+   function toggleCompleted(uint _index) public {
+      Todo storage todo = todos[_index];
+      todo.completed = !todo.completed;
+   }
+}
+```
+
+7. Function
+8. View vs Pure
+
+```
+// view 상태변수를 변경시키지 않는 함수에 사용  (no Set)
+// pure 상태변수를 변경시키지 않는 함수 & 상태변수를 읽지도 않는 함수 (no Set & Get)
+
+uint pulic num = 1; // 상태변수
+function getPlusNum(uint _i) public view returns (uint) {
+   return num + _i; // 상태변수 [num] get
+}
+function getPlusAnything(uint _i, uint _j) public pure return (uint) {
+   return _i + _j;
+}
+```
+
+9. Error
+
+```
+// 에러가 발생하면 트랜잭션 중에 상태변화를 취소(undo)
+// require: 실행 전에 조건, 입력 값 확인(검증)
+// revert: 가스비 조금 발생, 엄격한 상황
+// assert: 코드가 절대 false가 되어서는 안되는 상황 체크(개발자 디버깅 용이)
+// 사용자 임의: 로그를 다양하게 블록체인에 기록, 확인.
+function testRequire(uint _i) public pure {
+   require(_i > 10, "input must be greater than 10");
+   // 코드 실행
+}
+function testRevert(uint _i) public pure {
+   if (_i <= 10) {
+      revert("input must be greater than 10");
+   }
+   // 코드 실행
+}
+uint public validatedNum;
+function testAssert() public view {
+   assert(validatedNum == 0);
+}
+
+//사용자 정의 에러
+error InsufficientBalance(uint256 balance, uint256 withdrawAmount);
+function testCustomError(uint _withdrawAmount) public view {
+   uint bal = address(this).balance; // 현재 컨트랙트 이더 잔액
+   if(bal < _withdrawAmount) {
+      revert InsufficientBalance({ balance: bal, withdrawAmount: _withdrawAmount });
+   }
+}
+```
+
+10. Modifier (수정자)
+
+```
+contract Modifier {
+   // 함수 호출하기 전 후에 실행할 수 있는 코드.
+   // 엑세스 제한, 유효한 입력값 확인, 재진입 해킹차단.
+
+   address public owner;
+   constructor() {
+      owner = msg.sender;
+   }
+   modifier onlyOwner() {
+      require(msg.sender == owner, "Not owner!");
+      _; // 수정자가 끝났다는 것 체크
+   }
+   modifier validAddress(address _addr) {
+      require(_addr == address(0), "Not valid address!");
+      _;
+   }
+   function changeOwner(address _newOwner) public onlyOwner validAddress(_newOwner) {
+      owner = _newOwner;
+   }
+}
+```
+
+11. Event
+
+```
+// 블록체인에 대한 로그를 남길 수 있다.
+// 이벤트 수신 및 사용자 인터페이스 업데이트 시 log
+// 저렴한 형태의 블록체인에 저장이 가능하다.
+contract Eveent {
+    event Log(address indexed sender, string message);
+    event SomethingLog();
+
+    function eventTest() public {
+        emit Log(msg.sender, "hello, EVENT!");
+        emit Log(msg.sender, "2nd Log!!");
+        emit SomethingLog();
+    }
+}
+```
+
+12. Constructor (생성자)
+13. Inferitance (상속)
+14. Function 속성의 차이
+
+```
+// 함수와 상태 변수의 다른 계약에서의 엑세스 여부 선언
+// public- 모든 계약 및 계정에서 호출 가능
+// private- 함수를 정의하는 계약 내에서만 가능
+// internalinternal- 함수 를 상속받은 계약 내부에서만 가능
+// external- 다른 계약 및 계정만 호출할 수 있습니다.
+// 상태변수는 public, private, internal 사용 가능 하지만 external은 사용 불가능.
+
+contract Base {
+    // 이 계약을 상속받은 계약은 이 함수를 호출할 수 없습니다.
+    function privateFunc() private pure returns (string memory) {
+        return "private function called";
+    }
+
+    function testPrivateFunc() public pure returns (string memory) {
+        return privateFunc();
+    }
+
+    function internalFunc() internal pure returns (string memory) {
+        return "internal function called";
+    }
+
+    function testInternalFunc() public pure [virtual] returns (string memory) {
+        return internalFunc();
+    }
+
+    function publicFunc() public pure returns (string memory) {
+        return "public function called";
+    }
+
+    function externalFunc() external pure returns (string memory) {
+        return "external function called";
+    }
+
+    // external 함수는 해당 계약 내부에서 실행되지 않습니다. testExternalFunc() 호출 x
+    // function testExternalFunc() public pure returns (string memory) {
+    //     return externalFunc();
+    // }
+
+    // 상태변수 속성
+    string private privateVar = "my private variable";
+    string internal internalVar = "my internal variable";
+    string public publicVar = "my public variable";
+    // 상태변수는 external 사용 x
+    // string external externalVar = "my external variable";
+}
+
+contract Child is Base {
+    // 상속된 함수의 [private] function 과 상태변수는 사용x
+    // function testPrivateFunc() public pure returns (string memory) {
+    //     return privateFunc();
+    // }
+
+    // Internal function은 호출이 가능하다.
+    function testInternalFunc() public pure [override] returns (string memory) {
+        return internalFunc();
+    }
+}
+```
