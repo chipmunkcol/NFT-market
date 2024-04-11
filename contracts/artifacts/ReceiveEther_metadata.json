@@ -1,0 +1,67 @@
+{
+	"compiler": {
+		"version": "0.8.25+commit.b61c2a91"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"stateMutability": "payable",
+				"type": "fallback"
+			},
+			{
+				"inputs": [],
+				"name": "getBalance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/SendAndReceive.sol": "ReceiveEther"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/SendAndReceive.sol": {
+			"keccak256": "0x91c90d9959c76da2198a1141dc1dd49df9db64f57065788d5437081bd54e8f37",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7d1d680ca2316681879e78539750097cb6097e466c46bdabc2d21171c907c55a",
+				"dweb:/ipfs/QmbUsfhq3RLKUJmzPdKaucWN4JZWh2CoRc3ZqkDSBH75xe"
+			]
+		}
+	},
+	"version": 1
+}
