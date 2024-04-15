@@ -23,6 +23,28 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
     setRegisterPrice(Number(e.target.value));
   };
 
+  const getTargetNftByIpfs = async () => {
+    if (!account) return;
+
+    const options = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
+    };
+    const metadataQuery = encodeURIComponent(
+      `{"value":"${account}", "op":"iLike"}`
+    );
+    fetch(
+      `https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`,
+      options
+    )
+      // fetch('https://api.pinata.cloud/data/pinList', options)
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => console.error(err));
+  };
+
   const registerForSaleHandler = async () => {
     const weiPrice = web3.utils.toWei(registerPrice, "ether");
     const res = await SaleNftContract.methods.setSaleNft(nftId, weiPrice).send({
@@ -31,6 +53,25 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
     console.log("res: ", res);
     if (res.status) {
       alert("판매 등록이 완료되었습니다.");
+      const jsonKeyvalues = JSON.stringify({
+        ipfsPinHash: nftHash,
+        keyvalues: {
+          price: registerPrice,
+        },
+      });
+      const options = {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+          "Content-Type": "application/json",
+        },
+        body: jsonKeyvalues,
+      };
+
+      fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
+        .then((response) => console.log(response))
+        .catch((err) => console.error(err));
+
       setRegisterPrice(registerPrice);
     }
   };

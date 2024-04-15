@@ -9,8 +9,10 @@ import { ThemeProvider } from "styled-components";
 import App from "./App";
 import Home from "./pages/Home";
 import MarketPlace from "./pages/MarketPlace";
-import CreateNft from "./pages/CreateNft";
+import Create from "./pages/Create.jsx";
 import MyPage from "./pages/MyPage";
+import MintNft from "./pages/Create/MintNft.js";
+import Collection from "./pages/Create/Collection.js";
 
 const router = createBrowserRouter([
   {
@@ -26,8 +28,26 @@ const router = createBrowserRouter([
         element: <MarketPlace />,
       },
       {
-        path: "create-nft",
-        element: <CreateNft />,
+        path: "create",
+        element: <Create />,
+        // children: [
+        //   {
+        //     path: "collection",
+        //     element: <Collection />,
+        //   },
+        //   {
+        //     path: "mint-nft",
+        //     element: <MintNft />,
+        //   },
+        // ],
+      },
+      {
+        path: "create-collection",
+        element: <Collection />,
+      },
+      {
+        path: "create-mint-nft",
+        element: <MintNft />,
       },
       {
         path: "mypage",

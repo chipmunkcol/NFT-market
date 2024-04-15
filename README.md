@@ -501,7 +501,7 @@ contract Reservation {
     //     owner.transfer(msg.value);
     //     emit LogBook(msg.sender, msg.value);
     // }
-    // 아래 함수로 변경
+    // function book() -> receive() external 로 변경
 
     receive() external payable isRoomEmpty validBookingPrive {
         roomStatus = RoomStatus.full;

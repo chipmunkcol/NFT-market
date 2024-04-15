@@ -31,8 +31,6 @@ contract Mint is ERC721Enumerable {
     uint256 nftId = totalSupply() + 1;
     uint256 random5 = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nftId)))%5 + 1;
     string memory strRandom5 = Strings.toString(random5);
-    // string memory png = ".png"; 
-    // string memory nftHash = string(abi.encodePacked(ipfsUrl, '/', strRandom5, png));
     string memory mintHash = string(abi.encodePacked(ipfsHash, '/', strRandom5));
     nftHashs[nftId] = mintHash;
     _mint(msg.sender, nftId);

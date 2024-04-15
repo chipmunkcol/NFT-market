@@ -136,8 +136,8 @@ function App() {
           <Link to={'/market-place'}>
             <Nav>Marketplace</Nav>
           </Link>
-          <Link to={'/create-nft'}>
-            <Nav>Create NFT</Nav>
+          <Link to={'/create'}>
+            <Nav>Create</Nav>
           </Link>
         </Navbar>
         {!account ? (

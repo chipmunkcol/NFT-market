@@ -1,41 +1,39 @@
-import { MintContract } from "../../contracts/index";
+import { MintContract } from "../../../contracts/index";
 import styled from "styled-components";
-import bgMain from '../assets/images/bg-create-nft.png';
 import { useRef } from "react";
-import { S_Button } from "../styles/styledComponent";
+import { S_Button } from "../../styles/styledComponent";
 import { useState } from "react";
 import { useContext } from "react";
-import { GlobalContext } from "../context/GlobalContext";
-import iconUpload from '../assets/images/icon-upload.png';
+import { GlobalContext } from "../../context/GlobalContext";
+import iconUpload from "../../assets/images/icon-upload.png";
 
-function CreateNft() {
+function MintNft() {
   const { account } = useContext(GlobalContext);
   const [data, setData] = useState({
-    name: '',
-    desc: '',
+    name: "",
+    desc: "",
   });
   const [file, setFile] = useState(null);
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState("");
   const onchangeNameData = (e) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      name: e.target.value
+      name: e.target.value,
     }));
-  }
+  };
   const onchangeDescData = (e) => {
-    setData(prev => ({
+    setData((prev) => ({
       ...prev,
-      desc: e.target.value
+      desc: e.target.value,
     }));
-  }
+  };
   const onchangeHandler = (e) => {
     setFile(e.target.files[0]);
-  }
+  };
   const inputFileRef = useRef();
   const onClickFileHandler = () => {
     inputFileRef.current.click();
-  }
-
+  };
 
   const validateFormData = () => {
     if (!account) {
@@ -55,16 +53,16 @@ function CreateNft() {
       return false;
     }
     return true;
-  }
+  };
 
   const resetFormData = () => {
     setData({
-      name: '',
-      desc: '',
+      name: "",
+      desc: "",
     });
     setFile(null);
-    setTags('');
-  }
+    setTags("");
+  };
 
   const handleSubmission = async () => {
     try {
@@ -78,7 +76,7 @@ function CreateNft() {
           owner: account,
           description: data.desc,
           tags: tags,
-        }
+        },
       });
       formData.append("pinataMetadata", jsonData);
       formData.append("file", file);
@@ -101,33 +99,34 @@ function CreateNft() {
       const resData = await res.json();
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
-        const mintResult = await MintContract.methods.mintByUser(ipfsHash).send({ from: account });
+        const mintResult = await MintContract.methods
+          .mintByUser(ipfsHash)
+          .send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");
           resetFormData();
-
         }
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   // 태그
   const handleTags = (e) => {
-    let str = '#';
-    str = tags + str + e.target.value + ' ';
+    let str = "#";
+    str = tags + str + e.target.value + " ";
     setTags(str);
-  }
+  };
 
   const onChangeInputSpecific = (e) => {
     setTags(e.target.value);
-  }
+  };
 
   const cancelHandler = () => {
     setFile(null);
-    inputFileRef.current.value = '';
-  }
+    inputFileRef.current.value = "";
+  };
 
   return (
     <Background>
@@ -139,32 +138,53 @@ function CreateNft() {
         <FlexBox>
           <LeftPart>
             {!file ? (
-              <InputFileBox onClick={onClickFileHandler} onDrop={onchangeHandler}>
-                <div style={{ width: '40px', height: '40px' }}>
+              <InputFileBox
+                onClick={onClickFileHandler}
+                onDrop={onchangeHandler}
+              >
+                <div style={{ width: "40px", height: "40px" }}>
                   <IconUpload />
                 </div>
                 <h2>미디어 파일 끌어다 놓기</h2>
                 <h3>파일 찾아보기</h3>
                 <h4>최대 크기: 50MB</h4>
                 <h4>JPG, PNG, GIF, SVG, MP4</h4>
-              </InputFileBox>) : (
+              </InputFileBox>
+            ) : (
               <PreviewFile>
                 <img src={URL.createObjectURL(file)} alt="preview" />
                 <CancelWrap>
                   <CancelBtn onClick={cancelHandler}>x</CancelBtn>
                 </CancelWrap>
-              </PreviewFile>)}
-            <input type="file" ref={inputFileRef} style={{ display: 'none' }} onChange={onchangeHandler} />
+              </PreviewFile>
+            )}
+            <input
+              type="file"
+              ref={inputFileRef}
+              style={{ display: "none" }}
+              onChange={onchangeHandler}
+            />
           </LeftPart>
           <RightPart>
             <InputLabel>이름 *</InputLabel>
-            <InputText type="text" value={data.name} onChange={onchangeNameData} />
+            <InputText
+              type="text"
+              value={data.name}
+              onChange={onchangeNameData}
+            />
             <InputLabel>설명</InputLabel>
-            <InputText type="text" value={data.desc} onChange={onchangeDescData} />
+            <InputText
+              type="text"
+              value={data.desc}
+              onChange={onchangeDescData}
+            />
             <InputLabel>태그</InputLabel>
-            <p style={{ fontSize: '14px', marginBottom: '0.75rem' }}>태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로 표시되며 아이템 페이지에도 나열됩니다.</p>
-            <select style={{ marginBottom: '5px' }} onChange={handleTags}>
-              <option style={{ display: 'none' }}>ex</option>
+            <p style={{ fontSize: "14px", marginBottom: "0.75rem" }}>
+              태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로
+              표시되며 아이템 페이지에도 나열됩니다.
+            </p>
+            <select style={{ marginBottom: "5px" }} onChange={handleTags}>
+              <option style={{ display: "none" }}>ex</option>
               <option>예술</option>
               <option>유명인</option>
               <option>게임</option>
@@ -172,13 +192,17 @@ function CreateNft() {
               <option>가상자산</option>
               <option>프로필 사진</option>
             </select>
-            <InputSpecific placeholder="#예술 #유명인 #게임" value={tags} onChange={onChangeInputSpecific} />
-            <S_Button onClick={handleSubmission} >생성</S_Button>
+            <InputSpecific
+              placeholder="#예술 #유명인 #게임"
+              value={tags}
+              onChange={onChangeInputSpecific}
+            />
+            <S_Button onClick={handleSubmission}>생성</S_Button>
           </RightPart>
         </FlexBox>
       </Container>
     </Background>
-  )
+  );
 }
 
 const CancelWrap = styled.div`
@@ -217,13 +241,12 @@ const LeftPart = styled.div`
   }
 `;
 
-
 const PreviewFile = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
   max-height: 425px;
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -259,7 +282,6 @@ const InputFileBox = styled.div`
     margin-top: 0.5rem;
   }
 
-
   &:hover {
     border: 1px solid rgba(18, 18, 18, 0.32);
     background-color: rgba(18, 18, 18, 0.1);
@@ -276,12 +298,10 @@ const InputText = styled.input`
   margin-bottom: 1rem;
 `;
 
-const InputSpecific = styled(InputText)`
-`;
+const InputSpecific = styled(InputText)``;
 
 const RightPart = styled.div`
   width: 44%;
-
 `;
 const InputLabel = styled.div`
   margin-bottom: 0.75rem;
@@ -292,12 +312,7 @@ const Background = styled.div`
   padding-top: 100px;
   width: 100%;
   background-color: #ffffff;
-  /* background-image: url(${bgMain});
-  background-position: center;
-  background-repeat: no-repeat; */
-  background-size: cover;
 `;
-
 
 const Container = styled.div`
   min-height: 100vh;
@@ -314,4 +329,4 @@ const TitleBox = styled.div`
     margin-top: 10px;
   }
 `;
-export default CreateNft;
+export default MintNft;
