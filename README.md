@@ -20,9 +20,12 @@
 4. 보안을 강조하는 블록체인이 지향하는 방향과는 맞지는 않지만 핵심은 ipfs URI 이고 부가 내용들은 (name, desc 정도 price는 아닌듯) pinata 의 데이터베이스를 사용해도 괜찮을 듯
    UX 관점에서 NFT의 name, desc 등의 내용 수정에 적지 않은 편의가 있다고 생각한다. 예)open sea 에서 사용자 프로필 & 프로필 배경 바꾸는 기능 느낌 (메타데이터를 블록체인에 기록하지 않으니 SC에서 gas fee 절약은 덤)
 
-## 3. Solidity Deep Dive(SC는 기본코드만 적당히 가져와서 개발하려했는데 덕질좀 해야겠다😎)
+## 3. Solidity dive
 
 - 인프런 대니월드 강의[https://www.inflearn.com/course/%EB%B8%94%EB%A1%9D%EC%B2%B4%EC%9D%B8-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EC%BD%94%EC%9D%B8%EC%A0%9C%EC%9E%91#curriculum]
+
+<details>
+<summary>접기/펼치기</summary>
 
 1. dataType
 
@@ -518,3 +521,9 @@ contract Reservation {
     }
 }
 ```
+
+</details>
+
+## 4. Solidity DeepDive
+
+- Solidity Docs 중 Applications[https://solidity-by-example.org/app/ether-wallet/]
