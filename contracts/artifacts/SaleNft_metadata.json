@@ -293,11 +293,11 @@
 			]
 		},
 		"contracts/Mint.sol": {
-			"keccak256": "0x2ce294a00e3fc668cb18ef49339f6562bdf0b9000a536379f6777208802b01ee",
+			"keccak256": "0x05ef53c2fed9132439a48e5134b0feca2199a9cdbfef7b368cbd534b96b18729",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://346c88502c797ce48ea594f002255e05306a799bf2cc68a7df39305b226847ad",
-				"dweb:/ipfs/QmcbL538dKmboBM5HXeQkV54PrsKVVPdB5GjL8Beb3ZyKe"
+				"bzz-raw://e60473123483b21ed9c63957788cfed6eeaaadf9ed1a0688246229ebe9695bc8",
+				"dweb:/ipfs/QmRySnEepJiKKwJaK2yqbcMtdLbg53QpDUVRHfXqGHRbh5"
 			]
 		},
 		"contracts/SaleNft.sol": {
