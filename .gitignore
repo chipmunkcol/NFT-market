@@ -13,6 +13,7 @@ node_modules
 
 # solidity-coverage files
 /contracts/artifacts
+/contracts/Applications/artifacts
 /coverage
 /coverage.json
 
