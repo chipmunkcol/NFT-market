@@ -57,6 +57,7 @@ function C_step2() {
           <div>%</div>
         </div>
       </div>
+      <S_Button>저장</S_Button>
 
 
 
