@@ -693,3 +693,17 @@ interface IERC721 is IERC165 {
 ```
 
 </details>
+
+## react-swiper 사용시 주의사항
+
+- thumbs type error
+  docs 그대로 가져왔는데 아래 에러 발생
+  Uncaught TypeError: Cannot convert undefined or null to object
+
+1. Swiper 태그 안에서 ts 가 제대로 안먹히는 버그인데
+   (에러 이슈)[https://github.com/nolimits4web/swiper/issues/5548]
+   (해결 이슈)[https://github.com/nolimits4web/swiper/issues/6233]
+   해결로 올렸는데 같은 버그 계속 있는듯?
+
+아래 구문 추가하니까 정상 작동 하는데 뭔가 찝찝쓰
+=> thumbs={{swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}

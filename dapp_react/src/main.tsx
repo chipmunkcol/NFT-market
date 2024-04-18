@@ -11,8 +11,10 @@ import Home from "./pages/Home";
 import MarketPlace from "./pages/MarketPlace";
 import Create from "./pages/Create.jsx";
 import MyPage from "./pages/MyPage";
-import MintNft from "./pages/Create/MintNft.js";
-import Collection from "./pages/Create/Collection.js";
+import MintNft from "./pages/Create/MintNft.jsx";
+import Collection from "./pages/Create/Collection.jsx";
+import C_step1 from "./pages/Create/CollectionComponents/C_step1.jsx";
+import C_step2 from "./pages/Create/CollectionComponents/C_step2.jsx";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,16 @@ const router = createBrowserRouter([
       {
         path: "create-collection",
         element: <Collection />,
+        children: [
+          {
+            path: "step-1",
+            element: <C_step1 />,
+          },
+          {
+            path: "step-2",
+            element: <C_step2 />,
+          },
+        ],
       },
       {
         path: "create-mint-nft",
