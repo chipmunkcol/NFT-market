@@ -7,6 +7,33 @@ const GlobalProvider = ({ children }) => {
   const [myNfts, setMyNfts] = useState([]);
   const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [purchaseTrigger, setpurchaseTrigger] = useState(false);
+  const [collection, setCollection] = useState({
+    name: "",
+    desc: "",
+    tags: "",
+    files: null,
+    filesLength: 0,
+    perPrice: 0,
+    startAt: 0,
+    preReleaseIpfsHash: "",
+    preReleaseDesc: "",
+    address: "",
+  });
+
+  const resetCollection = () => {
+    setCollection({
+      name: "",
+      desc: "",
+      tags: "",
+      files: null,
+      filesLength: 0,
+      perPrice: 0,
+      startAt: 0,
+      preReleaseIpfsHash: "",
+      preReleaseDesc: "",
+      address: "",
+    });
+  }
 
   const contextValue = useMemo(() => ({
     account,
@@ -16,8 +43,11 @@ const GlobalProvider = ({ children }) => {
     onsaleNftList,
     setOnsaleNftList,
     purchaseTrigger,
-    setpurchaseTrigger
-  }), [account, myNfts, onsaleNftList, purchaseTrigger])
+    setpurchaseTrigger,
+    collection,
+    setCollection,
+    resetCollection,
+  }), [account, myNfts, onsaleNftList, purchaseTrigger, collection])
   return (
     <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>
   )

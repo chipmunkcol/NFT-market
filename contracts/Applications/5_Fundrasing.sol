@@ -80,5 +80,6 @@ contract Fundrasing {
     
     uint balance = donations[msg.sender];
     payable (msg.sender).transfer(balance);
+    donations[msg.sender] = 0;
   }
 }

@@ -11,27 +11,15 @@ import Slider from "./CollectionComponents/Slider";
 import { Outlet } from "react-router-dom";
 
 function Collection() {
-  const { account } = useContext(GlobalContext);
-  const [file, setFile] = useState(null);
-  const [fileIndex, setFileIndex] = useState(0);
-  const [filesLength, setFilesLength] = useState(0);
+  const { account, collection, setCollection } = useContext(GlobalContext);
+
   const onchangeHandler = (e) => {
-    setFile(e.target.files);
+    setCollection(prev => ({
+      ...prev,
+      files: e.target.files,
+      filesLength: e.target.files.length
+    }))
   };
-
-  useEffect(() => {
-    if (file) {
-      setFilesLength(file.length);
-    }
-  }, [file]);
-
-  const handlerSlider = () => {
-    if (fileIndex < filesLength - 1) {
-      setFileIndex(prev => prev + 1);
-    } else {
-      setFileIndex(0);
-    }
-  }
 
   const inputFileRef = useRef();
   const onClickFileHandler = () => {
@@ -40,7 +28,11 @@ function Collection() {
 
 
   const cancelHandler = () => {
-    setFile(null);
+    setCollection(prev => ({
+      ...prev,
+      files: null,
+      filesLength: 0
+    }));
     inputFileRef.current.value = "";
   };
 
@@ -53,7 +45,7 @@ function Collection() {
         </TitleBox>
         <FlexBox>
           <LeftPart>
-            {!file ? (
+            {!collection.files ? (
               <InputFileBox
                 onClick={onClickFileHandler}
                 onDrop={onchangeHandler}
@@ -67,8 +59,8 @@ function Collection() {
                 <h4>JPG, PNG, GIF, SVG, MP4</h4>
               </InputFileBox>
             ) : (
-              <div style={{ width: '100%', height: '100%', minHeight: '425px' }}>
-                <Slider file={file} cancelHandler={cancelHandler} handlerSlider={handlerSlider} />
+              <div style={{ width: '100%', height: '100%', minHeight: '425px', maxHeight: '555px' }}>
+                <Slider files={collection.files} cancelHandler={cancelHandler} />
               </div>
             )}
             <input
@@ -116,6 +108,7 @@ const LeftPart = styled.div`
 const InputFileBox = styled.div`
   width: 100%;
   height: 100%;
+  max-height: 555px;
   display: flex;
   flex-direction: column;
   justify-content: center;

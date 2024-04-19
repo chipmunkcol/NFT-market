@@ -15,7 +15,7 @@ import '../../../styles/Library/slider.css';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import styled from 'styled-components';
 
-export default function Slider({ file, cancelHandler }) {
+export default function Slider({ files, cancelHandler }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   return (
@@ -32,7 +32,7 @@ export default function Slider({ file, cancelHandler }) {
         className="mySwiper2"
       >
         {
-          Object.values(file)?.map((item) => (
+          Object.values(files)?.map((item) => (
             <SwiperSlide>
               <PreviewFile>
                 <img src={URL.createObjectURL(item)} alt="preview" />
@@ -54,7 +54,7 @@ export default function Slider({ file, cancelHandler }) {
         className="mySwiper"
       >
         {
-          Object.values(file)?.map((item) => (
+          Object.values(files)?.map((item) => (
             <SwiperSlide >
               <img src={URL.createObjectURL(item)} alt="thumb" />
             </SwiperSlide>
@@ -80,15 +80,15 @@ const CancelBtn = styled.button`
   }
 `;
 
-const NextSliderWrap = styled.div`
-  position: absolute;
-  top: 45%;
-  right: 1rem;
-`;
+// const NextSliderWrap = styled.div`
+//   position: absolute;
+//   top: 45%;
+//   right: 1rem;
+// `;
 
-const NextSliderBtn = styled(CancelBtn)`
-  font-size: 40px;
-`;
+// const NextSliderBtn = styled(CancelBtn)`
+//   font-size: 40px;
+// `;
 
 const PreviewFile = styled.div`
   position: relative;

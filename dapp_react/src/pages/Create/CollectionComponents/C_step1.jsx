@@ -2,44 +2,45 @@ import { useState } from "react";
 import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { GlobalContext } from "../../../context/GlobalContext";
 
 function C_step() {
 
-  const [data, setData] = useState({
-    name: "",
-    desc: "",
-  });
-  const [tags, setTags] = useState("");
+  const { collection, setCollection } = useContext(GlobalContext);
+  // const [data, setData] = useState({
+  //   name: "",
+  //   desc: "",
+  // });
+  // const [tags, setTags] = useState("");
   const onchangeNameData = (e) => {
-    setData((prev) => ({
+    setCollection((prev) => ({
       ...prev,
       name: e.target.value,
     }));
   };
   const onchangeDescData = (e) => {
-    setData((prev) => ({
+    setCollection((prev) => ({
       ...prev,
       desc: e.target.value,
     }));
   };
 
-  const resetFormData = () => {
-    setData({
-      name: "",
-      desc: "",
-    });
-    setFile(null);
-    setTags("");
-  };
   // 태그
   const handleTags = (e) => {
     let str = "#";
-    str = tags + str + e.target.value + " ";
-    setTags(str);
+    str = collection.tags + str + e.target.value + " ";
+    setCollection(prev => ({
+      ...prev,
+      tags: str
+    }));
   };
 
   const onChangeInputSpecific = (e) => {
-    setTags(e.target.value);
+    setCollection(prev => ({
+      ...prev,
+      tags: e.target.value
+    }));
   };
 
   return (
@@ -47,7 +48,7 @@ function C_step() {
       <InputLabel>이름 *</InputLabel>
       <InputText
         type="text"
-        value={data.name}
+        value={collection.name}
         onChange={onchangeNameData}
       />
       <InputLabel>설명</InputLabel>
@@ -57,8 +58,9 @@ function C_step() {
               onChange={onchangeDescData}
             /> */}
       <InputTextArea
-        value={data.desc}
-        onChange={onchangeDescData}></InputTextArea>
+        value={collection.desc}
+        onChange={onchangeDescData}>
+      </InputTextArea>
       <InputLabel>태그</InputLabel>
       <p style={{ fontSize: "14px", marginBottom: "0.75rem" }}>
         태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로
@@ -75,7 +77,7 @@ function C_step() {
       </select>
       <InputSpecific
         placeholder="#예술 #유명인 #게임"
-        value={tags}
+        value={collection.tags}
         onChange={onChangeInputSpecific}
       />
       {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
@@ -108,7 +110,7 @@ const InputLabel = styled.div`
 
 const InputTextArea = styled.textarea`
   width: 100%;
-  height: 48px;
+  height: 80px;
   padding: 0.75rem;
   border: 1px solid rgba(18, 18, 18, 0.32);
   border-radius: 5px;

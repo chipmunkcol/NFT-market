@@ -34,7 +34,7 @@ const Slider = ({ sliderRef }) => {
         style={{ height: '300px' }}
         spaceBetween={50}
         slidesPerView={1}
-        onActiveIndexChange={(e) => console.log(e.realIndex)}
+        // onActiveIndexChange={(e) => console.log(e.realIndex)}
         onSwiper={(swiper) => sliderRef.current = swiper}
         loop={true}
         speed={1000}
@@ -66,7 +66,7 @@ const Slider = ({ sliderRef }) => {
 }
 
 const BannerWrap = styled.div`
-  width: 35%;
+  width: 100%;
   height: 100%;
   position: absolute;
   left: 50%;
@@ -95,7 +95,7 @@ height: 100%;
 width: 100%;
 `;
 const Container = styled.div`
-  width: 80%;
+  width: 50%;
   margin: 0 auto;
 `;
 

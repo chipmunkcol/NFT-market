@@ -3,9 +3,12 @@ import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
+import { useContext } from "react";
+import { GlobalContext } from "../../../context/GlobalContext";
 
 function C_step2() {
 
+  const { collection } = useContext(GlobalContext);
   const inputRef = useRef(null);
   const onClickInput = () => {
     inputRef.current.click();
@@ -13,51 +16,75 @@ function C_step2() {
 
   return (
     <RightPart>
-      <div>NFT 총 수량 [10개]</div>
+      <div>NFT 총 수량 {collection.filesLength}개</div>
       <InputLabel>NFT당 가격 * (일괄 적용됩니다)</InputLabel>
       <InputText type="number" />
       <InputLabel>민트 시작 날짜 및 시간</InputLabel>
       <InputText type="date" />
-      <h1>사전 공개</h1>
-      <p>컬렉션의 각 NFT에는 최종 자산을 업로드하고 공개할 때까지 사전 공개 <br />
-        미디어가 표시됩니다</p>
-      <PreReleaseWrap>
-        <div style={{ height: '300px' }}>
-          <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickInput}>
-            <div style={{ width: '20px', height: '20px', fontSize: '20px' }}>
-              {/* <img src={iconUpload} alt="upload" /> */}
-              +
+      <div>
+        <h2 style={{ marginBottom: '10px' }}>사전 공개</h2>
+        <div style={{ display: 'flex' }}>
+          <div style={{ width: '70%' }}>
+            <div style={{ marginBottom: '10px' }}>컬렉션의 각 NFT에는 최종 자산을 업로드하고 <br />
+              공개할 때까지 사전 공개 미디어가 표시됩니다
             </div>
+            <div style={{ marginBottom: '10px', color: 'blue', cursor: 'pointer' }}>더 알아보기</div>
+            <InputLabel>사전 공개 설명</InputLabel>
+            <InputTextArea style={{ width: '80%', height: '100px' }} placeholder="Bycl monkey is Comming soon!" />
+
           </div>
-          <input ref={inputRef} type="file" style={{ display: 'none' }} />
+          <PreReleaseWrap>
+            <div style={{ height: '150px' }}>
+              <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickInput}>
+                <div style={{ width: '20px', height: '20px', fontSize: '20px' }}>
+                  {/* <img src={iconUpload} alt="upload" /> */}
+                  +
+                </div>
+              </div>
+              <input ref={inputRef} type="file" style={{ display: 'none' }} />
+            </div>
+            <div style={{ height: '52px', padding: '1rem' }}>myCollection</div>
+          </PreReleaseWrap>
         </div>
-        <div style={{ height: '52px', padding: '1rem' }}>myCollection</div>
-      </PreReleaseWrap>
-      <InputLabel>사전 공개 설명</InputLabel>
-      <InputTextArea />
-      <h1>수익에 대해</h1>
-      <p>기본 판매 수익을 받으려면 지갑을 추가하세요.
-        스플리터 컨트랙트를 사용하여 여러 개의 지갑을 추가할 수 있습니다.
+      </div>
+      <h2 style={{ marginBottom: '10px' }}>수익에 대해</h2>
+      <p style={{ marginBottom: '10px' }}>기본 판매 수익을 받으려면 지갑을 추가하세요.
         OpenSea는 기본 판매에 대해 5%의 수수료를 받습니다.
       </p>
-      <div>
-        <InputText type="text" />
-        <div>
-          <div>95</div>
-          <div>%</div>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', gap: '5px' }}>
+          <InputText type="text" style={{ width: '80%', marginBottom: '5px' }} />
+          <RateBox>
+            <div>95</div>
+            <div>%</div>
+          </RateBox>
+        </div>
+        <div style={{ display: 'flex', gap: '5px' }}>
+          <MyAddressBox>
+            <div style={{ width: '15px', height: '15px', borderRadius: '50%', backgroundColor: 'blueviolet' }}></div>
+            <div>오픈씨</div>
+          </MyAddressBox>
+          <RateBox>
+            <div>5</div>
+            <div>%</div>
+          </RateBox>
         </div>
       </div>
       <div>
-        <div>
-          <div>logo</div>
-          <div>오픈씨</div>
-        </div>
-        <div>
-          <div>5</div>
-          <div>%</div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div>
+            <Link to={"/create-collection/step-1"} >
+              <S_Button>이전</S_Button>
+            </Link>
+          </div>
+          <div style={{ padding: '4px 0px' }}>
+            <div style={{ height: '100%', borderRight: '1px solid gray' }} />
+          </div>
+          <div>
+            <S_Button>저장</S_Button>
+          </div>
         </div>
       </div>
-      <S_Button>저장</S_Button>
 
 
 
@@ -65,8 +92,36 @@ function C_step2() {
   )
 }
 
+const MyAddressBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 80%;
+  padding: 12px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(18, 18, 18, 0.12);
+  background-color: rgb(242, 244, 245);
+`;
+
+const RateBox = styled.div`
+  width: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  height: 48px;
+  background-color: rgb(242, 244, 245);
+  border-radius: 12px;
+  border: 1px solid rgba(18, 18, 18, 0.12);
+`;
+
 const PreReleaseWrap = styled.div`
-  width: 300px;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center; */
+  width: 30%;
+  height: 202px;
   border-radius: 12px;
   overflow: hidden;
   transition: box-shadow 0.2s ease-in-out 0s;
@@ -76,14 +131,14 @@ const PreReleaseWrap = styled.div`
 
 const InputText = styled.input`
   width: 100%;
+  padding: 12px;
   height: 48px;
-  padding: 0.75rem;
-  border: 1px solid rgba(18, 18, 18, 0.32);
-  border-radius: 5px;
+  border-radius: 12px;
+  border: 1px solid rgba(18, 18, 18, 0.12);
   margin-bottom: 1rem;
 `;
 
-const InputSpecific = styled(InputText)``;
+// const InputSpecific = styled(InputText)``;
 
 const RightPart = styled.div`
   width: 44%;
