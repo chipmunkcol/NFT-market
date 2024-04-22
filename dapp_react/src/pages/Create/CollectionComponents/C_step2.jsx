@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { MintContract } from "../../../../contracts/index";
+import { useEffect, useState } from "react";
 import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
 import { Link } from "react-router-dom";
@@ -8,11 +9,71 @@ import { GlobalContext } from "../../../context/GlobalContext";
 
 function C_step2() {
 
-  const { collection } = useContext(GlobalContext);
+  const { collection, account } = useContext(GlobalContext);
   const inputRef = useRef(null);
   const onClickInput = () => {
     inputRef.current.click();
   }
+  const [progress, setProgress] = useState(0);
+
+  const handleSubmisstion = async () => {
+    const formData = new FormData();
+    const pinataOptions = JSON.stringify({
+      cidVersion: 1,
+    });
+
+    let collectionFiles = [];
+    Array.from(collection.files).forEach((file) => {
+      formData.append("file", file);
+      collectionFiles.push(file.name);
+    });
+
+    const jsonData = JSON.stringify({
+      name: collection.name,
+      keyvalues: {
+        owner: account,
+        description: collection.desc,
+        tags: collection.tags,
+        files: collectionFiles,
+      }
+    });
+    formData.append("pinataMetadata", jsonData);
+    formData.append("pinataOptions", pinataOptions);
+
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`
+      },
+      body: formData
+    }
+
+    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", options);
+    const resData = await res.json();
+    const ipfsHash = resData.IpfsHash;
+    console.log('ipfsHash: ', ipfsHash);
+
+    if (ipfsHash) {
+      try {
+        collectionFiles.forEach(async (file) => {
+          const mintResult = await MintContract.methods
+            .mintByUser(ipfsHash, file)
+            .send({ from: account });
+          if (mintResult.status) {
+            setProgress(progress + 1);
+          }
+        });
+        alert("NFT 발행 성공");
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.log(progress);
+  }, [progress]);
+
 
   return (
     <RightPart>
@@ -81,7 +142,7 @@ function C_step2() {
             <div style={{ height: '100%', borderRight: '1px solid gray' }} />
           </div>
           <div>
-            <S_Button>저장</S_Button>
+            <S_Button onClick={handleSubmisstion}>저장</S_Button>
           </div>
         </div>
       </div>

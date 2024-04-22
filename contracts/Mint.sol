@@ -12,7 +12,11 @@ contract Mint is ERC721Enumerable {
   
   SaleNft public saleNft;
 
-  mapping(uint256 => string) public nftHashs;
+  struct nftHash {
+    string name;
+    string ipfsHash;
+  }
+  mapping(uint256 => nftHash) public nftHashs;
 
   struct NftData {
     uint256 nftId;
@@ -31,14 +35,16 @@ contract Mint is ERC721Enumerable {
     uint256 nftId = totalSupply() + 1;
     uint256 random5 = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, nftId)))%5 + 1;
     string memory strRandom5 = Strings.toString(random5);
-    string memory mintHash = string(abi.encodePacked(ipfsHash, '/', strRandom5));
-    nftHashs[nftId] = mintHash;
+    string memory nftName = string(abi.encodePacked(strRandom5, '.png'));
+    nftHashs[nftId].name = strRandom5;
+    nftHashs[nftId].ipfsHash = ipfsHash;
     _mint(msg.sender, nftId);
   }
 
-  function mintByUser(string memory ipfsHash) public {
+  function mintByUser(string memory ipfsHash, string memory nftName) public {
     uint256 nftId = totalSupply() + 1;
-    nftHashs[nftId] = ipfsHash;
+    nftHashs[nftId].name = nftName;
+    nftHashs[nftId].ipfsHash = ipfsHash;
     _mint(msg.sender, nftId);
   }
 
