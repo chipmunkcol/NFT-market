@@ -23,13 +23,21 @@ contract MyNft is ERC721Enumerable {
         owner = payable(msg.sender);
     }
 
+    // struct nftHash {
+    //     string name;
+    //     string ipfsHash;
+    // }
+
+    struct Attribute {
+        string trait_type;
+        string value;
+    }
+
     struct NftData {
-        uint id;
         string name;
         string description;
-        string ipfsHash;
-        uint nftType;
-        uint price;
+        string image; // nftHash[ipfsHash].nftHash[name] // ipfs://abcde/1.png
+        Attribute[] attributes;
     }
 
     mapping (uint => NftData) public nftDatas;
@@ -43,34 +51,39 @@ contract MyNft is ERC721Enumerable {
     }
     
     function getBalance() public view returns (uint) {
-        // return address(this).balance;
-        return msg.sender.balance;
+        return address(this).balance;
     }
 
     // 
-    function mintNft(string memory _name, string memory _ipfsHash, string memory _description) public {
+    function mintNft(string memory _name, string memory _ipfsHash, string memory _description, Attribute[] memory _attributes) public {
         uint nftId = totalSupply() + 1;
         uint randomNumber = uint(keccak256(abi.encode(block.timestamp, msg.sender, nftId)))%5 + 1;
-        nftDatas[nftId].id = nftId;
         nftDatas[nftId].name = _name;
         nftDatas[nftId].description = _description;
-        nftDatas[nftId].ipfsHash = _ipfsHash;
-        nftDatas[nftId].nftType = randomNumber;
+        // string memory strRandomNumber = Strings.toString(randomNumber);
+        nftDatas[nftId].image = string(abi.encodePacked(_ipfsHash, '/', randomNumber, '.png'));
+        if (_attributes.length > 0) {
+            for (uint i = 0; i < _attributes.length; i++) {
+                nftDatas[nftId].attributes.push(_attributes[i]);
+            }
+        }
         _mint(msg.sender, nftId);
     }
-    function createNft(string memory _name, string memory _ipfsHash, string memory _description) public {
+    function createNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description, Attribute[] memory _attributes) public {
         uint nftId = totalSupply() + 1;
-        nftDatas[nftId].id = nftId;
         nftDatas[nftId].name = _name;
         nftDatas[nftId].description = _description;
-        nftDatas[nftId].ipfsHash = _ipfsHash;
+        nftDatas[nftId].image = string(abi.encodePacked(_ipfsHash, '/', _fileName));
+        if (_attributes.length > 0) {
+            for (uint i = 0; i < _attributes.length; i++) {
+                nftDatas[nftId].attributes.push(_attributes[i]);
+            }
+        }
         _mint(msg.sender, nftId);
     }
-    // pinata 에서 어떤식으로 넘어오는지 확인 (아마 반복문 돌려야할듯?)
-    // function createCollection() public {}
-    // function setApprovalFolAll(bool _approved) public {
-    //     setApprovalForAll(address(this), _approved);
-    // }
+    function setApprovalFolAll(bool _approved) public {
+        setApprovalForAll(address(this), _approved);
+    }
 
     // 판매 등록
     function setSaleController(uint _nftId, uint _price) public {
@@ -79,22 +92,24 @@ contract MyNft is ERC721Enumerable {
         require(_price > 0, "Nft price must be greater than 0");
         nftDatas[_nftId].price = _price;
 
-        addOnSaleNft(_nftId);
+        onSaleNfts.push(_nftId);
     }
-    function getTargetNft(uint _nftId) public view returns (NftData memory) {
-        // NftData memory nftData = nftDatas[_nftId];
-        // return nftData;
-        return nftDatas[_nftId];
-    }
-    function temp(uint _nftId) public view returns (uint, string memory, string memory) {
-        NftData storage nft = nftDatas[_nftId];
-        // return (nft.id, nft.name, nft.description, nft.price);
-        return (nft.id, nft.name, nft.description);
-        // return nftDatas[_nftId];
+    function getTargetNfts(address _nftOwner) public view returns (NftData[] memory) {
+        uint balanceLength = balanceOf(_nftOwner);
+        require(balanceLength != 0, "You don't have any NFTs");
+
+        NftData[] memory nftData = new NftData[](balanceLength);
+
+        for (uint i = 0; i < balanceLength; i++) {
+            uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
+            string memory ipfsHash = nftDatas[nftId].ipfsHash;
+            string memory nftName = nftDatas[nftId].name;
+            string memory nftDescription = nftDatas[nftId].description;
+        }
     }
 
     // 구매 관련
-    function purchaseController(uint _nftId) public {
+    function purchaseController(uint _nftId) public payable {
         uint ethBalance = msg.sender.balance;
         NftData memory nft = getTargetNft(_nftId);
         uint nftPrice = nft.price;
@@ -102,20 +117,13 @@ contract MyNft is ERC721Enumerable {
         require(ethBalance >= nftPrice, "Balance is less than price");
 
         address oldOwner = ownerOf(_nftId);
-        nftTrading(oldOwner, msg.sender, _nftId, nftPrice);
-        removeOnSaleNft(_nftId);
-    }
-    function nftTrading(address _oldOwner, address _newOwner, uint _nftId, uint _nftPrice) public payable {
-        (bool sent, bytes memory data) = _oldOwner.call{value: _nftPrice}("");
+        // (bool sent,) = oldOwner.call{value: nftPrice}("");
+        (bool sent,) = payable(oldOwner).call{value: msg.value}("");
         require(sent, "Failed to send Ether");
         
-        approve(_newOwner, _nftId);
-        safeTransferFrom(_oldOwner, _newOwner, _nftId);
-    }
-    function addOnSaleNft(uint _nftId) public {
-        onSaleNfts.push(_nftId);
-    }
-    function removeOnSaleNft(uint _nftId) public {
+        approve(msg.sender, _nftId);
+        safeTransferFrom(oldOwner, msg.sender, _nftId);
+    
         for (uint i = 0; i < onSaleNfts.length; i++) {
             if (onSaleNfts[i] == _nftId) {
                 onSaleNfts[i] = onSaleNfts[onSaleNfts.length - 1];
@@ -126,3 +134,23 @@ contract MyNft is ERC721Enumerable {
     
     // function ThankYouForYourDonation() public {}
 }
+    // function temp(uint _nftId) public view returns (uint, string memory, string memory) {
+    //     NftData storage nft = nftDatas[_nftId];
+    //     return (nft.id, nft.name, nft.description);
+    // }
+
+    // function nftTrading(address _oldOwner, address _newOwner, uint _nftId, uint _nftPrice) public payable {
+    //     (bool sent,) = _oldOwner.call{value: _nftPrice}("");
+    //     require(sent, "Failed to send Ether");
+        
+    //     approve(_newOwner, _nftId);
+    //     safeTransferFrom(_oldOwner, _newOwner, _nftId);
+    // }
+    // function removeOnSaleNft(uint _nftId) public {
+    //     for (uint i = 0; i < onSaleNfts.length; i++) {
+    //         if (onSaleNfts[i] == _nftId) {
+    //             onSaleNfts[i] = onSaleNfts[onSaleNfts.length - 1];
+    //             onSaleNfts.pop();
+    //         }
+    //     }
+    // }

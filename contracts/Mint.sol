@@ -20,7 +20,8 @@ contract Mint is ERC721Enumerable {
 
   struct NftData {
     uint256 nftId;
-    string nftHash;
+    string nftName;
+    string ipfsHash;
     uint256 nftPrice;
   }
 
@@ -56,10 +57,11 @@ contract Mint is ERC721Enumerable {
     
     for (uint256 i = 0; i < balanceLength; i++) {
       uint256 nftId = tokenOfOwnerByIndex(_nftOwner, i);
-      string memory nftHash = nftHashs[nftId];
+      string memory ipfsHash = nftHashs[nftId].ipfsHash;
+      string memory nftName = nftHashs[nftId].name;
       uint256 nftPrice = saleNft.getNftPrices(nftId);
 
-      nftData[i] = NftData(nftId, nftHash, nftPrice);
+      nftData[i] = NftData(nftId, nftName, ipfsHash, nftPrice);
     }
     return nftData;
   }
