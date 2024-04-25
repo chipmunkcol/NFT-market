@@ -42,7 +42,11 @@ contract MyNft is ERC721Enumerable {
 
     mapping (uint => NftData) public nftDatas;
 
-    // onSaleNft 
+    // onSaleNft
+    struct OnSaleNft {
+        uint id;
+        uint price;
+    } 
     uint[] public onSaleNfts;
     
     event PayableLog(address indexed sender, uint value);
