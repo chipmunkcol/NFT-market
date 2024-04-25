@@ -78,12 +78,12 @@ function MintNft() {
           tags: tags,
         },
       });
-      formData.append("pinataMetadata", jsonData);
-      formData.append("file", file);
-
       const options = JSON.stringify({
         cidVersion: 0,
       });
+
+      formData.append("file", file);
+      formData.append("pinataMetadata", jsonData);
       formData.append("pinataOptions", options);
 
       const res = await fetch(
@@ -100,7 +100,7 @@ function MintNft() {
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
         const mintResult = await MintContract.methods
-          .mintByUser(ipfsHash)
+          .createNft(data.name, ipfsHash, file.name, data.desc)
           .send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import * as Styled from './NftCard'
 // import NonSaleNftCard from "./NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
-import { SaleNftContract, MintContract, web3 } from "../../contracts/index";
+import { MintContract, web3 } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
 // interface props {
 //   nft: {
@@ -33,7 +33,7 @@ const OnsaleNftCard = ({ nft }) => {
   async function purchaseNftHandler(nftId) {
     try {
       const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      const res = await MintContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
         alert('NFT 구매에 성공했습니다.');

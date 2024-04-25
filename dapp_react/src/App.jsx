@@ -6,7 +6,7 @@ import { useState } from "react";
 import { GlobalContext } from "./context/GlobalContext";
 import { useContext } from "react";
 
-import { MintContract, SaleAddress } from "../contracts/index";
+// import { MintContract } from "../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
@@ -116,14 +116,14 @@ function App() {
   }, [account]);
 
 
-  async function connectSaleNftOnMintContract() {
-    await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
-  }
+  // async function connectSaleNftOnMintContract() {
+  //   await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
+  // }
 
-  useEffect(() => {
-    if (!account) return;
-    connectSaleNftOnMintContract();
-  }, [account])
+  // useEffect(() => {
+  //   if (!account) return;
+  //   connectSaleNftOnMintContract();
+  // }, [account])
 
 
   return (

@@ -40,7 +40,7 @@ contract SaleNft {
 
         payable(nftOwner).transfer(msg.value);
         mintAddress.safeTransferFrom(nftOwner, msg.sender, _nftId);
-
+        
         nftPrices[_nftId] = 0;
         for (uint256 i = 0; i < onsaleNftIds.length; i++) {
             if (nftPrices[onsaleNftIds[i]] == 0) {

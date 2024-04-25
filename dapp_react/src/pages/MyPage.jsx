@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { MintContract, SaleAddress, web3 } from "../../contracts/index";
+import { MintContract, MintAddress, web3 } from "../../contracts/index";
 // import NonSaleNftCard from "../components/NonSaleNftCard";
 import styled from "styled-components";
 import saleNftCard from "../components/NonSaleNftCard";
@@ -20,7 +20,7 @@ const MyPage = () => {
 
     try {
       const res = await MintContract.methods
-        .isApprovedForAll(account, SaleAddress).call();
+        .isApprovedForAll(account, MintAddress).call();
       // console.log('res: ', res);
       setApprovedState(res);
     } catch (err) {
@@ -43,7 +43,7 @@ const MyPage = () => {
     }
 
     try {
-      const res = await MintContract.methods.setApprovalForAll(SaleAddress, !approvedState).send({ from: account });
+      const res = await MintContract.methods.setApprovalForAll(MintAddress, !approvedState).send({ from: account });
       console.log('res: ', res);
       if (res.status) {
         setApprovedState(!approvedState);
@@ -53,20 +53,20 @@ const MyPage = () => {
     }
   };
   
-  const getMyNftBySmartcontract = async () => {
+  const getMyNfts = async () => {
     if (!account) return;
 
     try {
-      const myNfts = await MintContract.methods.getMyNftsByIfps(account).call();
+      const myNfts = await MintContract.methods.getNftsByOwner(account).call();
       if (myNfts.length < 1) return;
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { nftId, nftHash, nftPrice } = myNft;
-        const parsedId = parseInt(nftId, 10);
-        const parsedPrice = parseInt(nftPrice, 10);
-        const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-        newMyNfts.push({ nftId: parsedId, nftHash, nftPrice: etherPrice });
+        const { id, name, description, image } = myNft;
+        const parsedId = parseInt(id, 10);
+        // const parsedPrice = parseInt(nftPrice, 10);
+        // const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+        newMyNfts.push({ id: parsedId, name, description, image });
       });
 
       setMyNfts(newMyNfts);
@@ -76,7 +76,7 @@ const MyPage = () => {
   };
 
   async function init() {
-    await getMyNftBySmartcontract();
+    await getMyNfts();
     await getApprovedStatus();
   }
 

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { SaleNftContract, web3 } from "../../contracts/index";
+import { MintContract, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import OnsaleNftCard from "../components/OnsaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
@@ -15,7 +15,7 @@ const MarketPlace = () => {
   const { account } = useContext(GlobalContext);
 
   async function getOnsaleNftList() {
-    const res = await SaleNftContract.methods
+    const res = await MintContract.methods
       .getOnsaleNftList()
       .call();
     console.log("res: ", res);
