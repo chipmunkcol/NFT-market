@@ -12,25 +12,26 @@ import iconList from '../assets/images/icon-list.png';
 
 const MarketPlace = () => {
   const { onsaleNftList, setOnsaleNftList, purchaseTrigger } = useContext(GlobalContext);
-  const { account } = useContext(GlobalContext);
+  // const { account } = useContext(GlobalContext);
 
   async function getOnsaleNftList() {
     const res = await MintContract.methods
-      .getOnsaleNftList()
+      .getOnsaleNfts()
       .call();
     console.log("res: ", res);
     if (res?.length < 0) return;
-
     const onsaleNftList = [];
     res.map((onsaleNft) => {
-      const { nftId, nftHash, price } = onsaleNft;
-      const parsedId = parseInt(nftId, 10);
+      const { id, name, description, image, price } = onsaleNft;
+      const parsedId = parseInt(id, 10);
       const parsedPrice = parseInt(price, 10);
       const etherPrice = web3.utils.fromWei(parsedPrice.toString(), "ether");
       onsaleNftList.push({
-        nftId: parsedId,
-        nftHash,
-        nftPrice: etherPrice,
+        id: parsedId,
+        name,
+        description,
+        image,
+        price: etherPrice,
       });
     });
     // setOnsaleNftList(prev => [...prev, ...onsaleNftList]);

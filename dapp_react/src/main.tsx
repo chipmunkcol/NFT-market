@@ -15,6 +15,10 @@ import MintNft from "./pages/Create/MintNft.jsx";
 import Collection from "./pages/Create/Collection.jsx";
 import C_step1 from "./pages/Create/CollectionComponents/C_step1.jsx";
 import C_step2 from "./pages/Create/CollectionComponents/C_step2.jsx";
+import All from "./pages/mypageComponents/All.jsx";
+import Nonsale from "./pages/mypageComponents/Nonsale.jsx";
+import Onsale from "./pages/mypageComponents/Onsale.jsx";
+import Sold from "./pages/mypageComponents/Sold.jsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +68,24 @@ const router = createBrowserRouter([
       {
         path: "mypage",
         element: <MyPage />,
+        children: [
+          {
+            path: "",
+            element: <All />,
+          },
+          {
+            path: "non-sale",
+            element: <Nonsale />,
+          },
+          {
+            path: "on-sale",
+            element: <Onsale />,
+          },
+          {
+            path: "sold",
+            element: <Sold />,
+          },
+        ],
       },
     ],
     errorElement: <div>404 Not Found</div>,

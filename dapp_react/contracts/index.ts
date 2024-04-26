@@ -387,8 +387,63 @@ const MintABI = [
             name: "image",
             type: "string",
           },
+          {
+            internalType: "bool",
+            name: "isOnSale",
+            type: "bool",
+          },
         ],
         internalType: "struct MyNft.NftData[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getOnsaleNfts",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "description",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "image",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "price",
+            type: "uint256",
+          },
+          {
+            internalType: "bool",
+            name: "isOnSale",
+            type: "bool",
+          },
+          {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+        ],
+        internalType: "struct MyNft.OnsaleNft[]",
         name: "",
         type: "tuple[]",
       },
@@ -486,6 +541,11 @@ const MintABI = [
         name: "image",
         type: "string",
       },
+      {
+        internalType: "bool",
+        name: "isOnSale",
+        type: "bool",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -498,8 +558,28 @@ const MintABI = [
         type: "uint256",
       },
     ],
-    name: "onSaleNfts",
+    name: "onsaleNfts",
     outputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "description",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "image",
+        type: "string",
+      },
       {
         internalType: "uint256",
         name: "price",
@@ -509,6 +589,11 @@ const MintABI = [
         internalType: "bool",
         name: "isOnSale",
         type: "bool",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -782,7 +867,7 @@ const MintABI = [
   },
 ] as const;
 
-export const MintAddress = "0x172076E0166D1F9Cc711C77Adf8488051744980C";
+export const MintAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 

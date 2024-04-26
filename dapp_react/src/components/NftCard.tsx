@@ -29,6 +29,7 @@ export const ImgWrap = styled.div`
   border-top-left-radius: 0.75rem;
 `;
 export const NftInfo = styled.div`
+  height: 64px;
   padding: 1rem;
 `;
 export const Name = styled.div`

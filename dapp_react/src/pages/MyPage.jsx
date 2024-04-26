@@ -6,6 +6,7 @@ import saleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
 import NonSaleNftCard from "../components/NonSaleNftCard";
+import { Link, Outlet } from "react-router-dom";
 
 const MyPage = () => {
   // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
@@ -128,41 +129,51 @@ const MyPage = () => {
 
         </div>
 
-        <FlexWrap $justifyContent={'space-between'} style={{ padding: '1rem 2rem' }}>
+        <FlexWrap $justifyContent={'space-between'} style={{ padding: '1rem 2rem', maxHeight:'500px' }}>
           <LeftPart>
             <div>
               <NavButton>
-                All
+                <Link to={""}>
+                  All
+                </Link>
               </NavButton>
             </div>
             <div>
               <NavButton>
-                Non sale
+                <Link to={"non-sale"}>
+                  Non sale
+                </Link>
               </NavButton>
             </div>
             <div>
               <NavButton>
-                On sale
+                <Link to={"on-sale"}>
+                  On sale
+                </Link>
               </NavButton>
             </div>
             <div>
               <NavButton>
-                Sold
+                <Link to={"sold"}>
+                  Sold
+                </Link>
               </NavButton>
             </div>
           </LeftPart>
           <RightPart>
-            <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '10px' }}>{myNfts.length > 0 ? myNfts.length : 0} deals</div>
-            <Button $isApproved={approvedState} onClick={!approvedState ? approvedNftHandler : alertAleadyApproved} >{approvedState ? 'Approved' : 'Not approved'}</Button>
+            {/* <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '10px' }}>{myNfts.length > 0 ? myNfts.length : 0} deals</div>
+            <Button $isApproved={approvedState} onClick={!approvedState ? approvedNftHandler : alertAleadyApproved} >{approvedState ? 'Approved' : 'Not approved'}</Button> */}
 
-            {myNfts.length > 0 && (
+            {/* {myNfts.length > 0 && (
               <MyNftsWrap>
                 {myNfts.map((nft, index) => (
                   <NonSaleNftCard key={index} nft={nft} account={account} />
                 ))}
               </MyNftsWrap>
             )}
-            {myNfts.length < 1 && <h2>No NFTs</h2>}
+            {myNfts.length < 1 && <h2>No NFTs</h2>} */}
+            {/* Outlet */}
+            <Outlet />
           </RightPart>
         </FlexWrap>
 
@@ -185,13 +196,14 @@ const NavButton = styled.button`
 `;
 
 const LeftPart = styled.div`
-  width: 30%;
+  width: 20%;
   display: flex;
   flex-direction: column;
   gap: 20px;
 `;
 const RightPart = styled.div`
-  width: 70%;
+  width: 80%;
+  overflow-y: auto;
 `;
 
 const ProfileContainer = styled.div`
@@ -236,7 +248,7 @@ const P_Info = styled.div`
 `;
 const FlexWrap = styled.div`
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: ${props => props.$justifyContent ? props.$justifyContent : ''};
 `;
 

@@ -58,24 +58,24 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
     console.log("res: ", res);
     if (res.status) {
       alert("판매 등록이 완료되었습니다.");
-      const jsonKeyvalues = JSON.stringify({
-        // ipfsPinHash: image,
-        keyvalues: {
-          price: registerPrice,
-        },
-      });
-      const options = {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-          "Content-Type": "application/json",
-        },
-        body: jsonKeyvalues,
-      };
+      // const jsonKeyvalues = JSON.stringify({
+      //   // ipfsPinHash: image,
+      //   keyvalues: {
+      //     price: registerPrice,
+      //   },
+      // });
+      // const options = {
+      //   method: "PUT",
+      //   headers: {
+      //     Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: jsonKeyvalues,
+      // };
 
-      fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
-        .then((response) => console.log(response))
-        .catch((err) => console.error(err));
+      // fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
+      //   .then((response) => console.log(response))
+      //   .catch((err) => console.error(err));
 
       setRegisterPrice(registerPrice);
     }
@@ -93,7 +93,7 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
         <Styled.Img src={imgUrl()} alt="NFT image" />
       </Styled.ImgWrap>
       <Styled.NftInfo>
-        <Styled.Name>NFT {"#"}277</Styled.Name>
+        <Styled.Name>{name}</Styled.Name>
         {/* {nftPrice && (
           <Price>
             가격 : {nftPrice} ETH ($
