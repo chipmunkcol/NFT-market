@@ -16,9 +16,9 @@ import { S_Button } from "../styles/styledComponent";
 
 
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
-const OnsaleNftCard = ({ nft, address }) => {
+const OnsaleNftCard = ({ nft, account }) => {
   const { id, name, description, image, price, owner } = nft;
-  const { myNfts, account, setPurchaseTrigger } = useContext(GlobalContext);
+  const { setTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
 
   // function checkMyNft(nftId) {
@@ -29,6 +29,9 @@ const OnsaleNftCard = ({ nft, address }) => {
   // useEffect(() => {
   //   checkMyNft(id);
   // }, [myNfts]);
+  useEffect(() => {
+    setIsMyNft(account === owner?.toLowerCase());
+  }, [account]);
 
   async function purchaseNftHandler(nftId) {
     try {
@@ -38,7 +41,7 @@ const OnsaleNftCard = ({ nft, address }) => {
       if (res.status) {
         alert('NFT 구매에 성공했습니다.');
       }
-      setPurchaseTrigger(prev => !prev);
+      setTrigger(prev => !prev);
 
     } catch (err) {
       console.log('err: ', err);
@@ -48,6 +51,17 @@ const OnsaleNftCard = ({ nft, address }) => {
   const imgUrl = `${import.meta.env.VITE_GATEWAY_URL
     }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
 
+  // 장바구니에 담기
+  const addCartHandler = nft => {
+    const cart = JSON.parse(localStorage.getItem('cart'));
+    const customNft = { ...nft, checked: true };
+    if (!cart) {
+      localStorage.setItem('cart', JSON.stringify([customNft]));
+    } else {
+      cart.push(customNft);
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+  }
 
   return (
     <Styled.Container>
@@ -63,9 +77,12 @@ const OnsaleNftCard = ({ nft, address }) => {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         )
       </OnsalePriceWrap>
-      {owner !== address && <ButtonWrap>
-        <S_Button onClick={() => purchaseNftHandler(id)}>구매하기</S_Button>
-      </ButtonWrap>}
+      {
+        !isMyNft && <ButtonWrap>
+          <S_Button onClick={() => purchaseNftHandler(id)}>구매하기</S_Button>
+          <S_Button onClick={() => addCartHandler(nft)}>💛</S_Button>
+        </ButtonWrap>
+      }
     </Styled.Container>
   );
 };
@@ -74,6 +91,7 @@ const ButtonWrap = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 10px;
+  gap: 10px;
 `;
 
 const OnsalePriceWrap = styled.div`

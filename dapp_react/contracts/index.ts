@@ -389,7 +389,7 @@ const MintABI = [
           },
           {
             internalType: "bool",
-            name: "isOnSale",
+            name: "isOnsale",
             type: "bool",
           },
         ],
@@ -428,14 +428,70 @@ const MintABI = [
             type: "string",
           },
           {
+            internalType: "bool",
+            name: "isOnsale",
+            type: "bool",
+          },
+          {
             internalType: "uint256",
             name: "price",
             type: "uint256",
           },
           {
+            internalType: "address",
+            name: "owner",
+            type: "address",
+          },
+        ],
+        internalType: "struct MyNft.OnsaleNft[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_nftOwner",
+        type: "address",
+      },
+    ],
+    name: "getOnsaleNftsByOwner",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "id",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "description",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "image",
+            type: "string",
+          },
+          {
             internalType: "bool",
-            name: "isOnSale",
+            name: "isOnsale",
             type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "price",
+            type: "uint256",
           },
           {
             internalType: "address",
@@ -543,7 +599,7 @@ const MintABI = [
       },
       {
         internalType: "bool",
-        name: "isOnSale",
+        name: "isOnsale",
         type: "bool",
       },
     ],
@@ -581,14 +637,14 @@ const MintABI = [
         type: "string",
       },
       {
+        internalType: "bool",
+        name: "isOnsale",
+        type: "bool",
+      },
+      {
         internalType: "uint256",
         name: "price",
         type: "uint256",
-      },
-      {
-        internalType: "bool",
-        name: "isOnSale",
-        type: "bool",
       },
       {
         internalType: "address",
@@ -867,7 +923,7 @@ const MintABI = [
   },
 ] as const;
 
-export const MintAddress = "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853";
+export const MintAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 

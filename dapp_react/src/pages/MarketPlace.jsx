@@ -11,36 +11,56 @@ import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
 
 const MarketPlace = () => {
-  const { onsaleNftList, setOnsaleNftList, purchaseTrigger } = useContext(GlobalContext);
+  const { onsaleNftList, setOnsaleNftList, account, trigger } = useContext(GlobalContext);
   // const { account } = useContext(GlobalContext);
 
   async function getOnsaleNftList() {
-    const res = await MintContract.methods
-      .getOnsaleNfts()
-      .call();
-    console.log("res: ", res);
-    if (res?.length < 0) return;
-    const onsaleNftList = [];
-    res.map((onsaleNft) => {
-      const { id, name, description, image, price } = onsaleNft;
-      const parsedId = parseInt(id, 10);
-      const parsedPrice = parseInt(price, 10);
-      const etherPrice = web3.utils.fromWei(parsedPrice.toString(), "ether");
-      onsaleNftList.push({
-        id: parsedId,
-        name,
-        description,
-        image,
-        price: etherPrice,
+    // const res = await MintContract.methods
+    //   .getOnsaleNfts()
+    //   .call();
+    // console.log("res: ", res);
+    // if (res?.length < 0) return;
+    // const onsaleNftList = [];
+    // res.map((onsaleNft) => {
+    //   const { id, name, description, image, price } = onsaleNft;
+    //   const parsedId = parseInt(id, 10);
+    //   const parsedPrice = parseInt(price, 10);
+    //   const etherPrice = web3.utils.fromWei(parsedPrice.toString(), "ether");
+    //   onsaleNftList.push({
+    //     id: parsedId,
+    //     name,
+    //     description,
+    //     image,
+    //     price: etherPrice,
+    //   });
+    // });
+    // // setOnsaleNftList(prev => [...prev, ...onsaleNftList]);
+    // setOnsaleNftList(onsaleNftList);
+    if (!account) return;
+
+    try {
+      const resultNfts = await MintContract.methods.getOnsaleNfts().call();
+      if (resultNfts.length < 1) return;
+
+      const newOnsaleNfts = [];
+      resultNfts.forEach(onsaleMyNft => {
+        const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
+        const parsedId = parseInt(id, 10);
+        const parsedPrice = parseInt(price, 10);
+        const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+        newOnsaleNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
       });
-    });
-    // setOnsaleNftList(prev => [...prev, ...onsaleNftList]);
-    setOnsaleNftList(onsaleNftList);
+
+      setOnsaleNftList(newOnsaleNfts);
+      console.log('newMyNfts: ', newOnsaleNfts);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
     getOnsaleNftList();
-  }, [purchaseTrigger]);
+  }, [trigger, account]);
 
   return (
     <Background>
@@ -109,7 +129,7 @@ const MarketPlace = () => {
                   <MarketWrap>
                     {
                       onsaleNftList.map(onsaleNft => (
-                        <OnsaleNftCard key={onsaleNft.nftId} nft={onsaleNft} />
+                        <OnsaleNftCard key={`marketplace-${onsaleNft.nftId}`} nft={onsaleNft} account={account} />
                       ))
                     }
                   </MarketWrap>
@@ -218,7 +238,7 @@ const Container = styled.div`
 
 const MarketWrap = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 10px;
 `;
 

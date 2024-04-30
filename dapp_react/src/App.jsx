@@ -10,6 +10,7 @@ import { useContext } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
+import Cart from "./pages/commonComponents/Cart";
 // import Slider from "./components/Slider";
 // import { useRef } from "react";
 
@@ -125,6 +126,14 @@ function App() {
   //   connectSaleNftOnMintContract();
   // }, [account])
 
+  // Cart 컴포넌트
+  const [cartModal, setCartModal] = useState(false);
+  const cartModalOpen = () => {
+    setCartModal(true);
+  }
+  const cartModalClose = () => {
+    setCartModal(false);
+  }
 
   return (
     <Container>
@@ -150,13 +159,15 @@ function App() {
               <Nav>MyPage</Nav>
             </Link>
             <div>|</div>
-            <div>Cart</div>
+            <CartWrap onClick={cartModalOpen}>Cart</CartWrap>
           </div>
         )
         }
         <Menubar>
           ☰
         </Menubar>
+        {/* Cart Component */}
+        {cartModal && <Cart cartModalClose={cartModalClose} />}
       </Header>
       {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
       <ContainerHome>
@@ -171,6 +182,10 @@ function App() {
     </Container>
   );
 }
+
+const CartWrap = styled.div`
+  cursor: pointer;
+`;
 
 const ContainerHome = styled.div`
   width: 100%;

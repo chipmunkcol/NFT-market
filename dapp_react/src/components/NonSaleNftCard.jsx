@@ -1,30 +1,32 @@
 import styled from "styled-components";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useContext, useRef, useState } from "react";
 import { web3, MintContract } from "../../contracts/index";
 // import { toWei } from "web3-utils";
-import * as Styled from "./NftCard";
+import NftCard, * as Styled from "./NftCard";
+import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
 
-interface props {
-  nft: {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    // nftHash: string;
-    // nftPrice: number;
-    // nftType: number;
-  };
-  account: string;
-}
+// interface props {
+//   nft: {
+//     id: number;
+//     name: string;
+//     description: string;
+//     image: string;
+//     // nftHash: string;
+//     // registerPrice: number;
+//     // nftType: number;
+//   };
+//   account: string;
+// }
 
-const NonSaleNftCard: FC<props> = ({ nft, account }) => {
-  const { id, name, description, image } = nft;
+// const NonSaleNftCard: FC<props> = ({ nft, account }) => {
+const NonSaleNftCard = ({ nft, account }) => {
+  const { id, name, image } = nft;
+  // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
+  const { setTrigger } = useContext(GlobalContext)
 
-  const [registerPrice, setRegisterPrice] = useState<number>(0);
-  const onChangeRegisterPrice = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRegisterPrice(Number(e.target.value));
-  };
+  // const [registerPrice, setRegisterPrice] = useState(0);
+  const priceRef = useRef(null);
 
   // const getTargetNftByIpfs = async () => {
   //   if (!account) return;
@@ -49,7 +51,8 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
   // };
 
   const registerForSaleHandler = async () => {
-    const weiPrice = web3.utils.toWei(registerPrice, "ether");
+    const price = Number(priceRef.current?.value);
+    const weiPrice = web3.utils.toWei(price, "ether");
     const res = await MintContract.methods
       .setSaleController(id, weiPrice)
       .send({
@@ -58,6 +61,7 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
     console.log("res: ", res);
     if (res.status) {
       alert("판매 등록이 완료되었습니다.");
+      setTrigger(prev => !prev);
       // const jsonKeyvalues = JSON.stringify({
       //   // ipfsPinHash: image,
       //   keyvalues: {
@@ -77,14 +81,13 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
       //   .then((response) => console.log(response))
       //   .catch((err) => console.error(err));
 
-      setRegisterPrice(registerPrice);
+      // setRegisterPrice(price);
     }
   };
 
   const imgUrl = () => {
-    return `${
-      import.meta.env.VITE_GATEWAY_URL
-    }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
+    return `${import.meta.env.VITE_GATEWAY_URL
+      }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
   };
 
   return (
@@ -94,10 +97,10 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
       </Styled.ImgWrap>
       <Styled.NftInfo>
         <Styled.Name>{name}</Styled.Name>
-        {/* {nftPrice && (
+        {/* {registerPrice !== 0 && (
           <Price>
-            가격 : {nftPrice} ETH ($
-            {(Number(nftPrice) * 2928)
+            가격 : {registerPrice} ETH ($
+            {(Number(registerPrice) * 2928)
               .toString()
               .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             )
@@ -107,7 +110,8 @@ const NonSaleNftCard: FC<props> = ({ nft, account }) => {
       <SaleRegistrationWrap>
         <Input
           type="number"
-          onChange={onChangeRegisterPrice}
+          ref={priceRef}
+          // onChange={onChangePrice}
           placeholder="단위: ETH"
         />
         <Button onClick={registerForSaleHandler}>판매 등록</Button>

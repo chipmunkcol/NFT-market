@@ -13,7 +13,7 @@ const MyPage = () => {
 
   // console.log("account: ", account);
   // const [myNfts, setMyNfts] = useState([]);
-  const { account, myNfts, setMyNfts } = useContext(GlobalContext);
+  const { account, myNfts, setMyNfts, trigger } = useContext(GlobalContext);
   const [approvedState, setApprovedState] = useState(false);
 
   const getApprovedStatus = async () => {
@@ -63,28 +63,52 @@ const MyPage = () => {
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { id, name, description, image } = myNft;
+        const { id, name, description, image, isOnsale } = myNft;
         const parsedId = parseInt(id, 10);
-        // const parsedPrice = parseInt(nftPrice, 10);
-        // const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-        newMyNfts.push({ id: parsedId, name, description, image });
+        newMyNfts.push({ id: parsedId, name, description, image, isOnsale });
       });
 
       setMyNfts(newMyNfts);
+      console.log('newMyNfts: ', newMyNfts);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const [onsaleMyNfts, setOnsaleMyNfts] = useState([]);
+  const getMyNftsOnsale = async () => {
+    if (!account) return;
+
+    try {
+      const resultNfts = await MintContract.methods.getOnsaleNftsByOwner(account).call();
+      if (resultNfts.length < 1) return;
+
+      const newOnsaleMyNfts = [];
+      resultNfts.forEach(onsaleMyNft => {
+        const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
+        const parsedId = parseInt(id, 10);
+        const parsedPrice = parseInt(price, 10);
+        const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+        newOnsaleMyNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
+      });
+
+      setOnsaleMyNfts(newOnsaleMyNfts);
+      console.log('newMyNfts: ', newOnsaleMyNfts);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function init() {
     await getMyNfts();
+    await getMyNftsOnsale();
     await getApprovedStatus();
   }
 
   useEffect(() => {
     setMyNfts([]);
     init();
-  }, [account]);
+  }, [account, trigger]);
 
 
   // truncate account
@@ -132,32 +156,32 @@ const MyPage = () => {
         <FlexWrap $justifyContent={'space-between'} style={{ padding: '1rem 2rem', maxHeight:'500px' }}>
           <LeftPart>
             <div>
-              <NavButton>
                 <Link to={""}>
+              <NavButton>
                   All
-                </Link>
               </NavButton>
+                </Link>
             </div>
             <div>
-              <NavButton>
                 <Link to={"non-sale"}>
+              <NavButton>
                   Non sale
-                </Link>
               </NavButton>
+                </Link>
             </div>
             <div>
-              <NavButton>
                 <Link to={"on-sale"}>
+              <NavButton>
                   On sale
-                </Link>
               </NavButton>
+                </Link>
             </div>
             <div>
-              <NavButton>
                 <Link to={"sold"}>
+              <NavButton>
                   Sold
-                </Link>
               </NavButton>
+                </Link>
             </div>
           </LeftPart>
           <RightPart>
@@ -173,11 +197,9 @@ const MyPage = () => {
             )}
             {myNfts.length < 1 && <h2>No NFTs</h2>} */}
             {/* Outlet */}
-            <Outlet />
+            <Outlet context={[myNfts, onsaleMyNfts, account]} />
           </RightPart>
         </FlexWrap>
-
-
 
       </Container>
     </Background>
@@ -188,6 +210,7 @@ const NavButton = styled.button`
   padding: 12px 24px;
   display: inline-block;
   border-radius: 0.75rem;
+  min-width: 180px;
 
   &:hover {
     background-color: rgba(18, 18, 18, 0.04);

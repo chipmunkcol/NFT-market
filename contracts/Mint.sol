@@ -33,8 +33,8 @@ contract MyNft is ERC721Enumerable {
         string name;
         string description;
         string image; // nftHash[ipfsHash].nftHash[name] // ipfs://abcde/1.png
+        bool isOnsale;
         // Attribute[] attributes;
-        bool isOnSale;
     }
 
     mapping (uint => NftData) public nftDatas;
@@ -46,8 +46,8 @@ contract MyNft is ERC721Enumerable {
         string image;
         // Attribute[] attributes;
 
+        bool isOnsale;
         uint price;
-        bool isOnSale;
         
         address owner;
     }
@@ -120,12 +120,51 @@ contract MyNft is ERC721Enumerable {
             string memory nftName = nftDatas[nftId].name;
             string memory nftDescription = nftDatas[nftId].description;
             string memory nftImage = nftDatas[nftId].image;
-            bool nftIsOnsale = nftDatas[nftId].isOnSale;
+            bool nftIsOnsale = nftDatas[nftId].isOnsale;
+            // uint nftPrice = nftDatas[nftId].price;
             // Attribute[] memory nftAttributes = nftDatas[nftId].attributes;
             // nftData[i] = NftData(nftName, nftDescription, nftImage, nftAttributes);
             nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale);
         }
         return nftList;
+    }
+
+    // function getNonsaleNftsByOwner(address _nftOwner) public view returns (NftData[] memory) {
+    //     uint balanceLength = balanceOf(_nftOwner);
+    //     require(balanceLength != 0, "You don't have any NFTs");
+
+    //     NftData[] memory nftList = new NftData[](balanceLength);
+
+    //     for (uint i = 0; i < balanceLength; i++) {
+    //         uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
+    //         if (!nftDatas[nftId].isOnsale) continue;
+    //         string memory nftName = nftDatas[nftId].name;
+    //         string memory nftDescription = nftDatas[nftId].description;
+    //         string memory nftImage = nftDatas[nftId].image;
+    //         bool nftIsOnsale = nftDatas[nftId].isOnsale;
+    //         nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale);
+    //     }
+    //     return nftList;
+    // }
+
+    function getOnsaleNftsByOwner(address _nftOwner) public view returns (OnsaleNft[] memory) {
+        uint onsaleNftsLength = onsaleNfts.length;
+        require(onsaleNftsLength != 0, "There are no NFTs on sale");
+        OnsaleNft[] memory onsaleNftList = new OnsaleNft[](onsaleNftsLength);
+
+        for (uint i = 0; i < onsaleNftsLength; i++) {
+            if (onsaleNfts[i].owner != _nftOwner) continue;
+            uint nftId = onsaleNfts[i].id;
+            string memory nftName = onsaleNfts[i].name;
+            string memory nftDescription = onsaleNfts[i].description;
+            string memory nftImage = onsaleNfts[i].image;
+
+            bool nftIsOnsale = onsaleNfts[i].isOnsale;
+            uint nftPrice = onsaleNfts[i].price;
+            address nftOwner = onsaleNfts[i].owner;
+            onsaleNftList[i] = OnsaleNft(nftId, nftName, nftDescription, nftImage, nftIsOnsale, nftPrice, nftOwner);
+        }
+        return onsaleNftList;
     }
 
     function getOnsaleNfts() public view returns (OnsaleNft[] memory) {
@@ -140,9 +179,9 @@ contract MyNft is ERC721Enumerable {
             string memory nftImage = onsaleNfts[i].image;
 
             uint nftPrice = onsaleNfts[i].price;
-            bool nftIsOnSale = onsaleNfts[i].isOnSale;
+            bool nftIsOnsale = onsaleNfts[i].isOnsale;
             address nftOwner = onsaleNfts[i].owner;
-            onsaleNftList[i] = OnsaleNft(nftId, nftName, nftDescription, nftImage, nftPrice, nftIsOnSale, nftOwner);
+            onsaleNftList[i] = OnsaleNft(nftId, nftName, nftDescription, nftImage, nftIsOnsale, nftPrice, nftOwner);
         }
         return onsaleNftList;
     }
@@ -163,12 +202,13 @@ contract MyNft is ERC721Enumerable {
         onsaleNft.owner = nftOwner;
         onsaleNft.id = _nftId;
         onsaleNft.price = _price;
-        onsaleNft.isOnSale = true;
+        onsaleNft.isOnsale = true;
 
         onsaleNft.name = nftDatas[_nftId].name;
         onsaleNft.description = nftDatas[_nftId].description;
         onsaleNft.image = nftDatas[_nftId].image;
         onsaleNfts.push(onsaleNft);
+        nftDatas[_nftId].isOnsale = true;
     }
 
     // 구매 관련
@@ -195,7 +235,7 @@ contract MyNft is ERC721Enumerable {
             }
         }
         safeTransferFrom(oldOwner, msg.sender, _nftId);
-        
+        nftDatas[_nftId].isOnsale = false;
     }
     
     // function ThankYouForYourDonation() public {}

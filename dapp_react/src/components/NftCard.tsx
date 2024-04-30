@@ -50,6 +50,7 @@ export const Container = styled.div`
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 15px;
   padding-bottom: 1rem;
   font-size: 14px;
+  text-align: center;
 `;
 
 export default NftCard;
