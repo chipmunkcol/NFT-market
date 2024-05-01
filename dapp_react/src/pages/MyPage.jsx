@@ -59,17 +59,18 @@ const MyPage = () => {
 
     try {
       const myNfts = await MintContract.methods.getNftsByOwner(account).call();
+      console.log('myNfts: ', myNfts);
       if (myNfts.length < 1) return;
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { id, name, description, image, isOnsale } = myNft;
+        const { id, name, description, image, isOnsale, attributes } = myNft;
         const parsedId = parseInt(id, 10);
-        newMyNfts.push({ id: parsedId, name, description, image, isOnsale });
+        newMyNfts.push({ id: parsedId, name, description, image, isOnsale, attributes });
       });
 
       setMyNfts(newMyNfts);
-      console.log('newMyNfts: ', newMyNfts);
+      // console.log('newMyNfts: ', newMyNfts);
     } catch (error) {
       console.log(error);
     }

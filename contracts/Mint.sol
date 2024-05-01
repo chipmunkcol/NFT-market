@@ -23,10 +23,10 @@ contract MyNft is ERC721Enumerable {
         // owner = payable(msg.sender);
     }
 
-    struct Attribute {
-        string trait_type;
-        string value;
-    }
+    // struct Attribute {
+    //     string trait_type;
+    //     string value;
+    // }
 
     struct NftData {
         uint id;
@@ -34,6 +34,7 @@ contract MyNft is ERC721Enumerable {
         string description;
         string image; // nftHash[ipfsHash].nftHash[name] // ipfs://abcde/1.png
         bool isOnsale;
+        string attributes;
         // Attribute[] attributes;
     }
 
@@ -82,12 +83,13 @@ contract MyNft is ERC721Enumerable {
         _mint(msg.sender, nftId);
     }
     // function createNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description, Attribute[] memory _attributes) public {
-    function createNft(string memory _name, string memory _ipfsHash, string memory _description) public {
+    function createNft(string memory _name, string memory _ipfsHash, string memory _description, string memory attributes) public {
         uint nftId = totalSupply() + 1;
         nftDatas[nftId].id = nftId;
         nftDatas[nftId].name = _name;
         nftDatas[nftId].description = _description;
         nftDatas[nftId].image = _ipfsHash;
+        nftDatas[nftId].attributes = attributes;
         // if (_attributes.length > 0) {
         //     for (uint i = 0; i < _attributes.length; i++) {
         //         nftDatas[nftId].attributes.push(_attributes[i]);
@@ -121,31 +123,15 @@ contract MyNft is ERC721Enumerable {
             string memory nftDescription = nftDatas[nftId].description;
             string memory nftImage = nftDatas[nftId].image;
             bool nftIsOnsale = nftDatas[nftId].isOnsale;
+            string memory nftAttributes = nftDatas[nftId].attributes;
             // uint nftPrice = nftDatas[nftId].price;
             // Attribute[] memory nftAttributes = nftDatas[nftId].attributes;
             // nftData[i] = NftData(nftName, nftDescription, nftImage, nftAttributes);
-            nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale);
+            nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale, nftAttributes);
         }
         return nftList;
     }
 
-    // function getNonsaleNftsByOwner(address _nftOwner) public view returns (NftData[] memory) {
-    //     uint balanceLength = balanceOf(_nftOwner);
-    //     require(balanceLength != 0, "You don't have any NFTs");
-
-    //     NftData[] memory nftList = new NftData[](balanceLength);
-
-    //     for (uint i = 0; i < balanceLength; i++) {
-    //         uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
-    //         if (!nftDatas[nftId].isOnsale) continue;
-    //         string memory nftName = nftDatas[nftId].name;
-    //         string memory nftDescription = nftDatas[nftId].description;
-    //         string memory nftImage = nftDatas[nftId].image;
-    //         bool nftIsOnsale = nftDatas[nftId].isOnsale;
-    //         nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale);
-    //     }
-    //     return nftList;
-    // }
 
     function getOnsaleNftsByOwner(address _nftOwner) public view returns (OnsaleNft[] memory) {
         uint onsaleNftsLength = onsaleNfts.length;
@@ -259,4 +245,23 @@ contract MyNft is ERC721Enumerable {
     //             onsaleNfts.pop();
     //         }
     //     }
+    // }
+
+    
+    // function getNonsaleNftsByOwner(address _nftOwner) public view returns (NftData[] memory) {
+    //     uint balanceLength = balanceOf(_nftOwner);
+    //     require(balanceLength != 0, "You don't have any NFTs");
+
+    //     NftData[] memory nftList = new NftData[](balanceLength);
+
+    //     for (uint i = 0; i < balanceLength; i++) {
+    //         uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
+    //         if (!nftDatas[nftId].isOnsale) continue;
+    //         string memory nftName = nftDatas[nftId].name;
+    //         string memory nftDescription = nftDatas[nftId].description;
+    //         string memory nftImage = nftDatas[nftId].image;
+    //         bool nftIsOnsale = nftDatas[nftId].isOnsale;
+    //         nftList[i] = NftData(nftId, nftName, nftDescription, nftImage, nftIsOnsale);
+    //     }
+    //     return nftList;
     // }

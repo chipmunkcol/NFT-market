@@ -19,7 +19,7 @@ function C_step2() {
   const handleSubmisstion = async () => {
     const formData = new FormData();
     const pinataOptions = JSON.stringify({
-      cidVersion: 1,
+      cidVersion: 0,
     });
 
     let collectionFiles = [];
@@ -34,7 +34,7 @@ function C_step2() {
         owner: account,
         description: collection.desc,
         tags: collection.tags,
-        files: collectionFiles,
+        files: collectionFiles.join(','),
       }
     });
     formData.append("pinataMetadata", jsonData);
@@ -57,7 +57,7 @@ function C_step2() {
       try {
         collectionFiles.forEach(async (file) => {
           const mintResult = await MintContract.methods
-            .mintByUser(collection.name, ipfsHash, file, collection.desc, collection.tags)
+            .createCollectionNft(collection.name, ipfsHash, file, collection.desc)
             .send({ from: account });
           if (mintResult.status) {
             setProgress(progress + 1);

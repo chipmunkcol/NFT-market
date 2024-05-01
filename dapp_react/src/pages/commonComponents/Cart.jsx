@@ -132,6 +132,7 @@ const ContentWrap = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 150px;
   font-size: 0.8rem;
 `;
 

@@ -19,6 +19,7 @@ import All from "./pages/mypageComponents/All.jsx";
 import Nonsale from "./pages/mypageComponents/Nonsale.jsx";
 import Onsale from "./pages/mypageComponents/Onsale.jsx";
 import Sold from "./pages/mypageComponents/Sold.jsx";
+import NftDetail from "./pages/NftDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "market-place",
         element: <MarketPlace />,
+      },
+      {
+        path: "nft-detail/:ipfsHash/:nftId",
+        element: <NftDetail />,
       },
       {
         path: "create",

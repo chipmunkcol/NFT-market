@@ -8,11 +8,7 @@ import { GlobalContext } from "../../../context/GlobalContext";
 function C_step() {
 
   const { collection, setCollection } = useContext(GlobalContext);
-  // const [data, setData] = useState({
-  //   name: "",
-  //   desc: "",
-  // });
-  // const [tags, setTags] = useState("");
+
   const onchangeNameData = (e) => {
     setCollection((prev) => ({
       ...prev,
@@ -36,7 +32,7 @@ function C_step() {
     }));
   };
 
-  const onChangeInputSpecific = (e) => {
+  const onChangeInputTags = (e) => {
     setCollection(prev => ({
       ...prev,
       tags: e.target.value
@@ -78,7 +74,7 @@ function C_step() {
       <InputSpecific
         placeholder="#예술 #유명인 #게임"
         value={collection.tags}
-        onChange={onChangeInputSpecific}
+        onChange={onChangeInputTags}
       />
       {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
       <Link to={"/create-collection/step-2"}>
