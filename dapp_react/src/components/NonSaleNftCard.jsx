@@ -20,35 +20,13 @@ import { S_Button } from "../styles/styledComponent";
 // }
 
 // const NonSaleNftCard: FC<props> = ({ nft, account }) => {
-const NonSaleNftCard = ({ nft, account }) => {
-  const { id, name, image } = nft;
+const NonSaleNftCard = ({ nft }) => {
+  const { id, name, image, description, attributes } = nft;
   // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
-  const { setTrigger } = useContext(GlobalContext)
+  const { setTrigger, account } = useContext(GlobalContext)
 
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
-
-  // const getTargetNftByIpfs = async () => {
-  //   if (!account) return;
-
-  //   const options = {
-  //     method: "GET",
-  //     headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-  //   };
-  //   const metadataQuery = encodeURIComponent(
-  //     `{"value":"${account}", "op":"iLike"}`
-  //   );
-  //   fetch(
-  //     `https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`,
-  //     options
-  //   )
-  //     // fetch('https://api.pinata.cloud/data/pinList', options)
-  //     .then((response) => response.json())
-  //     .then((response) => {
-  //       console.log(response);
-  //     })
-  //     .catch((err) => console.error(err));
-  // };
 
   const registerForSaleHandler = async () => {
     const price = Number(priceRef.current?.value);
@@ -60,28 +38,34 @@ const NonSaleNftCard = ({ nft, account }) => {
       });
     console.log("res: ", res);
     if (res.status) {
+      const jsonKeyvalues = JSON.stringify({
+        ipfsPinHash: image,
+        name,
+        keyvalues: {
+          id,
+          owner: account,
+          description: description,
+          isOnsale: String(true),
+          price,
+          attributes,
+        },
+      });
+      const options = {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+          "Content-Type": "application/json",
+        },
+        body: jsonKeyvalues,
+      };
+
+      await fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
+        .then((response) => console.log(response))
+        .catch((err) => console.error(err));
+
+
       alert("판매 등록이 완료되었습니다.");
       setTrigger(prev => !prev);
-      // const jsonKeyvalues = JSON.stringify({
-      //   // ipfsPinHash: image,
-      //   keyvalues: {
-      //     price: registerPrice,
-      //   },
-      // });
-      // const options = {
-      //   method: "PUT",
-      //   headers: {
-      //     Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: jsonKeyvalues,
-      // };
-
-      // fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
-      //   .then((response) => console.log(response))
-      //   .catch((err) => console.error(err));
-
-      // setRegisterPrice(price);
     }
   };
 

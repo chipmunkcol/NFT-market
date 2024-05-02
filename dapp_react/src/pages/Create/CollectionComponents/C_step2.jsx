@@ -57,7 +57,7 @@ function C_step2() {
       try {
         collectionFiles.forEach(async (file) => {
           const mintResult = await MintContract.methods
-            .createCollectionNft(collection.name, ipfsHash, file, collection.desc)
+            .createCollectionNft(collection.name, ipfsHash, file, collection.desc, collection.tags)
             .send({ from: account });
           if (mintResult.status) {
             setProgress(progress + 1);

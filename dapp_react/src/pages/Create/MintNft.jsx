@@ -75,7 +75,8 @@ function MintNft() {
         keyvalues: {
           owner: account,
           description: data.desc,
-          tags: tags,
+          attributes: tags,
+          isOnsale: String(false),
         },
       });
       const options = JSON.stringify({
@@ -100,7 +101,7 @@ function MintNft() {
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
         const mintResult = await MintContract.methods
-          .createNft(data.name, ipfsHash, data.desc)
+          .createNft(data.name, ipfsHash, data.desc, tags)
           .send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");

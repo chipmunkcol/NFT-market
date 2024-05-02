@@ -9,7 +9,7 @@
    plugins: [react(), svgr()],
    }); 추가
 
-## 2. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
+## 2-1. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
 
 - IPFS 장단점
 
@@ -19,6 +19,13 @@
    => pinata docs 중 발췌 [Pinata에 업로드된 파일에 대한 이 메타데이터는 IPFS가 아니라 Pinata가 있는 개인 데이터베이스에 있으므로 NFT 메타데이터와 혼동하지 마십시오.]
 4. 보안을 강조하는 블록체인이 지향하는 방향과는 맞지는 않지만 핵심은 ipfs URI 이고 부가 내용들은 (name, desc 정도 price는 아닌듯) pinata 의 데이터베이스를 사용해도 괜찮을 듯
    UX 관점에서 NFT의 name, desc 등의 내용 수정에 적지 않은 편의가 있다고 생각한다. 예)open sea 에서 사용자 프로필 & 프로필 배경 바꾸는 기능 느낌 (메타데이터를 블록체인에 기록하지 않으니 SC에서 gas fee 절약은 덤)
+
+## 2-2. 페이지네이션 or 검색 기능을 구현하려는데 해당 기능을 pinata api query를 이용할지 sc를 구현해서 해결할지 여부
+
+- IPFS 장단점
+
+1. 그냥 커스텀하기가 너무 좋아서 이쪽이 맞는거 같음 nft 민팅 시에 해당 내용을 metadata에 저장 후에 query로 구현하는게 용이해보임 배포시 속도와 가스비는 덤이고, 무엇보다 내가 sc쪽 전문으로 구현하는게 아니니까 내쪽에서 해결해보는걸로 하자
+   Pinata 관련 내용[https://docs.pinata.cloud/pinning/listing-files]
 
 ## 3. Solidity dive
 
