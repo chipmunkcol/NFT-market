@@ -45,6 +45,7 @@ const NonSaleNftCard = ({ nft }) => {
           id,
           owner: account,
           description: description,
+          image,
           isOnsale: String(true),
           price,
           attributes,
@@ -60,12 +61,13 @@ const NonSaleNftCard = ({ nft }) => {
       };
 
       await fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
-        .then((response) => console.log(response))
+        .then((res) => {
+          if (res.ok) {
+            alert("판매 등록이 완료되었습니다.");
+            setTrigger(prev => !prev);
+          }
+        })
         .catch((err) => console.error(err));
-
-
-      alert("판매 등록이 완료되었습니다.");
-      setTrigger(prev => !prev);
     }
   };
 

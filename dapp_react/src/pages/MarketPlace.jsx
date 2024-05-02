@@ -12,28 +12,7 @@ import iconList from '../assets/images/icon-list.png';
 
 const MarketPlace = () => {
   const { onsaleNftList, setOnsaleNftList, account, trigger } = useContext(GlobalContext);
-
-  // async function getOnsaleNftList() {
-  //   if (!account) return;
-
-  //   try {
-  //     const resultNfts = await MintContract.methods.getOnsaleNfts().call();
-  //     if (resultNfts.length < 1) return;
-
-  //     const newOnsaleNfts = [];
-  //     resultNfts.forEach(onsaleMyNft => {
-  //       const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
-  //       const parsedId = parseInt(id, 10);
-  //       const parsedPrice = parseInt(price, 10);
-  //       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-  //       newOnsaleNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
-  //     });
-
-  //     setOnsaleNftList(newOnsaleNfts);
-  //     console.log('newMyNfts: ', newOnsaleNfts);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
+  const getAllonsaleNftListRef = useRef(null);
   const [offset, setOffset] = useState(0);
   const encodedOffset = encodeURIComponent(
     offset
@@ -49,13 +28,22 @@ const MarketPlace = () => {
       headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
     };
     fetch(
-      `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageOffset=0`,
+      // `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageOffset=0`,
+      `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageLimit=100`,
       options
     )
-      // fetch('https://api.pinata.cloud/data/pinList', options)
       .then((response) => response.json())
       .then((response) => {
-        console.log(response);
+        const ipfsDatas = response.rows;
+        const newOnsaleNfts = [];
+        ipfsDatas.forEach(data => {
+          const name = data.metadata.name;
+          const metaData = data.metadata.keyvalues;
+          newOnsaleNfts.push({ ...metaData, name });
+        })
+        setOnsaleNftList(newOnsaleNfts);
+        getAllonsaleNftListRef.current = newOnsaleNfts;
+        console.log('newOnsaleNfts: ', newOnsaleNfts);
       })
       .catch((err) => console.error(err));
 
@@ -65,33 +53,54 @@ const MarketPlace = () => {
     getOnsaleNftList();
   }, [offset]);
 
-  const searchRef = useRef(null);
+  const searchRef = useRef('');
   const onChangeSearch = e => {
     searchRef.current = e.target.value;
   }
-  const getSearchNftsFromIpfs = async () => {
-    const options = {
-      method: "GET",
-      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-    };
-    const metadataQuery = encodeURIComponent(
-      // `{"value":"${searchRef.current}&", "op":"iLike"}`
-      searchRef.current
-    );
-    fetch(
-      // `https://api.pinata.cloud/data/pinList?metadata[keyvalues]=${metadataQuery}`,
-      // `https://api.pinata.cloud/data/pinList?metadata[name]=${searchRef.current}`,
-      // `https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`,
-      `https://api.pinata.cloud/data/pinList?metadata[name]=${metadataQuery}`,
-      options
-    )
-      // fetch('https://api.pinata.cloud/data/pinList', options)
-      .then((response) => response.json())
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => console.error(err));
-  };
+
+  const [grid, setGrid] = useState('1fr 1fr 1fr 1fr 1fr');
+  const [cardWidth, setCardWidth] = useState('200px');
+  const grid5Hander = () => {
+    setGrid('1fr 1fr 1fr 1fr 1fr');
+    setCardWidth('200px');
+  }
+  const grid7Hander = () => {
+    setGrid('1fr 1fr 1fr 1fr 1fr 1fr 1fr');
+    setCardWidth('180px');
+  }
+
+  const searchNfts = () => {
+    const searchQuery = searchRef.current;
+    if (searchQuery === '') {
+      setOnsaleNftList(getAllonsaleNftListRef.current);
+      return;
+    }
+    const newOnsaleNftList = getAllonsaleNftListRef.current.filter(nft => nft.name.includes(searchQuery));
+    setOnsaleNftList(newOnsaleNftList);
+  }
+
+  const onKeydownHandler = e => {
+    e.key === 'Enter' && searchNfts();
+  }
+
+  const onChangeSort = e => {
+    const sortType = e.target.value;
+    if (sortType === 'updated') {
+      setOnsaleNftList(getAllonsaleNftListRef.current);
+    } else if (sortType === 'row') {
+      sortAsceNfts();
+    } else if (sortType === 'high') {
+      sortDescNfts();
+    }
+  }
+  const sortAsceNfts = () => {
+    const sortedNfts = [...getAllonsaleNftListRef.current].sort((a, b) => a.price - b.price);
+    setOnsaleNftList(sortedNfts);
+  }
+  const sortDescNfts = () => {
+    const sortedNfts = [...getAllonsaleNftListRef.current].sort((a, b) => b.price - a.price);
+    setOnsaleNftList(sortedNfts);
+  }
 
   return (
     <Background>
@@ -101,26 +110,26 @@ const MarketPlace = () => {
           <FlexWrap>
             <div>결과 {onsaleNftList?.length}개</div>
             <div style={{ position: 'relative', width: '400px', height: '48px' }}>
-              <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} />
-              <IconWrap onClick={getSearchNftsFromIpfs}>
+              <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
+              <IconWrap onClick={searchNfts}>
                 <IconFind />
               </IconWrap>
             </div>
             <div style={{ width: '240px', height: '48px' }}>
-              <Select>
-                <option>최신순</option>
-                <option>낮은 가격순</option>
-                <option>높은 가격순</option>
+              <Select onChange={onChangeSort}>
+                <option value='updated'>최신순</option>
+                <option value='row'>낮은 가격순</option>
+                <option value='high'>높은 가격순</option>
               </Select>
             </div>
             <IconContainer>
               <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
                 <IconList $iconPath={iconList} />
               </IconBox>
-              <IconBox>
+              <IconBox onClick={grid5Hander}>
                 <IconList $iconPath={iconGrid4} />
               </IconBox>
-              <IconBox style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
+              <IconBox onClick={grid7Hander} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
                 <IconList $iconPath={iconGrid9} />
               </IconBox>
             </IconContainer>
@@ -157,10 +166,10 @@ const MarketPlace = () => {
             <RightPart>
               {
                 onsaleNftList.length < 1 ? (<div>판매중인 NFT가 없습니다.</div>) : (
-                  <MarketWrap>
+                  <MarketWrap $grid={grid}>
                     {
                       onsaleNftList.map(onsaleNft => (
-                        <OnsaleNftCard key={`marketplace-${onsaleNft.nftId}`} nft={onsaleNft} account={account} />
+                        <OnsaleNftCard key={`marketplace-${onsaleNft.nftId}`} nft={onsaleNft} account={account} cardWidth={cardWidth} />
                       ))
                     }
                   </MarketWrap>
@@ -270,8 +279,60 @@ const Container = styled.div`
 
 const MarketWrap = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: ${props => props.$grid};
   gap: 10px;
 `;
 
 export default MarketPlace;
+
+
+// async function getOnsaleNftList() {
+//   if (!account) return;
+
+//   try {
+//     const resultNfts = await MintContract.methods.getOnsaleNfts().call();
+//     if (resultNfts.length < 1) return;
+
+//     const newOnsaleNfts = [];
+//     resultNfts.forEach(onsaleMyNft => {
+//       const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
+//       const parsedId = parseInt(id, 10);
+//       const parsedPrice = parseInt(price, 10);
+//       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+//       newOnsaleNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
+//     });
+
+//     setOnsaleNftList(newOnsaleNfts);
+//     console.log('newMyNfts: ', newOnsaleNfts);
+//   } catch (error) {
+//     console.log(error);
+//   }
+
+// const searchNfts = async () => {
+//   const options = {
+//     method: "GET",
+//     headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
+//   };
+//   const metadataQuery = encodeURIComponent(
+//     // `{"value":"${searchRef.current}&", "op":"iLike"}`
+//     searchRef.current
+//   );
+//   fetch(
+//     `https://api.pinata.cloud/data/pinList?metadata[name]=${metadataQuery}&metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageOffset=0`,
+//     options
+//   )
+//     // fetch('https://api.pinata.cloud/data/pinList', options)
+//     .then((response) => response.json())
+//     .then((response) => {
+//       const ipfsDatas = response.rows;
+//       const newOnsaleNfts = [];
+//       ipfsDatas.forEach(data => {
+//         const name = data.metadata.name;
+//         const metaData = data.metadata.keyvalues;
+//         newOnsaleNfts.push({ ...metaData, name });
+//       })
+//       setOnsaleNftList(newOnsaleNfts);
+//       console.log('newOnsaleNfts: ', newOnsaleNfts);
+//     })
+//     .catch((err) => console.error(err));
+// };

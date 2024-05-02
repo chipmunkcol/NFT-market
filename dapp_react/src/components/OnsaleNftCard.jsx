@@ -16,7 +16,7 @@ import { S_Button } from "../styles/styledComponent";
 
 
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
-const OnsaleNftCard = ({ nft, account }) => {
+const OnsaleNftCard = ({ nft, account, cardWidth }) => {
   const { id, name, description, image, price, owner } = nft;
   const { setTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
@@ -66,9 +66,9 @@ const OnsaleNftCard = ({ nft, account }) => {
   return (
     <Styled.Container>
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
-      <Styled.ImgWrap>
+      <ImgWrap $cardWidth={cardWidth} >
         <Styled.Img src={imgUrl} alt="NFT image" />
-      </Styled.ImgWrap>
+      </ImgWrap>
       <Styled.Name>{name}</Styled.Name>
       <OnsalePriceWrap>
         가격 : {price} ETH ($
@@ -86,6 +86,13 @@ const OnsaleNftCard = ({ nft, account }) => {
     </Styled.Container>
   );
 };
+
+const ImgWrap = styled.div`
+  width: ${props => props.$cardWidth};
+  height: ${props => props.$cardWidth};
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+`;
 
 const ButtonWrap = styled.div`
   display: flex;
