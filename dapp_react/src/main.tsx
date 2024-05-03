@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "market-place",
+        path: "market-place?",
         element: <MarketPlace />,
       },
       {
@@ -41,16 +41,6 @@ const router = createBrowserRouter([
       {
         path: "create",
         element: <Create />,
-        // children: [
-        //   {
-        //     path: "collection",
-        //     element: <Collection />,
-        //   },
-        //   {
-        //     path: "mint-nft",
-        //     element: <MintNft />,
-        //   },
-        // ],
       },
       {
         path: "create-collection",
@@ -71,7 +61,7 @@ const router = createBrowserRouter([
         element: <MintNft />,
       },
       {
-        path: "mypage",
+        path: "mypage:address",
         element: <MyPage />,
         children: [
           {

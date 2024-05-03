@@ -9,17 +9,34 @@ import { ReactComponent as iconFind } from '../assets/images/icon-find.svg';
 import iconGrid4 from '../assets/images/icon-grid4.png';
 import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
+import { useNavigate, useHref, useMatch, useParams, useSearchParams } from 'react-router-dom'
+// import { useInView } from 'react-intersection-observer';
 
+const dummyData = [{ name: '111', price: 3, isOnsale: true }, { name: '222', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }];
 const MarketPlace = () => {
   const { onsaleNftList, setOnsaleNftList, account, trigger } = useContext(GlobalContext);
   const getAllonsaleNftListRef = useRef(null);
+  const getPartOnsaleNftListRef = useRef(null);
   const [offset, setOffset] = useState(0);
+  const allNftCount = useRef(0);
+  const [isEndOffset, setIsEndOffset] = useState(false);
+  // let offset = 1;
+
+  // const { ref, inView, entr } = useInView({
+  //   threshold: 0,
+  // })
+  const searchRef = useRef('');
   const encodedOffset = encodeURIComponent(
     offset
   );
   const encodedIsOnsale = encodeURIComponent(
-    `{"value":"true", "op":"eq"}`
+    `{"isOnsale":{"value":"true", "op":"eq"}}`
   )
+
+  const encodedSearchQuery = encodeURIComponent(
+    // `{"value":"${searchRef.current}&", "op":"iLike"}`
+    searchRef.current
+  );
 
   // }
   async function getOnsaleNftList() {
@@ -27,9 +44,84 @@ const MarketPlace = () => {
       method: "GET",
       headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
     };
+
     fetch(
       // `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageOffset=0`,
-      `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageLimit=100`,
+      // `https://api.pinata.cloud/data/pinList?metadata[keyvalues][isOnsale]=${encodedIsOnsale}
+      // &pageLimit=100`,
+      // options
+      searchRef.current === '' ?
+        `https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}
+      ` :
+        `https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}
+      `,
+      options
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        const ipfsDatas = response.rows;
+        allNftCount.current = response.count;
+        const newOnsaleNfts = [];
+        ipfsDatas.forEach(data => {
+          const name = data.metadata.name;
+          const metaData = data.metadata.keyvalues;
+          newOnsaleNfts.push({ ...metaData, name });
+        })
+        getAllonsaleNftListRef.current = newOnsaleNfts;
+        setOnsaleNftList(prev => [...prev, ...newOnsaleNfts]);
+        console.log('newOnsaleNfts: ', newOnsaleNfts);
+      })
+      .catch((err) => console.error(err));
+
+  }
+
+  useEffect(() => {
+    if (isEndOffset) return;
+    if (allNftCount.current !== 0 && allNftCount.current - 10 < offset * 10) {
+      setIsEndOffset(true);
+    }
+
+    getOnsaleNftList();
+  }, [offset]);
+
+  const onChangeSearch = e => {
+    searchRef.current = e.target.value;
+  }
+
+  // grid 5, 7
+  const [grid, setGrid] = useState('1fr 1fr 1fr 1fr 1fr');
+  const [cardWidth, setCardWidth] = useState('200px');
+  const grid5Hander = () => {
+    setGrid('1fr 1fr 1fr 1fr 1fr');
+    setCardWidth('200px');
+  }
+  const grid7Hander = () => {
+    setGrid('1fr 1fr 1fr 1fr 1fr 1fr 1fr');
+    setCardWidth('180px');
+  }
+
+  // search 구현
+  const navigate = useNavigate();
+  // const searchNfts = () => {
+  //   const encodedSearchQuery = searchRef.current;
+  //   if (encodedSearchQuery === '') {
+  //     setOnsaleNftList(getAllonsaleNftListRef.current.slice(0, offset * 10));
+  //     navigate('');
+  //     return;
+  //   }
+  //   const newOnsaleNftList = getAllonsaleNftListRef.current.filter(nft => nft.name.includes(encodedSearchQuery));
+  //   setOnsaleNftList(newOnsaleNftList.slice(0, offset * 10));
+  //   navigate(`?query=${encodedSearchQuery}`);
+  // }
+
+  const searchNfts = async () => {
+    const options = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
+    };
+    fetch(
+      `https://api.pinata.cloud/data/pinList?pageOffset=0&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}
+    `,
       options
     )
       .then((response) => response.json())
@@ -42,47 +134,16 @@ const MarketPlace = () => {
           newOnsaleNfts.push({ ...metaData, name });
         })
         setOnsaleNftList(newOnsaleNfts);
-        getAllonsaleNftListRef.current = newOnsaleNfts;
         console.log('newOnsaleNfts: ', newOnsaleNfts);
       })
       .catch((err) => console.error(err));
-
-  }
-
-  useEffect(() => {
-    getOnsaleNftList();
-  }, [offset]);
-
-  const searchRef = useRef('');
-  const onChangeSearch = e => {
-    searchRef.current = e.target.value;
-  }
-
-  const [grid, setGrid] = useState('1fr 1fr 1fr 1fr 1fr');
-  const [cardWidth, setCardWidth] = useState('200px');
-  const grid5Hander = () => {
-    setGrid('1fr 1fr 1fr 1fr 1fr');
-    setCardWidth('200px');
-  }
-  const grid7Hander = () => {
-    setGrid('1fr 1fr 1fr 1fr 1fr 1fr 1fr');
-    setCardWidth('180px');
-  }
-
-  const searchNfts = () => {
-    const searchQuery = searchRef.current;
-    if (searchQuery === '') {
-      setOnsaleNftList(getAllonsaleNftListRef.current);
-      return;
-    }
-    const newOnsaleNftList = getAllonsaleNftListRef.current.filter(nft => nft.name.includes(searchQuery));
-    setOnsaleNftList(newOnsaleNftList);
-  }
+  };
 
   const onKeydownHandler = e => {
     e.key === 'Enter' && searchNfts();
   }
 
+  // sort 구현
   const onChangeSort = e => {
     const sortType = e.target.value;
     if (sortType === 'updated') {
@@ -101,6 +162,34 @@ const MarketPlace = () => {
     const sortedNfts = [...getAllonsaleNftListRef.current].sort((a, b) => b.price - a.price);
     setOnsaleNftList(sortedNfts);
   }
+
+  // 무한스크롤 구현
+  const [isLoading, setIsLoading] = useState(false);
+  const observerRef = useRef(null);
+  // const { a } = useParams();
+  const [searchParams] = useSearchParams();
+  const quereyParam = searchParams.get('query');
+  console.log('quereyParam: ', quereyParam);
+  // console.log('a: ', a);
+
+  const infiniteScrollHandler = () => {
+    setIsLoading(true);
+    setOffset(prev => prev + 1);
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entryies) => {
+      if (entryies[0].isIntersecting && !isLoading && getAllonsaleNftListRef.current?.length > 0) {
+        infiniteScrollHandler();
+      }
+    }, { threshold: 1 });
+
+    observerRef.current = observer;
+    observer.observe(document.querySelector('#observer-target'));
+
+    return () => observer.disconnect();
+  }, [isLoading]);
 
   return (
     <Background>
@@ -175,6 +264,7 @@ const MarketPlace = () => {
                   </MarketWrap>
                 )
               }
+              <div id="observer-target" style={{ width: '100%', height: '100px', backgroundColor: 'red' }}></div>
             </RightPart>
           </FlexWrap>
         </div>
@@ -307,32 +397,3 @@ export default MarketPlace;
 //   } catch (error) {
 //     console.log(error);
 //   }
-
-// const searchNfts = async () => {
-//   const options = {
-//     method: "GET",
-//     headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-//   };
-//   const metadataQuery = encodeURIComponent(
-//     // `{"value":"${searchRef.current}&", "op":"iLike"}`
-//     searchRef.current
-//   );
-//   fetch(
-//     `https://api.pinata.cloud/data/pinList?metadata[name]=${metadataQuery}&metadata[keyvalues][isOnsale]=${encodedIsOnsale}&pageOffset=0`,
-//     options
-//   )
-//     // fetch('https://api.pinata.cloud/data/pinList', options)
-//     .then((response) => response.json())
-//     .then((response) => {
-//       const ipfsDatas = response.rows;
-//       const newOnsaleNfts = [];
-//       ipfsDatas.forEach(data => {
-//         const name = data.metadata.name;
-//         const metaData = data.metadata.keyvalues;
-//         newOnsaleNfts.push({ ...metaData, name });
-//       })
-//       setOnsaleNftList(newOnsaleNfts);
-//       console.log('newOnsaleNfts: ', newOnsaleNfts);
-//     })
-//     .catch((err) => console.error(err));
-// };
