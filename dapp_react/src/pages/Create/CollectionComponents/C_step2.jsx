@@ -33,8 +33,9 @@ function C_step2() {
       keyvalues: {
         owner: account,
         description: collection.desc,
-        tags: collection.tags,
+        attributes: collection.tags,
         files: collectionFiles.join(','),
+        isOnsale: String(true),
       }
     });
     formData.append("pinataMetadata", jsonData);
@@ -146,8 +147,6 @@ function C_step2() {
           </div>
         </div>
       </div>
-
-
 
     </RightPart>
   )

@@ -1,11 +1,13 @@
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 // import router from "./route/Router.js";
-// import { ChakraProvider } from "@chakra-ui/react";
 import GlobalProvider from "./context/GlobalContext.jsx";
 import GlobalStyle from "./styles/global.js";
 import theme from "./styles/theme.js";
 import { ThemeProvider } from "styled-components";
+
+// import router from "./route/Router.jsx";
+
 import App from "./App";
 import Home from "./pages/Home";
 import MarketPlace from "./pages/MarketPlace";
@@ -19,7 +21,8 @@ import All from "./pages/mypageComponents/All.jsx";
 import Nonsale from "./pages/mypageComponents/Nonsale.jsx";
 import Onsale from "./pages/mypageComponents/Onsale.jsx";
 import Sold from "./pages/mypageComponents/Sold.jsx";
-import NftDetail from "./pages/NftDetail.jsx";
+import NftDetail from "./pages/NftDetail";
+import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
   {

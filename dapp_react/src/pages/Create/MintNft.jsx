@@ -6,29 +6,69 @@ import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import iconUpload from "../../assets/images/icon-upload.png";
+import { json } from "react-router-dom";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
-  const [data, setData] = useState({
+  const [jsonData, setJsonData] = useState({
     name: "",
-    desc: "",
+    description: "",
+    image: "",
+    attributes: [
+      {
+        trait_type: "",
+        value: "",
+      }
+    ],
   });
   const [file, setFile] = useState(null);
   const [tags, setTags] = useState("");
   const onchangeNameData = (e) => {
-    setData((prev) => ({
+    setJsonData((prev) => ({
       ...prev,
       name: e.target.value,
     }));
   };
   const onchangeDescData = (e) => {
-    setData((prev) => ({
+    setJsonData((prev) => ({
       ...prev,
       desc: e.target.value,
     }));
   };
-  const onchangeHandler = (e) => {
-    setFile(e.target.files[0]);
+
+  const onchangeHandler = async (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+
+    if (file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const res = JSON.parse(reader.result);
+
+        const name = res.name ? res.name : "";
+        const description = res.description ? res.description : "";
+        const image = res.image ? res.image : "";
+        const attributes = res.attributes ? res.attributes : [
+          {
+            trait_type: "",
+            value: "",
+          }
+        ];
+        const newJsonData = {
+          name,
+          description,
+          image,
+          attributes,
+        };
+        setJsonData(prev => (
+          {
+            ...prev,
+            ...newJsonData
+          }
+        ));
+      }
+      reader.readAsText(file);
+    }
   };
   const inputFileRef = useRef();
   const onClickFileHandler = () => {
@@ -40,11 +80,11 @@ function MintNft() {
       alert("지갑을 연결해주세요");
       return false;
     }
-    if (!data.name) {
+    if (!jsonData.name) {
       alert("이름을 입력해주세요");
       return false;
     }
-    if (!data.desc) {
+    if (!jsonData.description) {
       alert("설명을 입력해주세요");
       return false;
     }
@@ -56,25 +96,54 @@ function MintNft() {
   };
 
   const resetFormData = () => {
-    setData({
+    setJsonData({
       name: "",
-      desc: "",
+      description: "",
+      image: "",
+      attributes: [
+        {
+          trait_type: "",
+          value: "",
+        }
+      ],
     });
     setFile(null);
     setTags("");
   };
 
+  const getImageIpfsHash = async file => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+        },
+        body: formData,
+      }
+    );
+    const resData = await res.json();
+    return resData.IpfsHash;
+  }
+
   const handleSubmission = async () => {
     try {
       const validateResult = validateFormData();
       if (!validateResult) return;
-      const formData = new FormData();
 
-      const jsonData = JSON.stringify({
-        name: data.name,
+      let imageIpfsHash = jsonData.image;
+      if (imageIpfsHash === "") {
+        imageIpfsHash = await getImageIpfsHash(file);
+      }
+      const formData = new FormData();
+      const metaData = JSON.stringify({
+        name: jsonData.name,
         keyvalues: {
           owner: account,
-          description: data.desc,
+          description: jsonData.description,
+          image: imageIpfsHash,
           attributes: tags,
           isOnsale: String(false),
         },
@@ -84,7 +153,7 @@ function MintNft() {
       });
 
       formData.append("file", file);
-      formData.append("pinataMetadata", jsonData);
+      formData.append("pinataMetadata", metaData);
       formData.append("pinataOptions", options);
 
       const res = await fetch(
@@ -101,7 +170,7 @@ function MintNft() {
       const ipfsHash = resData.IpfsHash;
       if (ipfsHash) {
         const mintResult = await MintContract.methods
-          .createNft(data.name, ipfsHash, data.desc, tags)
+          .createNft(jsonData.name, ipfsHash, jsonData.description, tags)
           .send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");
@@ -129,6 +198,12 @@ function MintNft() {
     inputFileRef.current.value = "";
   };
 
+  const getIpfsToJsonData = () => {
+    if (jsonData.image) return;
+    const url = `https://gateway.pinata.cloud/ipfs/${jsonData.image}`;
+    return url;
+  }
+
   return (
     <Background>
       <Container>
@@ -153,7 +228,7 @@ function MintNft() {
               </InputFileBox>
             ) : (
               <PreviewFile>
-                <img src={URL.createObjectURL(file)} alt="preview" />
+                <img src={jsonData.image ? getIpfsToJsonData() : URL.createObjectURL(file)} alt="preview" />
                 <CancelWrap>
                   <CancelBtn onClick={cancelHandler}>x</CancelBtn>
                 </CancelWrap>
@@ -170,13 +245,13 @@ function MintNft() {
             <InputLabel>이름 *</InputLabel>
             <InputText
               type="text"
-              value={data.name}
+              value={jsonData.name}
               onChange={onchangeNameData}
             />
             <InputLabel>설명</InputLabel>
             <InputText
               type="text"
-              value={data.desc}
+              value={jsonData.description}
               onChange={onchangeDescData}
             />
             <InputLabel>태그</InputLabel>

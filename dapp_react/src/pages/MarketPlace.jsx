@@ -19,7 +19,6 @@ const MarketPlace = () => {
   const getPartOnsaleNftListRef = useRef(null);
   const [offset, setOffset] = useState(0);
   const allNftCount = useRef(0);
-  const [isEndOffset, setIsEndOffset] = useState(false);
   // let offset = 1;
 
   // const { ref, inView, entr } = useInView({
@@ -76,10 +75,7 @@ const MarketPlace = () => {
   }
 
   useEffect(() => {
-    if (isEndOffset) return;
-    if (allNftCount.current !== 0 && allNftCount.current - 10 < offset * 10) {
-      setIsEndOffset(true);
-    }
+    if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
 
     getOnsaleNftList();
   }, [offset]);
@@ -102,17 +98,6 @@ const MarketPlace = () => {
 
   // search 구현
   const navigate = useNavigate();
-  // const searchNfts = () => {
-  //   const encodedSearchQuery = searchRef.current;
-  //   if (encodedSearchQuery === '') {
-  //     setOnsaleNftList(getAllonsaleNftListRef.current.slice(0, offset * 10));
-  //     navigate('');
-  //     return;
-  //   }
-  //   const newOnsaleNftList = getAllonsaleNftListRef.current.filter(nft => nft.name.includes(encodedSearchQuery));
-  //   setOnsaleNftList(newOnsaleNftList.slice(0, offset * 10));
-  //   navigate(`?query=${encodedSearchQuery}`);
-  // }
 
   const searchNfts = async () => {
     const options = {

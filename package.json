@@ -2,7 +2,8 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "hardhat": "^2.19.5"
+    "hardhat": "^2.19.5",
+    "rollup-plugin-polyfill-node": "^0.13.0"
   },
   "scripts": {
     "start": "cd dapp_react && npm run dev",
@@ -12,7 +13,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.1",
     "react-router-dom": "^6.22.0",
-    "styled-components": "^6.1.8",
+    "styled-components": "^6.1.9",
     "web3-core": "^4.3.2",
     "web3-eth-contract": "^4.2.0"
   }

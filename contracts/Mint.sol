@@ -97,7 +97,7 @@ contract MyNft is ERC721Enumerable {
         // }
         _mint(msg.sender, nftId);
     }
-    function createCollectionNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description) public {
+    function createCollectionNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description, string memory attributes) public {
         uint nftId = totalSupply() + 1;
         nftDatas[nftId].id = nftId;
         nftDatas[nftId].name = _name;
