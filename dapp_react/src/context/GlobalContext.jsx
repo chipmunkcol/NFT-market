@@ -9,36 +9,58 @@ const GlobalProvider = ({ children }) => {
   const [trigger, setTrigger] = useState(false);
   const [nft, setNft] = useState({
     name: "",
-    desc: "",
-    file: null,
-    attributes: [],
-  })
+    description: "",
+    image: "",
+    // file
+    attributes: [
+      {
+        trait_type: "",
+        value: "",
+      }
+    ],
+  });
+
+  const [collectionIndex, setCollectionIndex] = useState(0);
   const [collection, setCollection] = useState({
     name: "",
-    desc: "",
-    tags: "",
-    files: null,
-    filesLength: 0,
+    description: "",
+    image: "",
+    attributes: [
+      {
+        trait_type: "",
+        value: "",
+      }
+    ],
+    nfts: [], // type: nft[]
+    nftsLength: 0,
     perPrice: 0,
     startAt: 0,
     preReleaseIpfsHash: "",
-    preReleaseDesc: "",
+    preReleaseDescription: "",
     address: "",
   });
 
   const resetCollection = () => {
-    setCollection({
-      name: "",
-      desc: "",
-      tags: "",
-      files: null,
-      filesLength: 0,
-      perPrice: 0,
-      startAt: 0,
-      preReleaseIpfsHash: "",
-      preReleaseDesc: "",
-      address: "",
-    });
+    setCollection(
+      {
+        name: "",
+        description: "",
+        image: "",
+        attributes: [
+          {
+            trait_type: "",
+            value: "",
+          }
+        ],
+        files: null,
+        filesLength: 0,
+        perPrice: 0,
+        startAt: 0,
+        preReleaseIpfsHash: "",
+        preReleaseDescription: "",
+        address: "",
+      }
+    );
   }
 
   const contextValue = useMemo(() => ({
@@ -54,8 +76,10 @@ const GlobalProvider = ({ children }) => {
     setCollection,
     resetCollection,
     nft,
-    setNft
-  }), [account, myNfts, onsaleNftList, trigger, nft, collection])
+    setNft,
+    collectionIndex,
+    setCollectionIndex
+  }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex])
   return (
     <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>
   )

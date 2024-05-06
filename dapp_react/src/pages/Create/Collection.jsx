@@ -13,13 +13,42 @@ import { Outlet } from "react-router-dom";
 function Collection() {
   const { account, collection, setCollection } = useContext(GlobalContext);
 
+  const [files, setFiles] = useState(null);
   const onchangeHandler = (e) => {
-    setCollection(prev => ({
-      ...prev,
-      files: e.target.files,
-      filesLength: e.target.files.length
-    }))
+    setFiles(Object.values(e.target.files));
+
+    Object.values(e.target.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const res = JSON.parse(reader.result);
+
+        const name = res.name ? res.name : "";
+        const description = res.description ? res.description : "";
+        const image = res.image ? res.image : "";
+        const attributes = res.attributes ? res.attributes : [
+          {
+            trait_type: "",
+            value: "",
+          }
+        ];
+        const newJsonData = {
+          name,
+          description,
+          image,
+          attributes,
+        };
+        setCollection((prev) => ({
+          ...prev,
+          nfts: [...prev.nfts, newJsonData],
+        }));
+      }
+      reader.readAsText(file);
+    });
   };
+
+  useEffect(() => {
+    console.log('collection: ', collection.nfts);
+  }, [collection]);
 
   const inputFileRef = useRef();
   const onClickFileHandler = () => {
@@ -30,9 +59,9 @@ function Collection() {
   const cancelHandler = () => {
     setCollection(prev => ({
       ...prev,
-      files: null,
-      filesLength: 0
+      nfts: [],
     }));
+    setFiles(null);
     inputFileRef.current.value = "";
   };
 
@@ -45,7 +74,7 @@ function Collection() {
         </TitleBox>
         <FlexBox>
           <LeftPart>
-            {!collection.files ? (
+            {!files ? (
               <InputFileBox
                 onClick={onClickFileHandler}
                 onDrop={onchangeHandler}
@@ -60,7 +89,7 @@ function Collection() {
               </InputFileBox>
             ) : (
               <div style={{ width: '100%', height: '100%', minHeight: '425px', maxHeight: '555px' }}>
-                <Slider files={collection.files} cancelHandler={cancelHandler} />
+                <Slider files={files} cancelHandler={cancelHandler} />
               </div>
             )}
             <input
@@ -74,7 +103,7 @@ function Collection() {
           </LeftPart>
 
           {/* router_Outlet */}
-          <Outlet />
+          <Outlet context={files} />
         </FlexBox>
       </Container>
     </Background>

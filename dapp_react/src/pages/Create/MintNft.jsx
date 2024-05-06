@@ -198,9 +198,8 @@ function MintNft() {
     inputFileRef.current.value = "";
   };
 
-  const getIpfsToJsonData = () => {
-    if (jsonData.image) return;
-    const url = `https://gateway.pinata.cloud/ipfs/${jsonData.image}`;
+  const getIpfsToJsonData = ipfsUrl => {
+    const url = `https://gateway.pinata.cloud/ipfs/${ipfsUrl}`;
     return url;
   }
 
@@ -228,7 +227,7 @@ function MintNft() {
               </InputFileBox>
             ) : (
               <PreviewFile>
-                <img src={jsonData.image ? getIpfsToJsonData() : URL.createObjectURL(file)} alt="preview" />
+                <img src={jsonData.image ? getIpfsToJsonData(jsonData.image) : URL.createObjectURL(file)} alt="preview" />
                 <CancelWrap>
                   <CancelBtn onClick={cancelHandler}>x</CancelBtn>
                 </CancelWrap>

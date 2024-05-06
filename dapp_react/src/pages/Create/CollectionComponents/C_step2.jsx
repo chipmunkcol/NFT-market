@@ -2,19 +2,37 @@ import { MintContract } from "../../../../contracts/index";
 import { useEffect, useState } from "react";
 import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
 
 function C_step2() {
 
-  const { collection, account } = useContext(GlobalContext);
+  const { collection, setCollection, account } = useContext(GlobalContext);
+  const files = useOutletContext();
   const inputRef = useRef(null);
   const onClickInput = () => {
     inputRef.current.click();
   }
   const [progress, setProgress] = useState(0);
+
+  const getImageIpfsHash = async file => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+        },
+        body: formData,
+      }
+    );
+    const resData = await res.json();
+    return resData.IpfsHash;
+  }
 
   const handleSubmisstion = async () => {
     const formData = new FormData();
@@ -22,23 +40,42 @@ function C_step2() {
       cidVersion: 0,
     });
 
-    let collectionFiles = [];
-    Array.from(collection.files).forEach((file) => {
+
+    // collection.nfts 에 각 nft의 ipfsHash를 추가
+    let imageIpfsList = [];
+    let fileNameList = [];
+    Array.from(files).forEach(async (file, index) => {
       formData.append("file", file);
-      collectionFiles.push(file.name);
+      fileNameList.push(file.name);
+      if (!collection.nfts[index].image) {
+        const imageIpfs = await getImageIpfsHash(file);
+        imageIpfsList.push(imageIpfs);
+      } else {
+        imageIpfsList.push(collection.nfts[index].image);
+      }
+    })
+
+    // collection.nfts의 각 image 에 ipfsHash 추가
+    const newCollectionNfts = collection.nfts.map((nft, index) => {
+      return {
+        ...nft,
+        fileName: fileNameList[index],
+        image: imageIpfsList[index]
+      }
     });
 
-    const jsonData = JSON.stringify({
+    const metaData = JSON.stringify({
       name: collection.name,
       keyvalues: {
         owner: account,
-        description: collection.desc,
-        attributes: collection.tags,
-        files: collectionFiles.join(','),
+        description: collection.description,
+        attributes: JSON.stringify(collection.attributes),
+        nfts: JSON.stringify(newCollectionNfts),
         isOnsale: String(true),
+        isCollection: String(true),
       }
     });
-    formData.append("pinataMetadata", jsonData);
+    formData.append("pinataMetadata", metaData);
     formData.append("pinataOptions", pinataOptions);
 
     const options = {
@@ -51,14 +88,14 @@ function C_step2() {
 
     const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", options);
     const resData = await res.json();
-    const ipfsHash = resData.IpfsHash;
-    console.log('ipfsHash: ', ipfsHash);
+    const collectionIpfsHash = resData.IpfsHash;
+    console.log('ipfsHash: ', collectionIpfsHash);
 
-    if (ipfsHash) {
+    if (collectionIpfsHash) {
       try {
-        collectionFiles.forEach(async (file) => {
+        collection.nfts.forEach(async nft => {
           const mintResult = await MintContract.methods
-            .createCollectionNft(collection.name, ipfsHash, file, collection.desc, collection.tags)
+            .createCollectionNft(nft.name, nft.image, nft.fileName, collection.description, collection.attributes)
             .send({ from: account });
           if (mintResult.status) {
             setProgress(progress + 1);

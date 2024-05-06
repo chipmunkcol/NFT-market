@@ -35,22 +35,39 @@ contract MyNft is ERC721Enumerable {
         string image; // nftHash[ipfsHash].nftHash[name] // ipfs://abcde/1.png
         bool isOnsale;
         string attributes;
+
+        bool isRevealed;
+        string startAt;
         // Attribute[] attributes;
     }
 
     mapping (uint => NftData) public nftDatas;
+
+
+    bool public revealed = false;
+
+    struct UnrevealedData {
+        string ipfsHash;
+        string description;
+        string attributes;
+    }
+    mapping (uint => string) public UnrevealedData;
 
     struct OnsaleNft {
         uint id;
         string name;
         string description;
         string image;
+        string attributes;
         // Attribute[] attributes;
 
         bool isOnsale;
         uint price;
         
         address owner;
+        
+        bool isRevealed;
+        string startAt;
     }
     // mapping (uint => OnsaleNft) public onsaleNfts;
     // uint onsaleNftsLength;
@@ -75,6 +92,7 @@ contract MyNft is ERC721Enumerable {
         nftDatas[nftId].description = _description;
         // string memory strRandomNumber = Strings.toString(randomNumber);
         nftDatas[nftId].image = string(abi.encodePacked(_ipfsHash, '/', randomNumber, '.png'));
+        nftDatas[nftId].isRevealed = true;
         // if (_attributes.length > 0) {
         //     for (uint i = 0; i < _attributes.length; i++) {
         //         nftDatas[nftId].attributes.push(_attributes[i]);
@@ -90,6 +108,7 @@ contract MyNft is ERC721Enumerable {
         nftDatas[nftId].description = _description;
         nftDatas[nftId].image = _ipfsHash;
         nftDatas[nftId].attributes = attributes;
+        nftDatas[nftId].isRevealed = true;
         // if (_attributes.length > 0) {
         //     for (uint i = 0; i < _attributes.length; i++) {
         //         nftDatas[nftId].attributes.push(_attributes[i]);
@@ -97,18 +116,27 @@ contract MyNft is ERC721Enumerable {
         // }
         _mint(msg.sender, nftId);
     }
-    function createCollectionNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description, string memory attributes) public {
+
+    // 사전 등록 된 ipfsHash 와 description을 등록 -> deadline 이후에는 airdrop
+    function createCollectionNft(string memory _name, string memory _ipfsHash, string memory _fileName, string memory _description, string memory _attributes, string _startAt, string _revealedIpfsHash, string _revealedDescription) public {
         uint nftId = totalSupply() + 1;
         nftDatas[nftId].id = nftId;
         nftDatas[nftId].name = _name;
-        nftDatas[nftId].description = _description;
-        nftDatas[nftId].image = string(abi.encodePacked(_ipfsHash, '/', _fileName));
+        nftDatas[nftId].description = _unrevealedDescription;
+        nftDatas[nftId].image = _revealedIpfsHash;
+        nftDatas[nftId].attributes = _attributes;
+        nftDatas[nftId].startAt = _startAt;
+        UnrevealedData[nftId].ipfsHash = string(abi.encodePacked(_ipfsHash, '/', _fileName));
+        UnrevealedData[nftId].description = _description;
+        UnrevealedData[nftId].attributes = _attributes;
         // if (_attributes.length > 0) {
         //     for (uint i = 0; i < _attributes.length; i++) {
         //         nftDatas[nftId].attributes.push(_attributes[i]);
         //     }
         // }
         _mint(msg.sender, nftId);
+        // 민트된 nft 를 approve 해주고 판매 등록까지 완료한다
+
     }
     
     function getNftsByOwner(address _nftOwner) public view returns (NftData[] memory) {
@@ -222,6 +250,18 @@ contract MyNft is ERC721Enumerable {
         }
         safeTransferFrom(oldOwner, msg.sender, _nftId);
         nftDatas[_nftId].isOnsale = false;
+    }
+
+    function revealCollectionNfts(uint _nftId, address _owner, bool _state) public {
+        require(msg.sender == _owner, "Only the owner can reveal");
+        require(nftDatas[_nftId].startAt < block.timestamp, "Not yet")
+        require(nftDatas[_nftId].isRevealed == false, "Already revealed")
+
+        nftDatas[_nftId].isRevealed = _state;
+        nftDatas[_nftId].image = UnrevealedData[_nftId].ipfsHash;
+        nftDatas[_nftId].description = UnrevealedData[_nftId].description;
+        nftDatas[_nftId].attributes = UnrevealedData[_nftId].attributes;
+        nftDatas[_nftId].isRevealed = true;
     }
     
     // function ThankYouForYourDonation() public {}

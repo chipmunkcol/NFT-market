@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -14,9 +14,17 @@ import '../../../styles/Library/slider.css';
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import styled from 'styled-components';
+import { GlobalContext } from '../../../context/GlobalContext';
 
 export default function Slider({ files, cancelHandler }) {
+  const { account, collection, setCollection, setCollectionIndex } = useContext(GlobalContext);
+
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
+  const getIpfsToJsonData = ipfsUrl => {
+    const url = `https://gateway.pinata.cloud/ipfs/${ipfsUrl}`;
+    return url;
+  }
 
   return (
     <>
@@ -30,12 +38,13 @@ export default function Slider({ files, cancelHandler }) {
         thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
         modules={[FreeMode, Navigation, Thumbs]}
         className="mySwiper2"
+        onSlideChange={(e) => setCollectionIndex(e.activeIndex)}
       >
         {
-          Object.values(files)?.map((item) => (
+          files?.map((file, index) => (
             <SwiperSlide>
               <PreviewFile>
-                <img src={URL.createObjectURL(item)} alt="preview" />
+                <img src={collection.nfts[index]?.image ? getIpfsToJsonData(collection.nfts[index].image) : URL.createObjectURL(file)} alt="preview" />
                 <CancelWrap>
                   <CancelBtn onClick={cancelHandler}>x</CancelBtn>
                 </CancelWrap>
@@ -54,9 +63,9 @@ export default function Slider({ files, cancelHandler }) {
         className="mySwiper"
       >
         {
-          Object.values(files)?.map((item) => (
+          files?.map((file, index) => (
             <SwiperSlide >
-              <img src={URL.createObjectURL(item)} alt="thumb" />
+              <img src={collection.nfts[index]?.image ? getIpfsToJsonData(collection.nfts[index].image) : URL.createObjectURL(file)} alt="thumb" />
             </SwiperSlide>
           ))
         }

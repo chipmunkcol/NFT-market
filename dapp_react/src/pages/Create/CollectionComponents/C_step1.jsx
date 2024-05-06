@@ -7,44 +7,73 @@ import { GlobalContext } from "../../../context/GlobalContext";
 
 function C_step() {
 
-  const { collection, setCollection } = useContext(GlobalContext);
-
+  const { collection, setCollection, collectionIndex } = useContext(GlobalContext);
+  const [tags, setTags] = useState("");
+  // collection 의 nfts[collectionIndex]의 name, desc, tags를 변경
   const onchangeNameData = (e) => {
     setCollection((prev) => ({
       ...prev,
-      name: e.target.value,
+      nfts: prev.nfts.map((nft, index) => {
+        if (index === collectionIndex) {
+          return {
+            ...nft,
+            name: e.target.value
+          }
+        }
+        return nft;
+      })
     }));
   };
   const onchangeDescData = (e) => {
     setCollection((prev) => ({
       ...prev,
-      desc: e.target.value,
+      nfts: prev.nfts.map((nft, index) => {
+        if (index === collectionIndex) {
+          return {
+            ...nft,
+            description: e.target.value
+          }
+        }
+        return nft;
+      })
     }));
   };
 
   // 태그
-  const handleTags = (e) => {
-    let str = "#";
-    str = collection.tags + str + e.target.value + " ";
-    setCollection(prev => ({
-      ...prev,
-      tags: str
-    }));
-  };
+  // const handleTags = (e) => {
+  //   let str = "#";
+  //   str = collection.nfts[collectionIndex].tags + str + e.target.value + " ";
+  //   setTags(prev => ({
+  //     ...prev,
+  //     tags: str
+  //   }));
+  // };
 
-  const onChangeInputTags = (e) => {
-    setCollection(prev => ({
-      ...prev,
-      tags: e.target.value
-    }));
-  };
+  // const onChangeInputTags = (e) => {
+  //   setCollection(prev => ({
+  //     ...prev,
+  //     nfts: prev.nfts.map((nft, index) => {
+  //       if (index === collectionIndex) {
+  //         return {
+  //           ...nft,
+  //           tags: e.target.value
+  //         }
+  //       }
+  //       return nft;
+  //     })
+  //   }));
+  // };
 
   return (
     <RightPart>
+      <div>
+        <h2>No. #{collectionIndex + 1} </h2>
+        <h3>총 수량 {collection.nfts.length} 개</h3>
+      </div>
       <InputLabel>이름 *</InputLabel>
       <InputText
         type="text"
-        value={collection.name}
+        value={collection.nfts[collectionIndex].name}
         onChange={onchangeNameData}
       />
       <InputLabel>설명</InputLabel>
@@ -54,7 +83,7 @@ function C_step() {
               onChange={onchangeDescData}
             /> */}
       <InputTextArea
-        value={collection.desc}
+        value={collection.nfts[collectionIndex].description}
         onChange={onchangeDescData}>
       </InputTextArea>
       <InputLabel>태그</InputLabel>
@@ -62,7 +91,9 @@ function C_step() {
         태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로
         표시되며 아이템 페이지에도 나열됩니다.
       </p>
-      <select style={{ marginBottom: "5px" }} onChange={handleTags}>
+      <select style={{ marginBottom: "5px" }}
+      // onChange={handleTags}
+      >
         <option style={{ display: "none" }}>ex</option>
         <option>예술</option>
         <option>유명인</option>
@@ -73,8 +104,8 @@ function C_step() {
       </select>
       <InputSpecific
         placeholder="#예술 #유명인 #게임"
-        value={collection.tags}
-        onChange={onChangeInputTags}
+        value={collection.nfts[collectionIndex].tags}
+      // onChange={onChangeInputTags}
       />
       {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
       <Link to={"/create-collection/step-2"}>
