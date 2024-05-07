@@ -18,6 +18,24 @@ const theme = {
       main: "#F6F9F0",
     },
   },
+  variables: {
+    flex: `
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    `,
+    flexColumn: `
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    `,
+    flexBetween: `
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    `,
+  },
 };
 
 export default theme;

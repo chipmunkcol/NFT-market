@@ -73,7 +73,7 @@ function C_step() {
       <InputLabel>이름 *</InputLabel>
       <InputText
         type="text"
-        value={collection.nfts[collectionIndex].name}
+        value={collection.nfts[collectionIndex]?.name}
         onChange={onchangeNameData}
       />
       <InputLabel>설명</InputLabel>
@@ -83,7 +83,7 @@ function C_step() {
               onChange={onchangeDescData}
             /> */}
       <InputTextArea
-        value={collection.nfts[collectionIndex].description}
+        value={collection.nfts[collectionIndex]?.description}
         onChange={onchangeDescData}>
       </InputTextArea>
       <InputLabel>태그</InputLabel>
@@ -104,7 +104,7 @@ function C_step() {
       </select>
       <InputSpecific
         placeholder="#예술 #유명인 #게임"
-        value={collection.nfts[collectionIndex].tags}
+        value={collection.nfts[collectionIndex]?.tags}
       // onChange={onChangeInputTags}
       />
       {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
