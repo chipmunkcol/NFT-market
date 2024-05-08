@@ -1,81 +1,94 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.20;
 
 import "./Mint.sol";
 
 contract SaleNft {
-    Mint public mintAddress;
-    constructor (address _mintAddress) {
-        mintAddress = Mint(_mintAddress);
+  MyNft public mintContract;
+
+  constructor(address _mintContract) {
+    mintContract = MyNft(_mintContract);
+  }
+
+  mapping (uint => uint) public nftPrices;
+
+  uint[] public onsaleNftIds;
+
+  struct OnsaleNftData {
+    uint nftId;
+    string tokenUrl;
+    uint nftPrice;
+  }
+
+  modifier isCalledByOwner(uint _nftId) {
+    address nftOwner = mintContract.ownerOf(_nftId);
+
+    require(nftOwner == msg.sender, "Caller is not nft owner");
+    _;
+  }
+
+  // function approve(address to, uint256 tokenId) public virtual {
+  //     _approve(to, tokenId, _msgSender());
+  // }
+
+
+  function setOnsaleNft(uint _nftId, uint _price) public isCalledByOwner(_nftId) {
+    // address nftOwner = mintContract.ownerOf(_nftId);
+    // require(nftOwner == msg.sender, "Caller is not nft owner");
+    require(_price > 0, "Price must be greater than 0");
+    // require(mintContract.isApprovedForAll)
+    
+    nftPrices[_nftId] = _price;
+    onsaleNftIds.push(_nftId);
+  }
+
+  // function getApproved(uint256 tokenId) public view virtual returns (address) {
+  //       _requireOwned(tokenId);
+
+  //       return _getApproved(tokenId);
+  //   }
+  function purchaseNft(uint _nftId) public payable {
+    address nftOwner = mintContract.ownerOf(_nftId);
+    uint nftPrice = nftPrices[_nftId];
+    address approvedNftAddress = mintContract.getApproved(_nftId);
+
+    require(nftOwner != msg.sender, "Caller is nft owner");
+    require(nftPrice <= msg.value, "Caller sent lower than price");
+    require(approvedNftAddress == address(this), "This is an NFT that is not approved for sale.");
+  
+    payable(nftOwner).transfer(msg.value);
+    mintContract.safeTransferFrom(nftOwner, msg.sender, _nftId);
+  
+    nftPrices[_nftId] = 0;
+    for (uint i = 0; i < onsaleNftIds.length; i++ ) {
+      if (nftPrices[onsaleNftIds[i]] == 0) {
+        onsaleNftIds[i] = onsaleNftIds[onsaleNftIds.length - 1];
+        onsaleNftIds.pop();
+      }
     }
-    mapping(uint256 => uint256) public nftPrices;
-    uint256[] public onsaleNftIds;
+  }
 
-    struct OnsaleNftList {
-        uint256 nftId;
-        string nftHash;
-        uint256 price;
+  function getOnsaleNftIdsLength() view public returns (uint) {
+    return onsaleNftIds.length;
+  }
+
+  function getNftPrice(uint _nftId) view public returns (uint) {
+    return nftPrices[_nftId];
+  }
+
+  function getOnsaleNfts() view public returns (OnsaleNftData[] memory) {
+    uint onsaleNftIdsLength = getOnsaleNftIdsLength();
+    require(onsaleNftIdsLength != 0, "There are no NFTs on sale");
+
+    OnsaleNftData[] memory onsaleNftData = new OnsaleNftData[](onsaleNftIdsLength);
+    for (uint i = 0; i < onsaleNftIdsLength; i++) {
+      // mintContract.tokenByIndex(onsaleNftIds[i]);
+      uint nftId = onsaleNftIds[i];
+      string memory nftTokenUrl = mintContract.getTokenUrl(nftId);
+      uint nftPrice = nftPrices[nftId];
+
+      onsaleNftData[i] = OnsaleNftData(nftId, nftTokenUrl, nftPrice);
     }
-
-    function setSaleNft(uint256 _nftId, uint256 _price) public {
-        address nftOwner = mintAddress.ownerOf(_nftId);
-
-        require(nftOwner == msg.sender, "owner sender error!");
-        require(_price > 0, "price error!");
-        require(nftPrices[_nftId] == 0, "this nft is already on sale");
-        require(mintAddress.isApprovedForAll(nftOwner, address(this)), "mint error!");
-
-        nftPrices[_nftId] = _price;
-        onsaleNftIds.push(_nftId);
-    }
-
-    function purchaseNft(uint256 _nftId) public payable {
-        uint256 price = nftPrices[_nftId];
-        address nftOwner = mintAddress.ownerOf(_nftId);
-
-        require(price > 0, "price is lower than 0");
-        require(price <= msg.value, "Pay more than the set price");
-        require(nftOwner != msg.sender, "nft's owner don't purchase this nft");
-
-        payable(nftOwner).transfer(msg.value);
-        mintAddress.safeTransferFrom(nftOwner, msg.sender, _nftId);
-        
-        nftPrices[_nftId] = 0;
-        for (uint256 i = 0; i < onsaleNftIds.length; i++) {
-            if (nftPrices[onsaleNftIds[i]] == 0) {
-                onsaleNftIds[i] = onsaleNftIds[onsaleNftIds.length - 1]; // price 0 된거 맨 뒤로 보내서
-                onsaleNftIds.pop(); // 지워준다.
-                // onsaleNftIds.slice(i, 0);
-            }
-        }
-    }
-
-    function getNftArrayLength() view public returns (uint256) {
-        return onsaleNftIds.length;
-    }
-
-    function getNftPrices(uint256 _nftId) view public returns (uint256) {
-        return nftPrices[_nftId];
-    }
-
-    function getOnsaleNftList() view public returns (OnsaleNftList[] memory) {
-        uint256 onsaleNftLength = getNftArrayLength();
-        require(onsaleNftLength != 0, "There are no NFTs on sale");
-        
-        OnsaleNftList[] memory onsaleNftList = new OnsaleNftList[](onsaleNftLength);
-
-        for (uint256 i = 0; i < onsaleNftLength; i++) {
-            uint256 nftId = onsaleNftIds[i];
-            string memory nftHash = mintAddress.nftHashs(nftId);
-            uint256 price = nftPrices[nftId];
-
-            onsaleNftList[i] = OnsaleNftList(nftId, nftHash, price);
-        }
-        return onsaleNftList;
-        
-    }
-    // function getOnsaleNftList() view public returns (uint256[] memory) {
-    //     return onsaleNftIds;
-    // }
+    return onsaleNftData;
+  } 
 }

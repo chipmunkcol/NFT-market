@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.25+commit.b61c2a91"
+		"version": "0.8.20+commit.a1b79de6"
 	},
 	"language": "Solidity",
 	"output": {
@@ -9,25 +9,12 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_mintAddress",
+						"name": "_mintContract",
 						"type": "address"
 					}
 				],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
-			},
-			{
-				"inputs": [],
-				"name": "getNftArrayLength",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			},
 			{
 				"inputs": [
@@ -37,7 +24,7 @@
 						"type": "uint256"
 					}
 				],
-				"name": "getNftPrices",
+				"name": "getNftPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -50,7 +37,20 @@
 			},
 			{
 				"inputs": [],
-				"name": "getOnsaleNftList",
+				"name": "getOnsaleNftIdsLength",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getOnsaleNfts",
 				"outputs": [
 					{
 						"components": [
@@ -61,16 +61,16 @@
 							},
 							{
 								"internalType": "string",
-								"name": "nftHash",
+								"name": "tokenUrl",
 								"type": "string"
 							},
 							{
 								"internalType": "uint256",
-								"name": "price",
+								"name": "nftPrice",
 								"type": "uint256"
 							}
 						],
-						"internalType": "struct SaleNft.OnsaleNftList[]",
+						"internalType": "struct SaleNft.OnsaleNftData[]",
 						"name": "",
 						"type": "tuple[]"
 					}
@@ -80,10 +80,10 @@
 			},
 			{
 				"inputs": [],
-				"name": "mintAddress",
+				"name": "mintContract",
 				"outputs": [
 					{
-						"internalType": "contract Mint",
+						"internalType": "contract MyNft",
 						"name": "",
 						"type": "address"
 					}
@@ -155,7 +155,7 @@
 						"type": "uint256"
 					}
 				],
-				"name": "setSaleNft",
+				"name": "setOnsaleNft",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -176,7 +176,7 @@
 		"compilationTarget": {
 			"contracts/SaleNft.sol": "SaleNft"
 		},
-		"evmVersion": "cancun",
+		"evmVersion": "shanghai",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -293,19 +293,19 @@
 			]
 		},
 		"contracts/Mint.sol": {
-			"keccak256": "0x05ef53c2fed9132439a48e5134b0feca2199a9cdbfef7b368cbd534b96b18729",
+			"keccak256": "0x9002e76f695c0ff4acecd801b2aa81d68baed6fa1d05e6274c0bc3d47db45f0b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e60473123483b21ed9c63957788cfed6eeaaadf9ed1a0688246229ebe9695bc8",
-				"dweb:/ipfs/QmRySnEepJiKKwJaK2yqbcMtdLbg53QpDUVRHfXqGHRbh5"
+				"bzz-raw://f3ddf0d877d8c7055074f24dbecad98601f7914b166983d35b76ced26c88328c",
+				"dweb:/ipfs/QmXCpucszJvyTdUMTrSfC3pkQtnCZGqofThV6PU9n6zHxo"
 			]
 		},
 		"contracts/SaleNft.sol": {
-			"keccak256": "0x0d8220275f49b74dc5aca7826e947bad307d16caebed4079b2cc39a4995f03f0",
+			"keccak256": "0xa5d4113205538f3675a3ae462b70c6995175bf7db7b172b8494151d3a107de1b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2f3e22e36c68bab8bceb354cb9f3f02db0006ca4a6b87810f87f5f35333bb362",
-				"dweb:/ipfs/QmNVqgKQbxWokUG5cSP8d3KWZdo5pzceThr74F6LWdyAB7"
+				"bzz-raw://24c3aae5a59ff141b4ecd5275de3df4fe3e17fbb78dae90f9e68aaad4288364b",
+				"dweb:/ipfs/QmR6p22BdRQKryqY1J66gpATBBx2xtAbkHJqLs8XZXYnAB"
 			]
 		}
 	},
