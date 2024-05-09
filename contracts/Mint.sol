@@ -11,37 +11,41 @@ contract MyNft is ERC721Enumerable {
   SaleNft public saleNftContract;
 
   struct TokenUrl {
+    string tokenName;
     string tokenUrl;
     bool isHide;
     string tempTokenUrl;
     uint startAt;
-    
   }
   mapping(uint => TokenUrl) public tokenUrls;
 
   struct NftData {
     uint nftId;
+    string nftName;
     string tokenUrl;
     uint nftPrice;
   }
 
-  function ownerMintNft(string memory _ipfsHash, uint _totalNum) public {
+  function ownerMintNft(string memory _tokenName, string memory _ipfsHash, uint _totalNum) public {
     uint id = totalSupply() + 1;
     uint randomNumber = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, id))) & _totalNum + 1;
     tokenUrls[id].tokenUrl = string(abi.encodePacked(_ipfsHash, '/', randomNumber));
+    tokenUrls[id].tokenName = _tokenName;
 
     _mint(msg.sender, id);
   }
 
-  function userMintNft(string memory _ipfsHash) public {
+  function userMintNft(string memory _tokenName, string memory _ipfsHash) public {
     uint id = totalSupply() + 1;
     tokenUrls[id].tokenUrl = _ipfsHash;
+    tokenUrls[id].tokenName = _tokenName;
 
     _mint(msg.sender, id);
   }
 
-  function userMintCollection(string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
+  function userMintCollection(string memory _tokenName, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
     uint id = totalSupply() + 1;
+    tokenUrls[id].tokenName = _tokenName;
     tokenUrls[id].tokenUrl = _ipfsHash;
     tokenUrls[id].isHide = _isHide;
     tokenUrls[id].tempTokenUrl = _tempTokenUrl;
@@ -57,10 +61,11 @@ contract MyNft is ERC721Enumerable {
     NftData[] memory nftData = new NftData[](balanceLength);
     for (uint i = 0; i < balanceLength; i++) {
       uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
+      string memory nftName = tokenUrls[nftId].tokenName;
       string memory nftTokenUrl = tokenUrls[nftId].tokenUrl;
       uint nftPrice = saleNftContract.getNftPrice(nftId);
 
-      nftData[i] = NftData(nftId, nftTokenUrl, nftPrice);
+      nftData[i] = NftData(nftId, nftName, nftTokenUrl, nftPrice);
     }
     return nftData;
   }

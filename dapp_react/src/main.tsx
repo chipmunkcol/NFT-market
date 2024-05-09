@@ -10,7 +10,7 @@ import { ThemeProvider } from "styled-components";
 
 import App from "./App";
 import Home from "./pages/Home";
-import MarketPlace from "./pages/MarketPlace";
+import MarketPlace from "./pages/MarketPlace.jsx";
 import Create from "./pages/Create.jsx";
 import MyPage from "./pages/MyPage";
 import MintNft from "./pages/Create/MintNft.jsx";
@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "market-place?",
+        path: "market-place",
         element: <MarketPlace />,
       },
       {
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
         element: <MintNft />,
       },
       {
-        path: "mypage:address",
+        path: "mypage/:account",
         element: <MyPage />,
         children: [
           {

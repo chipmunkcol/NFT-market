@@ -57,7 +57,7 @@ const router = createBrowserRouter([
         element: <MintNft />,
       },
       {
-        path: "mypage:address",
+        path: "mypage/:address",
         element: <MyPage />,
         children: [
           {

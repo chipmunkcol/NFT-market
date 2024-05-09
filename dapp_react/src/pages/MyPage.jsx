@@ -14,96 +14,75 @@ const MyPage = () => {
   // console.log("account: ", account);
   // const [myNfts, setMyNfts] = useState([]);
   const { account, myNfts, setMyNfts, trigger } = useContext(GlobalContext);
-  const [approvedState, setApprovedState] = useState(false);
+  // const [approvedState, setApprovedState] = useState(false);
 
-  const getApprovedStatus = async () => {
-    if (!account) return;
+  // const getApprovedStatus = async () => {
+  //   if (!account) return;
 
-    try {
-      const res = await MintContract.methods
-        .isApprovedForAll(account, MintAddress).call();
-      // console.log('res: ', res);
-      setApprovedState(res);
-    } catch (err) {
-      console.log('err: ', err);
-    }
-  };
-
-  const alertAleadyApproved = () => {
-    alert('이미 승인되었습니다');
+  //   try {
+  //     const res = await MintContract.methods
+  //       .isApprovedForAll(account, MintAddress).call();
+  //     // console.log('res: ', res);
+  //     setApprovedState(res);
+  //   } catch (err) {
+  //     console.log('err: ', err);
+  //   }
+  // };
+  const getEthPrice = weiPrice => {
+    return web3.utils.fromWei(weiPrice, "ether");
   }
-
-  const approvedNftHandler = async () => {
-    if (!account) {
-      alert('Please connect your wallet first!');
-      return;
-    }
-    if (myNfts.length < 1) {
-      alert('You have no NFTs to approve');
-      return;
-    }
-
-    try {
-      const res = await MintContract.methods.setApprovalForAll(MintAddress, !approvedState).send({ from: account });
-      console.log('res: ', res);
-      if (res.status) {
-        setApprovedState(!approvedState);
-      }
-    } catch (err) {
-      console.log('err: ', err);
-    }
-  };
   
   const getMyNfts = async () => {
     if (!account) return;
 
     try {
-      const myNfts = await MintContract.methods.getNftsByOwner(account).call();
-      console.log('myNfts: ', myNfts);
-      if (myNfts.length < 1) return;
+      const myNfts = await MintContract.methods.getMyNfts(account).call();
+      // console.log('myNfts: ', myNfts);
+      if (!myNfts) return;
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { id, name, description, image, isOnsale, attributes } = myNft;
-        const parsedId = parseInt(id, 10);
-        newMyNfts.push({ id: parsedId, name, description, image, isOnsale, attributes });
+        const { nftId, nftName, tokenUrl, nftPrice } = myNft;
+        const parsedId = parseInt(nftId, 10);
+        const parsedEthPrice = parseInt(getEthPrice(nftPrice, 10));
+        newMyNfts.push({ nftId: parsedId, nftName, tokenUrl, nftPrice: parsedEthPrice });
       });
 
       setMyNfts(newMyNfts);
-      // console.log('newMyNfts: ', newMyNfts);
+      console.log('newMyNfts: ', newMyNfts);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const [onsaleMyNfts, setOnsaleMyNfts] = useState([]);
-  const getMyNftsOnsale = async () => {
-    if (!account) return;
+  // const [onsaleMyNfts, setOnsaleMyNfts] = useState([]);
+  // const getMyNftsOnsale = async () => {
+  //   if (!account) return;
 
-    try {
-      const resultNfts = await MintContract.methods.getOnsaleNftsByOwner(account).call();
-      if (resultNfts.length < 1) return;
+  //   try {
+  //     const resultNfts = await MintContract.methods.getOnsaleNftsByOwner(account).call();
+  //     if (resultNfts.length < 1) return;
 
-      const newOnsaleMyNfts = [];
-      resultNfts.forEach(onsaleMyNft => {
-        const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
-        const parsedId = parseInt(id, 10);
-        const parsedPrice = parseInt(price, 10);
-        const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-        newOnsaleMyNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
-      });
+  //     const newOnsaleMyNfts = [];
+  //     resultNfts.forEach(onsaleMyNft => {
+  //       const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
+  //       const parsedId = parseInt(id, 10);
+  //       const parsedPrice = parseInt(price, 10);
+  //       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
+  //       newOnsaleMyNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
+  //     });
 
-      setOnsaleMyNfts(newOnsaleMyNfts);
-      console.log('newMyNfts: ', newOnsaleMyNfts);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     setOnsaleMyNfts(newOnsaleMyNfts);
+  //     console.log('newMyNfts: ', newOnsaleMyNfts);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   async function init() {
     await getMyNfts();
-    await getMyNftsOnsale();
-    await getApprovedStatus();
+    // await getMyNftsOnsale();
+    // await getApprovedStatus();
   }
 
   useEffect(() => {
@@ -198,7 +177,7 @@ const MyPage = () => {
             )}
             {myNfts.length < 1 && <h2>No NFTs</h2>} */}
             {/* Outlet */}
-            <Outlet context={[myNfts, onsaleMyNfts, account]} />
+            <Outlet context={[myNfts, account]} />
           </RightPart>
         </FlexWrap>
 
@@ -361,4 +340,31 @@ export default MyPage;
 
   //     })
   //     .catch(err => console.error(err));
+  // };
+
+  
+
+  // const alertAleadyApproved = () => {
+  //   alert('이미 승인되었습니다');
+  // }
+
+  // const approvedNftHandler = async () => {
+  //   if (!account) {
+  //     alert('Please connect your wallet first!');
+  //     return;
+  //   }
+  //   if (myNfts.length < 1) {
+  //     alert('You have no NFTs to approve');
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await MintContract.methods.setApprovalForAll(MintAddress, !approvedState).send({ from: account });
+  //     console.log('res: ', res);
+  //     if (res.status) {
+  //       setApprovedState(!approvedState);
+  //     }
+  //   } catch (err) {
+  //     console.log('err: ', err);
+  //   }
   // };

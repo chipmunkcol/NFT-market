@@ -155,7 +155,7 @@ function App() {
           </ButtonWrap>) : (
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
             <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
-            <Link to={'/mypage'}>
+            <Link to={`/mypage/${account}`}>
               <Nav>MyPage</Nav>
             </Link>
             <div>|</div>

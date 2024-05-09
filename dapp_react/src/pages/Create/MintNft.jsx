@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import iconUpload from "../../assets/images/icon-upload.png";
-import { json } from "react-router-dom";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
@@ -32,7 +31,7 @@ function MintNft() {
   const onchangeDescData = (e) => {
     setJsonData((prev) => ({
       ...prev,
-      desc: e.target.value,
+      description: e.target.value,
     }));
   };
 
@@ -128,49 +127,80 @@ function MintNft() {
     return resData.IpfsHash;
   }
 
+  const pinFileToIPFS = async (metaData) => {
+    const formData = new FormData();
+    const options = JSON.stringify({
+      cidVersion: 0,
+    });
+
+    formData.append("file", file);
+    formData.append("pinataMetadata", metaData);
+    formData.append("pinataOptions", options);
+
+    const res = await fetch(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+        },
+        body: formData,
+      }
+    );
+    const result = await res.json();
+    return result.IpfsHash;
+  }
+
+  const pinJsonToIPFS = async (imageIpfsHash, metaData) => {
+    const jsonContent = JSON.stringify({
+      name: jsonData.name,
+      description: jsonData.description,
+      image: imageIpfsHash,
+      attributes: tags
+    });
+
+    const options = {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`, 'Content-Type': 'application/json' },
+      body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`
+    };
+
+    const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', options);
+    const result = await res.json();
+    return result.IpfsHash;
+  }
+
+  // 판매등록 함수
   const handleSubmission = async () => {
     try {
       const validateResult = validateFormData();
       if (!validateResult) return;
 
       let imageIpfsHash = jsonData.image;
-      if (imageIpfsHash === "") {
+      if (!imageIpfsHash) {
         imageIpfsHash = await getImageIpfsHash(file);
       }
-      const formData = new FormData();
+
       const metaData = JSON.stringify({
         name: jsonData.name,
         keyvalues: {
           owner: account,
           description: jsonData.description,
-          image: imageIpfsHash,
-          attributes: tags,
           isOnsale: String(false),
         },
       });
-      const options = JSON.stringify({
-        cidVersion: 0,
-      });
 
-      formData.append("file", file);
-      formData.append("pinataMetadata", metaData);
-      formData.append("pinataOptions", options);
 
-      const res = await fetch(
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-          },
-          body: formData,
-        }
-      );
-      const resData = await res.json();
-      const ipfsHash = resData.IpfsHash;
-      if (ipfsHash) {
+      let tokenUrl;
+      if (file.type === "application/json") {
+        tokenUrl = await pinFileToIPFS(metaData);
+      } else {
+        tokenUrl = await pinJsonToIPFS(imageIpfsHash, metaData);
+      }
+
+      if (tokenUrl) {
         const mintResult = await MintContract.methods
-          .createNft(jsonData.name, ipfsHash, jsonData.description, tags)
+          .userMintNft(jsonData.name, tokenUrl)
           .send({ from: account });
         if (mintResult.status) {
           alert("NFT 발행 성공");

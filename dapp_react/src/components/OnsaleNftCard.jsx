@@ -4,8 +4,9 @@ import styled from "styled-components";
 import * as Styled from './NftCard'
 // import NonSaleNftCard from "./NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
-import { MintContract, web3 } from "../../contracts/index";
+import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
+import { getImageUrl, getIpfsTokenData } from "../hooks/common";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -16,9 +17,11 @@ import { S_Button } from "../styles/styledComponent";
 
 
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
+
+// nftId, nftName, tokenUrl, nftPrice 
 const OnsaleNftCard = ({ nft, account, cardWidth }) => {
-  const { id, name, description, image, price, owner } = nft;
-  const { setTrigger } = useContext(GlobalContext);
+  const { nftId, nftName, tokenUrl, nftPrice } = nft;
+  const { setPurchaseTrigger } = useContext(GlobalContext);
   const [isMyNft, setIsMyNft] = useState(false);
 
   // function checkMyNft(nftId) {
@@ -29,27 +32,24 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
   // useEffect(() => {
   //   checkMyNft(id);
   // }, [myNfts]);
-  useEffect(() => {
-    setIsMyNft(account === owner?.toLowerCase());
-  }, [account]);
+  // useEffect(() => {
+  //   setIsMyNft(account === owner?.toLowerCase());
+  // }, [account]);
 
   async function purchaseNftHandler(nftId) {
     try {
-      const weiPrice = web3.utils.toWei(price, 'ether');
-      const res = await MintContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
+      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
         alert('NFT 구매에 성공했습니다.');
       }
-      setTrigger(prev => !prev);
+      setPurchaseTrigger(prev => !prev);
 
     } catch (err) {
       console.log('err: ', err);
     }
   }
-
-  const imgUrl = `${import.meta.env.VITE_GATEWAY_URL
-    }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
 
   // 장바구니에 담기
   const addCartHandler = nft => {
@@ -63,23 +63,49 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
     }
   }
 
+
+  const [ipfsData, setIpfsData] = useState({
+    name: '',
+    description: '',
+    image: '',
+    attributes: []
+  });
+
+
+  const [imageUrl, setImageUrl] = useState('');
+  useEffect(() => {
+    if (!tokenUrl) return;
+
+    async function fetchIpfsData() {
+      try {
+        const tokenData = await getIpfsTokenData(tokenUrl);
+        setIpfsData(tokenData);
+        setImageUrl(getImageUrl(tokenData.image));
+      } catch (error) {
+        console.error('Error fetching IPFS data:', error);
+      }
+    }
+
+    fetchIpfsData();
+  }, [tokenUrl]);
+
   return (
     <Styled.Container>
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
       <ImgWrap $cardWidth={cardWidth} >
-        <Styled.Img src={imgUrl} alt="NFT image" />
+        <Styled.Img src={imageUrl} alt="NFT image" />
       </ImgWrap>
-      <Styled.Name>{name}</Styled.Name>
+      <Styled.Name>{nftName}</Styled.Name>
       <OnsalePriceWrap>
-        가격 : {price} ETH ($
-        {(Number(price) * 2928)
+        가격 : {nftPrice} ETH ($
+        {(Number(nftPrice) * 2928)
           .toString()
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         )
       </OnsalePriceWrap>
       {
         !isMyNft && <ButtonWrap>
-          <S_Button onClick={() => purchaseNftHandler(id)}>구매하기</S_Button>
+          <S_Button onClick={() => purchaseNftHandler(nftId)}>구매하기</S_Button>
           <S_Button onClick={() => addCartHandler(nft)}>💛</S_Button>
         </ButtonWrap>
       }

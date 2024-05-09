@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import React, { FC, useContext, useRef, useState } from "react";
-import { web3, MintContract } from "../../contracts/index";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
+import { web3, MintContract, SaleNftContract, SaleNftAddress } from "../../contracts/index";
 // import { toWei } from "web3-utils";
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
+import { getImageUrl, getIpfsTokenData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 
 // interface props {
 //   nft: {
@@ -20,69 +21,90 @@ import { S_Button } from "../styles/styledComponent";
 // }
 
 // const NonSaleNftCard: FC<props> = ({ nft, account }) => {
+
+// nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
-  const { id, name, image, description, attributes } = nft;
+  const { nftId, nftName, tokenUrl } = nft;
   // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
-  const { setTrigger, account } = useContext(GlobalContext)
+  const { setOnsaleTrigger, account } = useContext(GlobalContext)
 
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
 
+  // const getTargetNftPreviousPriceList = async tokenUrl => {
+  //   fetch(`https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`, ipfsGetOptions)
+  //     .then(response => response.json())
+  //     .then(response => console.log(response))
+  //     .catch(err => console.error(err));
+  // }
+
   const registerForSaleHandler = async () => {
+    const result = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+    console.log('result: ', result);
+
     const price = Number(priceRef.current?.value);
     const weiPrice = web3.utils.toWei(price, "ether");
-    const res = await MintContract.methods
-      .setSaleController(id, weiPrice)
+    const res = await SaleNftContract.methods
+      .setOnsaleNft(nftId, weiPrice)
       .send({
         from: account,
       });
-    console.log("res: ", res);
+    // console.log("res: ", res);
     if (res.status) {
+      // await getTargetNftPreviousPriceList(tokenUrl);
       const jsonKeyvalues = JSON.stringify({
-        ipfsPinHash: image,
-        name,
+        ipfsPinHash: tokenUrl,
+        name: nftName,
         keyvalues: {
-          id,
+          nftId,
           owner: account,
-          description: description,
-          image,
+          nftPrice: price,
           isOnsale: String(true),
-          price,
-          attributes,
         },
       });
-      const options = {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-          "Content-Type": "application/json",
-        },
-        body: jsonKeyvalues,
-      };
 
-      await fetch("https://api.pinata.cloud/pinning/hashMetadata", options)
+      await fetch("https://api.pinata.cloud/pinning/hashMetadata", ipfsPutOptions(jsonKeyvalues))
         .then((res) => {
           if (res.ok) {
             alert("판매 등록이 완료되었습니다.");
-            setTrigger(prev => !prev);
+            setOnsaleTrigger(prev => !prev);
           }
         })
         .catch((err) => console.error(err));
     }
   };
 
-  const imgUrl = () => {
-    return `${import.meta.env.VITE_GATEWAY_URL
-      }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
-  };
+  const [ipfsData, setIpfsData] = useState({
+    name: '',
+    description: '',
+    image: '',
+    attributes: []
+  });
+
+  const [imageUrl, setImageUrl] = useState('');
+  useEffect(() => {
+    if (!tokenUrl) return;
+
+    async function fetchIpfsData() {
+      try {
+        const tokenData = await getIpfsTokenData(tokenUrl);
+        setIpfsData(tokenData);
+        setImageUrl(getImageUrl(tokenData.image));
+      } catch (error) {
+        console.error('Error fetching IPFS data:', error);
+      }
+    }
+
+    fetchIpfsData();
+  }, [tokenUrl]);
 
   return (
     <Styled.Container>
       <Styled.ImgWrap>
-        <Styled.Img src={imgUrl()} alt="NFT image" />
+        <Styled.Img src={imageUrl} alt="NFT image" />
       </Styled.ImgWrap>
       <Styled.NftInfo>
-        <Styled.Name>{name}</Styled.Name>
+        <Styled.Name>{nftName}</Styled.Name>
         {/* {registerPrice !== 0 && (
           <Price>
             가격 : {registerPrice} ETH ($
@@ -105,6 +127,8 @@ const NonSaleNftCard = ({ nft }) => {
     </Styled.Container>
   );
 };
+
+
 const Price = styled.div`
   padding-top: 0.5rem;
 `;

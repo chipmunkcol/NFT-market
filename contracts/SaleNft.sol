@@ -52,7 +52,7 @@ contract SaleNft {
     uint nftPrice = nftPrices[_nftId];
     address approvedNftAddress = mintContract.getApproved(_nftId);
 
-    require(nftOwner != msg.sender, "Caller is nft owner");
+    require(nftOwner != msg.sender, "Caller is nft owner"); 
     require(nftPrice <= msg.value, "Caller sent lower than price");
     require(approvedNftAddress == address(this), "This is an NFT that is not approved for sale.");
   

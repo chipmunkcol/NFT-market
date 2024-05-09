@@ -6,9 +6,11 @@ import styled from "styled-components";
 import OnsaleNftCard from "../../components/OnsaleNftCard";
 import { useOutletContext } from "react-router-dom";
 
+// nftId, nftName, tokenUrl, nftPrice 
 const All = () => {
-  const [myNfts, onsaleMyNfts, account] = useOutletContext();
-  const nonsaleMyNfts = myNfts.filter(nft => !nft.isOnsale);
+  const [myNfts, account] = useOutletContext();
+  const onsaleMyNfts = myNfts.filter(nft => nft.nftPrice);
+  const nonsaleMyNfts = myNfts.filter(nft => !nft.nftPrice);
 
 
   return (

@@ -4,10 +4,10 @@ pragma solidity ^0.8.20;
 
 import "./Mint.sol";
 
-contract SaleNft {
-    Mint public mintAddress;
+contract OldSaleNft {
+    MyNft public mintAddress;
     constructor (address _mintAddress) {
-        mintAddress = Mint(_mintAddress);
+        mintAddress = MyNft(_mintAddress);
     }
     mapping(uint256 => uint256) public nftPrices;
     uint256[] public onsaleNftIds;
