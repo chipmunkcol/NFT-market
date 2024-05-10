@@ -1,0 +1,24 @@
+{
+  "name": "Jack's NFT #333",
+  "description": "A cute CryptoKitty that enjoys long walks on the beach.",
+  "image": "QmfSeLSMHsKrLMLe4Wh5n47YTggdirDvxiNKs1oijJVpNr",
+  "external_url": "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
+  "attributes": [
+    {
+      "trait_type": "Breed",
+      "value": "Siamese"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Cross-Eyed"
+    },
+    {
+      "trait_type": "Fur",
+      "value": "Sphynx"
+    },
+    {
+      "trait_type": "Color",
+      "value": "Chocolate"
+    }
+  ]
+}

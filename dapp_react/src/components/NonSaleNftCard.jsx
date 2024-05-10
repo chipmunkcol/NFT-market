@@ -5,7 +5,7 @@ import { web3, MintContract, SaleNftContract, SaleNftAddress } from "../../contr
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { getImageUrl, getIpfsTokenData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 
 // interface props {
 //   nft: {
@@ -31,50 +31,36 @@ const NonSaleNftCard = ({ nft }) => {
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
 
-  // const getTargetNftPreviousPriceList = async tokenUrl => {
-  //   fetch(`https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`, ipfsGetOptions)
-  //     .then(response => response.json())
-  //     .then(response => console.log(response))
-  //     .catch(err => console.error(err));
-  // }
-
-  const registerForSaleHandler = async () => {
-    const result = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
-    console.log('result: ', result);
-
-    const price = Number(priceRef.current?.value);
+  const C_setOnsaleNft = async (price) => {
     const weiPrice = web3.utils.toWei(price, "ether");
-    const res = await SaleNftContract.methods
+    const result = await SaleNftContract.methods
       .setOnsaleNft(nftId, weiPrice)
       .send({
         from: account,
       });
-    // console.log("res: ", res);
-    if (res.status) {
-      // await getTargetNftPreviousPriceList(tokenUrl);
-      const jsonKeyvalues = JSON.stringify({
-        ipfsPinHash: tokenUrl,
-        name: nftName,
-        keyvalues: {
-          nftId,
-          owner: account,
-          nftPrice: price,
-          isOnsale: String(true),
-        },
-      });
+    return result;
+  }
 
-      await fetch("https://api.pinata.cloud/pinning/hashMetadata", ipfsPutOptions(jsonKeyvalues))
-        .then((res) => {
-          if (res.ok) {
-            alert("판매 등록이 완료되었습니다.");
-            setOnsaleTrigger(prev => !prev);
-          }
-        })
-        .catch((err) => console.error(err));
+  const registerForSaleHandler = async () => {
+    const price = Number(priceRef.current?.value);
+    const ipfsData = await getTargetNftToIpfsDataMetadata(tokenUrl);
+    console.log('ipfsData: ', ipfsData);
+
+    const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
+    if (!updateResult.ok) return;
+
+    const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+    console.log('result: ', approveResult);
+    if (!approveResult.status) return;
+
+    const setOnsaleResult = await C_setOnsaleNft(price);
+    if (setOnsaleResult.status) {
+      alert("판매 등록이 완료되었습니다.");
+      setOnsaleTrigger(prev => !prev);
     }
   };
 
-  const [ipfsData, setIpfsData] = useState({
+  const [, setIpfsData] = useState({
     name: '',
     description: '',
     image: '',
@@ -164,3 +150,45 @@ const SaleRegistrationWrap = styled.div`
 `;
 
 export default NonSaleNftCard;
+
+// const registerForSaleHandler = async () => {
+// const result = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+// console.log('result: ', result);
+
+// const price = Number(priceRef.current?.value);
+// const weiPrice = web3.utils.toWei(price, "ether");
+// const res = await SaleNftContract.methods
+//   .setOnsaleNft(nftId, weiPrice)
+//   .send({
+//     from: account,
+//   });
+// // console.log("res: ", res);
+// if (res.status) {
+//   const result = await getTargetNftToIpfsDataMetadata(tokenUrl);
+//   console.log('result: ', result);
+//   const jsonKeyvalues = JSON.stringify({
+//     ipfsPinHash: tokenUrl,
+//     name: nftName,
+//     keyvalues: {
+//       nftId,
+//       owner: account,
+//       isOnsale: String(true),
+//       nftPrice: price,
+//       // numberOfSales:
+//       // priceHistory: [{
+//       //   owner:'',
+//       //   price:
+//       // }]
+//     },
+//   });
+
+//   await fetch("https://api.pinata.cloud/pinning/hashMetadata", ipfsPutOptions(jsonKeyvalues))
+//     .then((res) => {
+//       if (res.ok) {
+//         alert("판매 등록이 완료되었습니다.");
+//         setOnsaleTrigger(prev => !prev);
+//       }
+//     })
+//     .catch((err) => console.error(err));
+// }
+// }

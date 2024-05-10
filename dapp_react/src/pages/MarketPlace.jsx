@@ -21,7 +21,7 @@ const MarketPlace = () => {
   const [offset, setOffset] = useState(0);
   const allNftCount = useRef(0);
 
-  const [onsaleNftIdsInContract, setOnsaleNftIdsInContract] = useState([]);
+  const [onsaleNftsInContract, setOnsaleNftsInContract] = useState([]);
 
   // let offset = 1;
 
@@ -42,8 +42,7 @@ const MarketPlace = () => {
   useEffect(() => {
     async function fetchOnsaleNftIdsInContract() {
       const _onsaleNftIdsInContract = await SaleNftContract.methods.getOnsaleNfts().call();
-      const onsaleIds = _onsaleNftIdsInContract.map(onsaleNft => parseInt(onsaleNft.nftId));
-      setOnsaleNftIdsInContract(onsaleIds);
+      setOnsaleNftsInContract(_onsaleNftIdsInContract);
     }
     fetchOnsaleNftIdsInContract();
   }, [onsaleTrigger]);
@@ -59,8 +58,8 @@ const MarketPlace = () => {
     return newOnsaleNfts;
   }
 
-  const checkContractNftsToIpfsNfts = (onsaleNftIdsInContract, onsaleNftsInIpfs) => {
-    const commonNfts = onsaleNftsInIpfs.filter(ipfsNft => onsaleNftIdsInContract.some(contractNftId => contractNftId === ipfsNft.nftId));
+  const checkContractNftsToIpfsNfts = (onsaleNftsInContract, onsaleNftsInIpfs) => {
+    const commonNfts = onsaleNftsInIpfs.filter(ipfsNft => onsaleNftsInContract.some(contractNft => (parseInt(contractNft.nftId) === ipfsNft.nftId && contractNft.tokenUrl === ipfsNft.tokenUrl)));
     return commonNfts
   }
 
@@ -77,7 +76,7 @@ const MarketPlace = () => {
           const ipfsDatas = response.rows;
           // allNftCount.current = response.count;
           const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftIdsInContract, newOnsaleNfts)
+          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
           setOnsaleNftList(commonNfts);
           console.log('newOnsaleNfts: ', newOnsaleNfts);
         })
@@ -89,7 +88,7 @@ const MarketPlace = () => {
           const ipfsDatas = response.rows;
           // allNftCount.current = response.count;
           const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftIdsInContract, newOnsaleNfts)
+          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
 
           setOnsaleNftList(prev => [...prev, ...commonNfts]);
           console.log('newOnsaleNfts: ', newOnsaleNfts);
@@ -101,10 +100,10 @@ const MarketPlace = () => {
   useEffect(() => {
     if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
     // if (onsaleNftList.length - 10 <= offset * 10) return;
-    if (onsaleNftIdsInContract.length < 1) return;
+    if (onsaleNftsInContract.length < 1) return;
 
     getOnsaleNftList();
-  }, [onsaleNftIdsInContract, offset, onsaleTrigger, purchaseTrigger]);
+  }, [onsaleNftsInContract, offset, onsaleTrigger, purchaseTrigger]);
 
   const onChangeSearch = e => {
     searchRef.current = e.target.value;

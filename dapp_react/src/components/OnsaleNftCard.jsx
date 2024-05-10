@@ -6,7 +6,7 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { getImageUrl, getIpfsTokenData } from "../hooks/common";
+import { P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata } from "../hooks/common";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -38,13 +38,17 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
 
   async function purchaseNftHandler(nftId) {
     try {
+      const ipfsData = await getTargetNftToIpfsDataMetadata(tokenUrl);
+      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
+      if (!updateResult.ok) return;
+
       const weiPrice = web3.utils.toWei(nftPrice, 'ether');
       const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
         alert('NFT 구매에 성공했습니다.');
+        setPurchaseTrigger(prev => !prev);
       }
-      setPurchaseTrigger(prev => !prev);
 
     } catch (err) {
       console.log('err: ', err);
