@@ -15,7 +15,6 @@ contract MyNft is ERC721Enumerable {
     string tokenUrl;
     bool isHide;
     string tempTokenUrl;
-    uint startAt;
   }
   mapping(uint => TokenUrl) public tokenUrls;
 
@@ -24,13 +23,22 @@ contract MyNft is ERC721Enumerable {
     string nftName;
     string tokenUrl;
     uint nftPrice;
+    string tempTokenUrl;
   }
 
-  mapping(string => uint[]) public collectionNftIds;
-
-  function getCollectionNftIds(string memory _ipfsHash) view public returns(uint[] memory) {
-    return collectionNftIds[_ipfsHash];
+  struct Collection {
+    uint[] ids;
+    uint startAt;
   }
+  mapping(string => Collection) public collectionDatas;
+
+  function getCollectionData(string memory _ipfsHash) view public returns(Collection memory) {
+    // uint[] memory collectionDatas = collectionDatas[_ipfsHash];
+    // uint collectionStartAt = collectionDatas.startAt; 
+    // return (collectionIds, collectionStartAt);
+    return collectionDatas[_ipfsHash]; 
+  }
+
   function userMintCollection(string[] memory _fileNameList, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
     uint timeStamp = block.timestamp;
     for (uint i = 0; i < _fileNameList.length; i ++) {
@@ -39,10 +47,20 @@ contract MyNft is ERC721Enumerable {
       tokenUrls[id].tokenUrl = string(abi.encodePacked(_ipfsHash, '/', _fileNameList[i]));
       tokenUrls[id].isHide = _isHide;
       tokenUrls[id].tempTokenUrl = _tempTokenUrl;
-      tokenUrls[id].startAt = timeStamp + _startAt * 1 seconds;
 
       _mint(msg.sender, id);
-      collectionNftIds[_ipfsHash].push(id); // check checkcheckcheckcheck
+      collectionDatas[_ipfsHash].ids.push(id);
+    }
+    collectionDatas[_ipfsHash].startAt = timeStamp + _startAt * 1 seconds;
+  }
+
+  function airdrop(string memory _collectionIpfsHash) public {
+    Collection memory collectionData = getCollectionData(_collectionIpfsHash);
+    require(collectionData.startAt < block.timestamp, "No!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, Airdrop not started yet");
+
+    for (uint i = 0; i < collectionData.ids.length; i ++) {
+      uint tokenId = collectionData.ids[i];
+      tokenUrls[tokenId].isHide = false;
     }
   }
   
@@ -83,10 +101,11 @@ contract MyNft is ERC721Enumerable {
     for (uint i = 0; i < balanceLength; i++) {
       uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
       string memory nftName = tokenUrls[nftId].tokenName;
-      string memory nftTokenUrl = getTokenUrl(nftId); // check!check!check!check!check!
+      string memory nftTokenUrl = getTokenUrl(nftId);
       uint nftPrice = saleNftContract.getNftPrice(nftId);
+      string memory collectionIpfs = tokenUrls[nftId].tempTokenUrl;
 
-      nftData[i] = NftData(nftId, nftName, nftTokenUrl, nftPrice);
+      nftData[i] = NftData(nftId, nftName, nftTokenUrl, nftPrice, collectionIpfs);
     }
     return nftData;
   }

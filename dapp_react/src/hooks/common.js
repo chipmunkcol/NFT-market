@@ -130,3 +130,52 @@ export const getImageIpfsHash = async (file) => {
   const resData = await res.json();
   return resData.IpfsHash;
 };
+
+export const pinJsonToIPFS = async (imageIpfsHash, jsonData, metaData) => {
+  const { name, description, attributes } = jsonData;
+  const jsonContent = JSON.stringify({
+    name,
+    description,
+    image: imageIpfsHash,
+    attributes,
+  });
+
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      "Content-Type": "application/json",
+    },
+    body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`,
+  };
+
+  const res = await fetch(
+    "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+    options
+  );
+  const result = await res.json();
+  return result.IpfsHash;
+};
+
+export const pinFileToIPFS = async (files, metaData) => {
+  const formData = new FormData();
+  const options = JSON.stringify({
+    cidVersion: 0,
+  });
+
+  Array.from(files).forEach(async (file) => {
+    formData.append("file", file);
+  });
+  formData.append("pinataMetadata", metaData);
+  formData.append("pinataOptions", options);
+
+  const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+    },
+    body: formData,
+  });
+  const result = await res.json();
+  return result.IpfsHash;
+};

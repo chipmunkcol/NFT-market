@@ -42,10 +42,10 @@ const MyPage = () => {
 
       const newMyNfts = [];
       myNfts.map(myNft => {
-        const { nftId, nftName, tokenUrl, nftPrice } = myNft;
+        const { nftId, nftName, tokenUrl, nftPrice, tempTokenUrl } = myNft;
         const parsedId = parseInt(nftId, 10);
-        const parsedEthPrice = parseInt(getEthPrice(nftPrice, 10));
-        newMyNfts.push({ nftId: parsedId, nftName, tokenUrl, nftPrice: parsedEthPrice });
+        const parsedEthPrice = Number(getEthPrice(nftPrice, 10));
+        newMyNfts.push({ nftId: parsedId, nftName, tokenUrl, nftPrice: parsedEthPrice, collectionIpfs: tempTokenUrl });
       });
 
       setMyNfts(newMyNfts);

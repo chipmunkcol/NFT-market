@@ -183,7 +183,10 @@ const MarketPlace = () => {
   return (
     <Background>
       <Container>
-        <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace</h1>
+        <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace
+          <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
+          <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
+        </h1>
         <div style={{ padding: '10px 0' }}>
           <FlexWrap>
             <div>결과 {onsaleNftList?.length}개</div>

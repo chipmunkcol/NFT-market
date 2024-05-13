@@ -2,17 +2,46 @@ import { MintContract, SaleNftContract, SaleNftAddress } from "../../../../contr
 import { useEffect, useState } from "react";
 import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, json, useNavigate, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
-import { C_setOnsaleNft, getImageIpfsHash, getImageUrl } from "../../../hooks/common";
+import { C_setOnsaleNft, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS } from "../../../hooks/common";
 
 function C_step2() {
 
+  const navigate = useNavigate();
   const { collection, setCollection, account } = useContext(GlobalContext);
   const files = useOutletContext();
   const [progress, setProgress] = useState(0);
+
+  const [file, setFile] = useState(null);
+  const [jsonData, setJsonData] = useState({
+    name: "",
+    description: "",
+    image: "",
+    attributes: [
+      {
+        trait_type: "",
+        value: "",
+      }
+    ],
+  });
+
+  const resetFormData = () => {
+    setJsonData({
+      name: "",
+      description: "",
+      image: "",
+      attributes: [
+        {
+          trait_type: "",
+          value: "",
+        }
+      ],
+    });
+    setFile(null);
+  }
 
   // const getImageIpfsHash = async file => {
   //   const formData = new FormData();
@@ -32,21 +61,30 @@ function C_step2() {
   // }
 
   const handleSubmisstion = async () => {
-    const formData = new FormData();
-    const pinataOptions = JSON.stringify({
-      cidVersion: 0,
-    });
+    // const formData = new FormData();
 
     let fileNameList = [];
+    let nftKeyvaluesList = [];
     Array.from(files).forEach(async (file) => {
-      formData.append("file", file);
-      fileNameList.push(file.name);
+      // formData.append("file", file);
+      const fileName = file.name
+      fileNameList.push(fileName);
+      const nftKeyvaluesObject = {
+        fileName,
+        owner: account,
+        isOnsale: String(false),
+        nftPrice: perPriceRef.current,
+        numberOfSales: 0,
+        priceHistory: [],
+      };
+      nftKeyvaluesList.push(nftKeyvaluesObject);
     })
 
-    let tempIpfsHash = jsonData.image;
-    if (!tempIpfsHash) {
-      tempIpfsHash = await getImageIpfsHash(file);
+    let imageIpfsHash = jsonData.image;
+    if (!imageIpfsHash) {
+      imageIpfsHash = await getImageIpfsHash(file);
     }
+
 
     const metaData = JSON.stringify({
       name: collection.name,
@@ -54,45 +92,58 @@ function C_step2() {
         owner: account,
         description: collection.description,
         attributes: JSON.stringify(collection.attributes),
-        fileNames: JSON.stringify(fileNameList),
-        onsaleFileList: JSON.stringify(fileNameList),
+        // fileNames: JSON.stringify(fileNameList),
+        // onsaleFileList: JSON.stringify(fileNameList),
+        // nftPrice: perPriceRef.current,
+        nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
         isCollection: String(true),
       }
     });
-    formData.append("pinataMetadata", metaData);
-    formData.append("pinataOptions", pinataOptions);
 
-    const options = {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`
-      },
-      body: formData
+    let tempIpfsHash;
+    if (file.type === "application/json") {
+      tempIpfsHash = await pinFileToIPFS(metaData);
+    } else {
+      tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, jsonData, metaData);
     }
 
-    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", options);
-    const resData = await res.json();
-    const collectionIpfsHash = resData.IpfsHash;
-    console.log('ipfsHash: ', collectionIpfsHash);
+    // formData.append("pinataMetadata", metaData);
+    // formData.append("pinataOptions", pinataOptions);
 
-    if (collectionIpfsHash) {
+    // const options = {
+    //   method: 'POST',
+    //   headers: {
+    //     Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`
+    //   },
+    //   body: formData
+    // }
+
+    // const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", options);
+    // const resData = await res.json();
+    // const collectionIpfsHash = resData.IpfsHash;
+    // console.log('ipfsHash: ', collectionIpfsHash);
+
+    if (tempIpfsHash) {
       const isHide = true;
-      const startAt = new Date(startAtRef.current).getTime() - Date.now();
-      const mintResult = await MintContract.methods.userMintCollection(fileNameList, collectionIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
+      // const startAt = new Date(startAtRef.current).getTime() - Date.now();
+      const startAt = 120;
+      const mintResult = await MintContract.methods.userMintCollection(fileNameList, tempIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
       if (!mintResult.status) return;
-      const getCollectionResult = await MintContract.methods.getCollectionNftIds(collectionIpfsHash).call();
+      const getCollectionResult = await MintContract.methods.getCollectionData(tempIpfsHash).call();
       console.log('result: ', getCollectionResult);
 
       // 위 result 바탕으로 반복문 approve!
-      getCollectionResult.forEach(async (nftId) => {
-        const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+      getCollectionResult.ids.forEach(async (nftId) => {
+        const parsedId = parseInt(nftId);
+        const approveResult = await MintContract.methods.approve(SaleNftAddress, parsedId).send({ from: account });
         console.log('result: ', approveResult);
         if (!approveResult.status) return;
 
-        const onsaleResult = await C_setOnsaleNft(nftId, perPriceRef.current, account);
+        const onsaleResult = await C_setOnsaleNft(parsedId, perPriceRef.current, account);
         console.log('onsaleResult: ', onsaleResult);
       });
-
+      resetFormData();
+      navigate('/create-collection/step-1');
     }
   }
 
@@ -118,19 +169,6 @@ function C_step2() {
     //   startAt: e.target.value
     // }));
   };
-
-  const [file, setFile] = useState(null);
-  const [jsonData, setJsonData] = useState({
-    name: "",
-    description: "",
-    image: "",
-    attributes: [
-      {
-        trait_type: "",
-        value: "",
-      }
-    ],
-  });
 
   const onchangeDescData = (e) => {
     setJsonData((prev) => ({
