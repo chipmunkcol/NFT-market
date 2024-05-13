@@ -42,7 +42,7 @@ export default function Slider({ files, cancelHandler }) {
       >
         {
           files?.map((file, index) => (
-            <SwiperSlide>
+            <SwiperSlide key={`slider-${index}`}>
               <PreviewFile>
                 <img src={collection.nfts[index]?.image ? getIpfsToJsonData(collection.nfts[index].image) : URL.createObjectURL(file)} alt="preview" />
                 <CancelWrap>
@@ -64,7 +64,7 @@ export default function Slider({ files, cancelHandler }) {
       >
         {
           files?.map((file, index) => (
-            <SwiperSlide >
+            <SwiperSlide key={`slider-thumnail-${index}`}>
               <img src={collection.nfts[index]?.image ? getIpfsToJsonData(collection.nfts[index].image) : URL.createObjectURL(file)} alt="thumb" />
             </SwiperSlide>
           ))

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { MintContract } from "../../contracts/index";
@@ -16,6 +16,8 @@ import premiumCrown from '../assets/images/premium-crown.png';
 
 import Slider from "../components/Slider";
 import { S_Button } from "../styles/styledComponent";
+import { getImageUrl, getIpfsTokenData, ipfsGetOptions } from "../hooks/common";
+import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 
 
 const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
@@ -29,50 +31,6 @@ function Home() {
   // const [account, setAccount] =
   //   useState("연결된 계정이 없습니다");
   const { account } = useContext(GlobalContext);
-  const [mintNft, setMintNft] = useState({
-    ipfsHash: "",
-    nftType: 0,
-  });
-
-  const onClickMint = async () => {
-    try {
-      const ipfsHash = `${import.meta.env.VITE_IPFS_MINT_HASH}`;
-      const result = await MintContract.methods
-        .mintAnimalToken(ipfsHash).send({ from: account });
-
-      console.log('result: ', result);
-      if (result.status) {
-        const balanceLenth = await MintContract.methods.balanceOf(account).call();
-
-        const nftId = await MintContract.methods.tokenOfOwnerByIndex(account, parseInt(balanceLenth, 10) - 1).call();
-
-        const nftHashPlusType = await MintContract.methods.nftHashs(nftId).call();
-        const nftType = parseInt(nftHashPlusType.split('/')[1]);
-        setMintNft({
-          ipfsHash,
-          nftType,
-        });
-        const jsonKeyvalues = JSON.stringify({
-          ipfsPinHash: ipfsHash,
-          keyvalues: {
-            owner: account,
-            nftType,
-          },
-        });
-        const options = {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`, 'Content-Type': 'application/json' },
-          body: jsonKeyvalues
-        };
-
-        fetch('https://api.pinata.cloud/pinning/hashMetadata', options)
-          .then(response => console.log(response))
-          .catch(err => console.error(err));
-      }
-    } catch (err) {
-      console.log("Error: ", err);
-    }
-  };
 
 
   const sliderRef = useRef(null);
@@ -83,6 +41,66 @@ function Home() {
   // const handlePrev = () => {
   //   sliderRef.current.slidePrev();
   // }
+  // numberOfSales
+  const [maxPriceNftData, setMaxPriceNftData] = useState({
+    name: '',
+    tokenUrl: '',
+    soldPrice: 0,
+    keyvalues: {}
+  });
+
+  const [maxPriceNftImageUrl, setMaxPriceNftImageUrl] = useState();
+  const [top10Nfts, setTop10Nfts] = useState([]);
+  const findMaxPriceSoldNft = nftList => {
+    const priceHistory = JSON.parse(nftList[0].metadata.keyvalues.priceHistory);
+    let soldPrice = priceHistory[0]?.price;
+    let maxPriceSoldNft = nftList[0];
+    // if (nftList.length === 1)  {
+    //   const { name, ipfs_pin_hash, keyvalues } = maxPriceSoldNft.metadata;
+    //   return { name, tokenUrl: ipfs_pin_hash, soldPrice, keyvalues }
+    // };
+    for (let i = 0; i < nftList.length; i++) {
+      const targetNftPriceHistory = JSON.parse(nftList[i].metadata.keyvalues.priceHistory);
+      const latestSoldPrice = targetNftPriceHistory[0].price;
+      if (latestSoldPrice > soldPrice) { // priceHistory
+        soldPrice = latestSoldPrice;
+        maxPriceSoldNft = nftList[i];
+      }
+    }
+    const { name, keyvalues } = maxPriceSoldNft.metadata;
+    return { name, tokenUrl: maxPriceSoldNft.ipfs_pin_hash, soldPrice, keyvalues }
+  };
+
+  const findTop10NumberOfSales = nftList => {
+    nftList.sort((a, b) => a.metadata.keyvalues.numberOfSales - b.metadata.keyvalues.numberOfSales);
+    return nftList.slice(0, 10);
+  }
+
+  const getTopRanking = async () => {
+    const res = await fetch('https://api.pinata.cloud/data/pinList?pinStart=20240510&metadata[keyvalues][numberOfSales]={"value":"0","op":"gt"}', ipfsGetOptions);
+    const result = await res.json();
+    console.log('result: ', result);
+    const nftList = result.rows;
+    const maxPriceSoldNft = findMaxPriceSoldNft(nftList);
+    const top10NftList = findTop10NumberOfSales(nftList);
+    setMaxPriceNftData(maxPriceSoldNft);
+    setTop10Nfts(top10NftList);
+  }
+
+  useEffect(() => {
+    getTopRanking();
+  }, []);
+
+  // useEffect(() => {
+  //   async function fetchImageUrl() {
+  //     const result = await getIpfsTokenData(maxPriceNftData.tokenUrl);
+  //     const imageUrl = result.image;
+  //     setMaxPriceNftImageUrl(imageUrl);
+  //   }
+  //   if (maxPriceNftData.tokenUrl) {
+  //     fetchImageUrl();
+  //   }
+  // }, [maxPriceNftData]);
 
   return (
     <Background>
@@ -94,8 +112,8 @@ function Home() {
               <TestMovingBg>
                 {
                   [test1, test2, test3, test4, test1, test2, test3, test4].map((item, index) => (
-                    <ImgWrap>
-                      <Img key={index} src={item} alt="test" />
+                    <ImgWrap key={`testMovingBg-${index}`}>
+                      <Img src={item} alt="test" />
                     </ImgWrap>
                   ))
                 }
@@ -105,8 +123,8 @@ function Home() {
               <TestMovingBg>
                 {
                   [test1, test2, test3, test4, test1, test2, test3, test4].reverse().map((item, index) => (
-                    <ImgWrap>
-                      <Img key={index} src={item} alt="test" />
+                    <ImgWrap key={`testMovingBg2-${index}`}>
+                      <Img src={item} alt="test" />
                     </ImgWrap>
                   ))
                 }
@@ -145,8 +163,8 @@ function Home() {
               <TestMovingBg>
                 {
                   [test1, test2, test3, test4, test1, test2, test3, test4].map((item, index) => (
-                    <ImgWrap>
-                      <Img key={index} src={item} alt="test" />
+                    <ImgWrap key={`testMovingBg3-${index}`}>
+                      <Img src={item} alt="test" />
                     </ImgWrap>
                   ))
                 }
@@ -156,8 +174,8 @@ function Home() {
               <TestMovingBg>
                 {
                   [test1, test2, test3, test4, test1, test2, test3, test4].reverse().map((item, index) => (
-                    <ImgWrap>
-                      <Img key={index} src={item} alt="test" />
+                    <ImgWrap key={`testMovingBg4-${index}`}>
+                      <Img src={item} alt="test" />
                     </ImgWrap>
                   ))
                 }
@@ -179,13 +197,13 @@ function Home() {
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
                   {
-                    [1, 2, 3].map((item, index) => (
-                      <TopItemBox>
+                    [top10Nfts].slice(0, 3).map((nft, index) => (
+                      <TopItemBox key={`top10-${index}`}>
                         <TopImgWrap>
                           <img src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${temp[index].image}`} />
                         </TopImgWrap>
                         <TopContent>
-                          <h3>{item} name</h3>
+                          {/* <h3>{item} name</h3> */}
                           <p>price</p>
                         </TopContent>
                       </TopItemBox>
@@ -215,19 +233,7 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {
-                    [1].map((item, index) => (
-                      <TopItemBox>
-                        <TopImgWrap>
-                          <img src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${temp[index].image}`} />
-                        </TopImgWrap>
-                        <TopContent>
-                          <h3>{item} name</h3>
-                          <p>price</p>
-                        </TopContent>
-                      </TopItemBox>
-                    ))
-                  }
+                  <HomeNftCard nftData={maxPriceNftData} />
                 </ul>
                 <ButtonArea>
                   <ButtonBox>

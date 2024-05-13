@@ -256,6 +256,30 @@ const MintABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "collectionNftIds",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
@@ -267,6 +291,25 @@ const MintABI = [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+    ],
+    name: "getCollectionNftIds",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",
@@ -678,9 +721,9 @@ const MintABI = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "_tokenName",
-        type: "string",
+        internalType: "string[]",
+        name: "_fileNameList",
+        type: "string[]",
       },
       {
         internalType: "string",
@@ -886,8 +929,8 @@ const SaleNftABI = [
   },
 ] as const;
 
-export const MintAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-export const SaleNftAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+export const MintAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const SaleNftAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 export const SaleNftContract = new web3.eth.Contract(

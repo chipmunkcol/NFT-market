@@ -5,7 +5,7 @@ import { web3, MintContract, SaleNftContract, SaleNftAddress } from "../../contr
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 
 // interface props {
 //   nft: {
@@ -31,15 +31,6 @@ const NonSaleNftCard = ({ nft }) => {
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
 
-  const C_setOnsaleNft = async (price) => {
-    const weiPrice = web3.utils.toWei(price, "ether");
-    const result = await SaleNftContract.methods
-      .setOnsaleNft(nftId, weiPrice)
-      .send({
-        from: account,
-      });
-    return result;
-  }
 
   const registerForSaleHandler = async () => {
     const price = Number(priceRef.current?.value);
@@ -53,7 +44,7 @@ const NonSaleNftCard = ({ nft }) => {
     console.log('result: ', approveResult);
     if (!approveResult.status) return;
 
-    const setOnsaleResult = await C_setOnsaleNft(price);
+    const setOnsaleResult = await C_setOnsaleNft(nftId, price, account);
     if (setOnsaleResult.status) {
       alert("판매 등록이 완료되었습니다.");
       setOnsaleTrigger(prev => !prev);

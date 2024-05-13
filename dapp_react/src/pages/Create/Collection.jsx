@@ -15,9 +15,10 @@ function Collection() {
 
   const [files, setFiles] = useState(null);
   const onchangeHandler = (e) => {
-    setFiles(Object.values(e.target.files));
+    const fileList = Object.values(e.target.files)
+    setFiles(fileList);
 
-    Object.values(e.target.files).forEach(file => {
+    fileList.forEach(file => {
       const reader = new FileReader();
       reader.onload = () => {
         const res = JSON.parse(reader.result);

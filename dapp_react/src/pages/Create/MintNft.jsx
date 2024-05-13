@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import iconUpload from "../../assets/images/icon-upload.png";
+import { getImageIpfsHash } from "../../hooks/common";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
@@ -110,22 +111,7 @@ function MintNft() {
     setTags("");
   };
 
-  const getImageIpfsHash = async file => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch(
-      "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-        },
-        body: formData,
-      }
-    );
-    const resData = await res.json();
-    return resData.IpfsHash;
-  }
+
 
   const pinFileToIPFS = async (metaData) => {
     const formData = new FormData();

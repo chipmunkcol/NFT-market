@@ -1,3 +1,5 @@
+import { web3, SaleNftContract } from "../../contracts/index";
+
 export const getImageUrl = (imageIpfsHash) => {
   return `${
     import.meta.env.VITE_GATEWAY_URL
@@ -103,4 +105,28 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
     ipfsPutOptions(jsonKeyvalues)
   );
   return result;
+};
+
+export const C_setOnsaleNft = async (nftId, price, account) => {
+  const weiPrice = web3.utils.toWei(price, "ether");
+  const result = await SaleNftContract.methods
+    .setOnsaleNft(nftId, weiPrice)
+    .send({
+      from: account,
+    });
+  return result;
+};
+
+export const getImageIpfsHash = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+    },
+    body: formData,
+  });
+  const resData = await res.json();
+  return resData.IpfsHash;
 };

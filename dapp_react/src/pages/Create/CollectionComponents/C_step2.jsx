@@ -1,4 +1,4 @@
-import { MintContract } from "../../../../contracts/index";
+import { MintContract, SaleNftContract, SaleNftAddress } from "../../../../contracts/index";
 import { useEffect, useState } from "react";
 import { S_Button } from "../../../styles/styledComponent"
 import styled from "styled-components";
@@ -6,33 +6,30 @@ import { Link, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
+import { C_setOnsaleNft, getImageIpfsHash, getImageUrl } from "../../../hooks/common";
 
 function C_step2() {
 
   const { collection, setCollection, account } = useContext(GlobalContext);
   const files = useOutletContext();
-  const inputRef = useRef(null);
-  const onClickInput = () => {
-    inputRef.current.click();
-  }
   const [progress, setProgress] = useState(0);
 
-  const getImageIpfsHash = async file => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch(
-      "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-        },
-        body: formData,
-      }
-    );
-    const resData = await res.json();
-    return resData.IpfsHash;
-  }
+  // const getImageIpfsHash = async file => {
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+  //   const res = await fetch(
+  //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+  //       },
+  //       body: formData,
+  //     }
+  //   );
+  //   const resData = await res.json();
+  //   return resData.IpfsHash;
+  // }
 
   const handleSubmisstion = async () => {
     const formData = new FormData();
@@ -40,29 +37,16 @@ function C_step2() {
       cidVersion: 0,
     });
 
-
-    // collection.nfts 에 각 nft의 ipfsHash를 추가
-    let imageIpfsList = [];
     let fileNameList = [];
-    Array.from(files).forEach(async (file, index) => {
+    Array.from(files).forEach(async (file) => {
       formData.append("file", file);
       fileNameList.push(file.name);
-      if (!collection.nfts[index].image) {
-        const imageIpfs = await getImageIpfsHash(file);
-        imageIpfsList.push(imageIpfs);
-      } else {
-        imageIpfsList.push(collection.nfts[index].image);
-      }
     })
 
-    // collection.nfts의 각 image 에 ipfsHash 추가
-    const newCollectionNfts = collection.nfts.map((nft, index) => {
-      return {
-        ...nft,
-        fileName: fileNameList[index],
-        image: imageIpfsList[index]
-      }
-    });
+    let tempIpfsHash = jsonData.image;
+    if (!tempIpfsHash) {
+      tempIpfsHash = await getImageIpfsHash(file);
+    }
 
     const metaData = JSON.stringify({
       name: collection.name,
@@ -70,8 +54,8 @@ function C_step2() {
         owner: account,
         description: collection.description,
         attributes: JSON.stringify(collection.attributes),
-        nfts: JSON.stringify(newCollectionNfts),
-        isOnsale: String(true),
+        fileNames: JSON.stringify(fileNameList),
+        onsaleFileList: JSON.stringify(fileNameList),
         isCollection: String(true),
       }
     });
@@ -92,19 +76,23 @@ function C_step2() {
     console.log('ipfsHash: ', collectionIpfsHash);
 
     if (collectionIpfsHash) {
-      try {
-        collection.nfts.forEach(async nft => {
-          const mintResult = await MintContract.methods
-            .createCollectionNft(nft.name, nft.image, nft.fileName, collection.description, collection.attributes)
-            .send({ from: account });
-          if (mintResult.status) {
-            setProgress(progress + 1);
-          }
-        });
-        alert("NFT 발행 성공");
-      } catch (err) {
-        console.log(err);
-      }
+      const isHide = true;
+      const startAt = new Date(startAtRef.current).getTime() - Date.now();
+      const mintResult = await MintContract.methods.userMintCollection(fileNameList, collectionIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
+      if (!mintResult.status) return;
+      const getCollectionResult = await MintContract.methods.getCollectionNftIds(collectionIpfsHash).call();
+      console.log('result: ', getCollectionResult);
+
+      // 위 result 바탕으로 반복문 approve!
+      getCollectionResult.forEach(async (nftId) => {
+        const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+        console.log('result: ', approveResult);
+        if (!approveResult.status) return;
+
+        const onsaleResult = await C_setOnsaleNft(nftId, perPriceRef.current, account);
+        console.log('onsaleResult: ', onsaleResult);
+      });
+
     }
   }
 
@@ -112,14 +100,97 @@ function C_step2() {
     console.log(progress);
   }, [progress]);
 
+  const perPriceRef = useRef(null);
+  const startAtRef = useRef(null);
+  const onChangePerPrice = (e) => {
+    perPriceRef.current = e.target.value;
+    // setCollection((prev) => ({
+    //   ...prev,
+    //   perPrice: e.target.value
+    // }))
+  }
+
+  const onChangeStartAtData = (e) => {
+    console.log('e.target.value: ', e.target.value);
+    startAtRef.current = e.target.value;
+    // setCollection((prev) => ({
+    //   ...prev,
+    //   startAt: e.target.value
+    // }));
+  };
+
+  const [file, setFile] = useState(null);
+  const [jsonData, setJsonData] = useState({
+    name: "",
+    description: "",
+    image: "",
+    attributes: [
+      {
+        trait_type: "",
+        value: "",
+      }
+    ],
+  });
+
+  const onchangeDescData = (e) => {
+    setJsonData((prev) => ({
+      ...prev,
+      description: e.target.value,
+    }));
+  };
+
+  const onchangeHandler = async (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+
+    if (file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const res = JSON.parse(reader.result);
+
+        const name = res.name ? res.name : "";
+        const description = res.description ? res.description : "";
+        const image = res.image ? res.image : "";
+        const attributes = res.attributes ? res.attributes : [
+          {
+            trait_type: "",
+            value: "",
+          }
+        ];
+        const newJsonData = {
+          name,
+          description,
+          image,
+          attributes,
+        };
+        setJsonData(prev => (
+          {
+            ...prev,
+            ...newJsonData
+          }
+        ));
+      }
+      reader.readAsText(file);
+    }
+  };
+  const inputFileRef = useRef();
+  const onClickFileHandler = () => {
+    inputFileRef.current.click();
+  };
+
+  const cancelHandler = () => {
+    setFile(null);
+    inputFileRef.current.value = "";
+  };
+
 
   return (
     <RightPart>
       <div>NFT 총 수량 {collection.filesLength}개</div>
       <InputLabel>NFT당 가격 * (일괄 적용됩니다)</InputLabel>
-      <InputText type="number" />
+      <InputText type="number" onChange={onChangePerPrice} />
       <InputLabel>민트 시작 날짜 및 시간</InputLabel>
-      <InputText type="date" />
+      <InputText type="date" onChange={onChangeStartAtData} />
       <div>
         <h2 style={{ marginBottom: '10px' }}>사전 공개</h2>
         <div style={{ display: 'flex' }}>
@@ -129,18 +200,38 @@ function C_step2() {
             </div>
             <div style={{ marginBottom: '10px', color: 'blue', cursor: 'pointer' }}>더 알아보기</div>
             <InputLabel>사전 공개 설명</InputLabel>
-            <InputTextArea style={{ width: '80%', height: '100px' }} placeholder="Bycl monkey is Comming soon!" />
+            <InputTextArea
+              style={{ width: '80%', height: '100px' }}
+              placeholder="Bycl monkey is Comming soon!"
+              value={jsonData.description}
+              onChange={onchangeDescData}
+            />
 
           </div>
           <PreReleaseWrap>
             <div style={{ height: '150px' }}>
-              <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickInput}>
-                <div style={{ width: '20px', height: '20px', fontSize: '20px' }}>
-                  {/* <img src={iconUpload} alt="upload" /> */}
-                  +
-                </div>
+              <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickFileHandler}>
+                {!file ? (
+                  <>
+                    <div style={{ width: '20px', height: '20px', fontSize: '20px' }}>
+                      +
+                    </div>
+                    <input
+                      ref={inputFileRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={onchangeHandler}
+                    />
+                  </>) : (
+                  <PreviewFile>
+                    <img src={jsonData.image ? getImageUrl(jsonData.image) : URL.createObjectURL(file)} alt="preview" />
+                    <CancelWrap>
+                      <CancelBtn onClick={cancelHandler}>x</CancelBtn>
+                    </CancelWrap>
+                  </PreviewFile>
+                )
+                }
               </div>
-              <input ref={inputRef} type="file" style={{ display: 'none' }} />
             </div>
             <div style={{ height: '52px', padding: '1rem' }}>myCollection</div>
           </PreReleaseWrap>
@@ -188,6 +279,34 @@ function C_step2() {
     </RightPart>
   )
 }
+
+const PreviewFile = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 425px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.75rem;
+  }
+`;
+
+const CancelWrap = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+`;
+const CancelBtn = styled.button`
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  &:hover {
+    color: #cccccc;
+  }
+`;
 
 const MyAddressBox = styled.div`
   display: flex;
