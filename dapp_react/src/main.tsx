@@ -11,6 +11,8 @@ import { ThemeProvider } from "styled-components";
 import App from "./App";
 import Home from "./pages/Home";
 import MarketPlace from "./pages/MarketPlace.jsx";
+import MarketPlaceCollection from "./pages/marketPlace/Collection.jsx";
+import MarketPlacenNft from "./pages/marketPlace/Nft.jsx";
 import Create from "./pages/Create.jsx";
 import MyPage from "./pages/MyPage";
 import MintNft from "./pages/Create/MintNft.jsx";
@@ -36,6 +38,16 @@ const router = createBrowserRouter([
       {
         path: "market-place",
         element: <MarketPlace />,
+        children: [
+          {
+            path: "nft",
+            element: <MarketPlacenNft />,
+          },
+          {
+            path: "collection",
+            element: <MarketPlaceCollection />,
+          },
+        ],
       },
       {
         path: "nft-detail/:ipfsHash/:nftId",

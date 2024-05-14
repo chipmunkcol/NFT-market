@@ -142,7 +142,7 @@ function App() {
           <Link to={'/'}>
             <img src="vite.svg" alt="logo" />
           </Link>
-          <Link to={'/market-place'}>
+          <Link to={'/market-place/nft'}>
             <Nav>Marketplace</Nav>
           </Link>
           <Link to={'/create'}>

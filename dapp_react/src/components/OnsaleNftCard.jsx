@@ -102,9 +102,7 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
       <Styled.Name>{nftName}</Styled.Name>
       <OnsalePriceWrap>
         가격 : {nftPrice} ETH ($
-        {(Number(nftPrice) * 2928)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+        {(Number(nftPrice) * 2928).toFixed(2)}
         )
       </OnsalePriceWrap>
       {

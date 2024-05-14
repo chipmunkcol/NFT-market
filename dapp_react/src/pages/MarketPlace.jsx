@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 // import { MintContract, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import { SaleNftContract } from "../../contracts/index"
-import OnsaleNftCard from "../components/OnsaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 // import { S_Button, S_Wallet_Button } from "../styles/styledComponent";
 import bgMain from '../assets/images/bg-main.png';
@@ -10,105 +9,19 @@ import { ReactComponent as iconFind } from '../assets/images/icon-find.svg';
 import iconGrid4 from '../assets/images/icon-grid4.png';
 import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
+import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { useNavigate, useHref, useMatch, useParams, useSearchParams } from 'react-router-dom'
 // import { useInView } from 'react-intersection-observer';
 
 // const dummyData = [{ name: '111', price: 3, isOnsale: true }, { name: '222', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }];
 const MarketPlace = () => {
-  const { onsaleNftList, setOnsaleNftList, account, onsaleTrigger, purchaseTrigger } = useContext(GlobalContext);
-  const getAllonsaleNftListRef = useRef(null);
-  // const getPartOnsaleNftListRef = useRef(null);
-  const [offset, setOffset] = useState(0);
-  const allNftCount = useRef(0);
-
-  const [onsaleNftsInContract, setOnsaleNftsInContract] = useState([]);
-
-  // let offset = 1;
-
-  // const { ref, inView, entr } = useInView({
-  //   threshold: 0,
-  // })
+  const { onsaleNftList, setOnsaleNftList, getAllonsaleNftListRef, account, onsaleTrigger, purchaseTrigger } = useContext(GlobalContext);
+  const navigate = useNavigate();
   const searchRef = useRef('');
-  const encodedOffset = encodeURIComponent(
-    offset
-  );
-
-  const encodedSearchQuery = encodeURIComponent(
-    // `{"value":"${searchRef.current}&", "op":"iLike"}`
-    searchRef.current
-  );
-
-
-  useEffect(() => {
-    async function fetchOnsaleNftIdsInContract() {
-      const _onsaleNftIdsInContract = await SaleNftContract.methods.getOnsaleNfts().call();
-      setOnsaleNftsInContract(_onsaleNftIdsInContract);
-    }
-    fetchOnsaleNftIdsInContract();
-  }, [onsaleTrigger]);
-
-  const getNewOnsaleNfts = ipfsNftsList => {
-    const newOnsaleNfts = [];
-    ipfsNftsList.forEach(data => {
-      const nftName = data.metadata.name;
-      const tokenUrl = data.ipfs_pin_hash;
-      const metaData = data.metadata.keyvalues;
-      newOnsaleNfts.push({ ...metaData, nftName, tokenUrl });
-    })
-    return newOnsaleNfts;
-  }
-
-  const checkContractNftsToIpfsNfts = (onsaleNftsInContract, onsaleNftsInIpfs) => {
-    const commonNfts = onsaleNftsInIpfs.filter(ipfsNft => onsaleNftsInContract.some(contractNft => (parseInt(contractNft.nftId) === ipfsNft.nftId && contractNft.tokenUrl === ipfsNft.tokenUrl)));
-    return commonNfts
-  }
-
-  function getOnsaleNftList() {
-    const options = {
-      method: "GET",
-      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-    };
-
-    if (searchRef.current) {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-          setOnsaleNftList(commonNfts);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
-    } else {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-
-          setOnsaleNftList(prev => [...prev, ...commonNfts]);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
-    }
-  }
-
-  useEffect(() => {
-    if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
-    // if (onsaleNftList.length - 10 <= offset * 10) return;
-    if (onsaleNftsInContract.length < 1) return;
-
-    getOnsaleNftList();
-  }, [onsaleNftsInContract, offset, onsaleTrigger, purchaseTrigger]);
 
   const onChangeSearch = e => {
     searchRef.current = e.target.value;
   }
-
   // grid 5, 7
   const [grid, setGrid] = useState('1fr 1fr 1fr 1fr 1fr');
   const [cardWidth, setCardWidth] = useState('200px');
@@ -121,16 +34,16 @@ const MarketPlace = () => {
     setCardWidth('180px');
   }
 
-  // search 구현
-  // const navigate = useNavigate();
-
   const searchNfts = async () => {
-    setOffset(0);
+    navigate(`/market-place/nft?query=${searchRef.current}`);
   };
 
   const onKeydownHandler = e => {
     e.key === 'Enter' && searchNfts();
   }
+
+  // search 구현
+  // const navigate = useNavigate();
 
   // sort 구현
   const onChangeSort = e => {
@@ -152,40 +65,17 @@ const MarketPlace = () => {
     setOnsaleNftList(sortedNfts);
   }
 
-  // 무한스크롤 구현
-  const [isLoading, setIsLoading] = useState(false);
-  const observerRef = useRef(null);
-  // const { a } = useParams();
-  // const [searchParams] = useSearchParams();
-  // const quereyParam = searchParams.get('query');
-  // console.log('quereyParam: ', quereyParam);
-  // console.log('a: ', a);
-
-  const infiniteScrollHandler = () => {
-    setIsLoading(true);
-    setOffset(prev => prev + 1);
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entryies) => {
-      if (entryies[0].isIntersecting && !isLoading && getAllonsaleNftListRef.current?.length > 0) {
-        infiniteScrollHandler();
-      }
-    }, { threshold: 1 });
-
-    observerRef.current = observer;
-    observer.observe(document.querySelector('#observer-target'));
-
-    return () => observer.disconnect();
-  }, [isLoading]);
 
   return (
     <Background>
       <Container>
         <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace
-          <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
-          <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
+          <Link to={'nft'}>
+            <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
+          </Link>
+          <Link to={'collection'} >
+            <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
+          </Link>
         </h1>
         <div style={{ padding: '10px 0' }}>
           <FlexWrap>
@@ -245,18 +135,7 @@ const MarketPlace = () => {
               </div>
             </LeftPart>
             <RightPart>
-              {
-                onsaleNftList.length < 1 ? (<div>판매중인 NFT가 없습니다.</div>) : (
-                  <MarketWrap $grid={grid}>
-                    {
-                      onsaleNftList.map(onsaleNft => (
-                        <OnsaleNftCard key={`marketplace-${onsaleNft.nftId}`} nft={onsaleNft} account={account} cardWidth={cardWidth} />
-                      ))
-                    }
-                  </MarketWrap>
-                )
-              }
-              <div id="observer-target" style={{ width: '100%', height: '100px', backgroundColor: 'red' }}></div>
+              <Outlet context={[grid, cardWidth]} />
             </RightPart>
           </FlexWrap>
         </div>
@@ -360,11 +239,6 @@ const Container = styled.div`
   padding: 1rem 2rem;
 `;
 
-const MarketWrap = styled.div`
-  display: grid;
-  grid-template-columns: ${props => props.$grid};
-  gap: 10px;
-`;
 
 export default MarketPlace;
 

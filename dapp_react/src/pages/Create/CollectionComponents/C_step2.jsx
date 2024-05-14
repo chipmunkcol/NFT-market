@@ -6,7 +6,7 @@ import { Link, json, useNavigate, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
-import { C_setOnsaleNft, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS } from "../../../hooks/common";
+import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateFormData } from "../../../hooks/common";
 
 function C_step2() {
 
@@ -43,39 +43,25 @@ function C_step2() {
     setFile(null);
   }
 
-  // const getImageIpfsHash = async file => {
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-  //   const res = await fetch(
-  //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-  //       },
-  //       body: formData,
-  //     }
-  //   );
-  //   const resData = await res.json();
-  //   return resData.IpfsHash;
-  // }
-
   const handleSubmisstion = async () => {
     // const formData = new FormData();
+    const validatedResult = validateFormData(account, jsonData, file);
+    if (!validatedResult) return;
 
     let fileNameList = [];
     let nftKeyvaluesList = [];
-    Array.from(files).forEach(async (file) => {
+    Array.from(files).forEach(async (file, index) => {
       // formData.append("file", file);
       const fileName = file.name
       fileNameList.push(fileName);
       const nftKeyvaluesObject = {
+        name: collection.nfts[index].name,
         fileName,
         owner: account,
-        isOnsale: String(false),
+        isOnsale: String(true),
         nftPrice: perPriceRef.current,
         numberOfSales: 0,
-        priceHistory: [],
+        priceHistory: JSON.stringify([]),
       };
       nftKeyvaluesList.push(nftKeyvaluesObject);
     })
@@ -92,11 +78,10 @@ function C_step2() {
         owner: account,
         description: collection.description,
         attributes: JSON.stringify(collection.attributes),
-        // fileNames: JSON.stringify(fileNameList),
-        // onsaleFileList: JSON.stringify(fileNameList),
-        // nftPrice: perPriceRef.current,
+        isOnsale: String(true),
         nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
         isCollection: String(true),
+        numberOfSales: 0
       }
     });
 
@@ -104,24 +89,8 @@ function C_step2() {
     if (file.type === "application/json") {
       tempIpfsHash = await pinFileToIPFS(metaData);
     } else {
-      tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, jsonData, metaData);
+      tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, metaData, jsonData);
     }
-
-    // formData.append("pinataMetadata", metaData);
-    // formData.append("pinataOptions", pinataOptions);
-
-    // const options = {
-    //   method: 'POST',
-    //   headers: {
-    //     Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`
-    //   },
-    //   body: formData
-    // }
-
-    // const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", options);
-    // const resData = await res.json();
-    // const collectionIpfsHash = resData.IpfsHash;
-    // console.log('ipfsHash: ', collectionIpfsHash);
 
     if (tempIpfsHash) {
       const isHide = true;
@@ -132,7 +101,9 @@ function C_step2() {
       const getCollectionResult = await MintContract.methods.getCollectionData(tempIpfsHash).call();
       console.log('result: ', getCollectionResult);
 
-      // 위 result 바탕으로 반복문 approve!
+      const updateMetadataResult = await P_AddNftIdOnCollection(tempIpfsHash, getCollectionResult.ids);
+      console.log('updateMetadataResult: ', updateMetadataResult);
+
       getCollectionResult.ids.forEach(async (nftId) => {
         const parsedId = parseInt(nftId);
         const approveResult = await MintContract.methods.approve(SaleNftAddress, parsedId).send({ from: account });
@@ -141,6 +112,7 @@ function C_step2() {
 
         const onsaleResult = await C_setOnsaleNft(parsedId, perPriceRef.current, account);
         console.log('onsaleResult: ', onsaleResult);
+        if (!onsaleResult.status) return;
       });
       resetFormData();
       navigate('/create-collection/step-1');
@@ -174,6 +146,13 @@ function C_step2() {
     setJsonData((prev) => ({
       ...prev,
       description: e.target.value,
+    }));
+  };
+
+  const onchangeNameData = (e) => {
+    setCollection((prev) => ({
+      ...prev,
+      name: e.target.value,
     }));
   };
 
@@ -225,6 +204,8 @@ function C_step2() {
   return (
     <RightPart>
       <div>NFT 총 수량 {collection.filesLength}개</div>
+      <InputLabel>Collection Name</InputLabel>
+      <InputText type="text" onChange={onchangeNameData} />
       <InputLabel>NFT당 가격 * (일괄 적용됩니다)</InputLabel>
       <InputText type="number" onChange={onChangePerPrice} />
       <InputLabel>민트 시작 날짜 및 시간</InputLabel>

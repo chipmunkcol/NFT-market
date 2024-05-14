@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import iconUpload from "../../assets/images/icon-upload.png";
-import { getImageIpfsHash } from "../../hooks/common";
+import { getImageIpfsHash, validateFormData } from "../../hooks/common";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
@@ -75,26 +75,6 @@ function MintNft() {
     inputFileRef.current.click();
   };
 
-  const validateFormData = () => {
-    if (!account) {
-      alert("지갑을 연결해주세요");
-      return false;
-    }
-    if (!jsonData.name) {
-      alert("이름을 입력해주세요");
-      return false;
-    }
-    if (!jsonData.description) {
-      alert("설명을 입력해주세요");
-      return false;
-    }
-    if (!file) {
-      alert("파일을 선택해주세요");
-      return false;
-    }
-    return true;
-  };
-
   const resetFormData = () => {
     setJsonData({
       name: "",
@@ -159,7 +139,7 @@ function MintNft() {
   // 판매등록 함수
   const handleSubmission = async () => {
     try {
-      const validateResult = validateFormData();
+      const validateResult = validateFormData(account, jsonData, file);
       if (!validateResult) return;
 
       let imageIpfsHash = jsonData.image;
@@ -170,9 +150,11 @@ function MintNft() {
       const metaData = JSON.stringify({
         name: jsonData.name,
         keyvalues: {
+          name: jsonData.name,
           owner: account,
           description: jsonData.description,
           isOnsale: String(false),
+          isCollection: String(false)
         },
       });
 

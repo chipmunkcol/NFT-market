@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState } from "react";
+import React, { createContext, useMemo, useRef, useState } from "react";
 
 export const GlobalContext = createContext({});
 
@@ -9,6 +9,7 @@ const GlobalProvider = ({ children }) => {
   const [trigger, setTrigger] = useState(false);
   const [onsaleTrigger, setOnsaleTrigger] = useState(false);
   const [purchaseTrigger, setPurchaseTrigger] = useState(false);
+  const getAllonsaleNftListRef = useRef(null);
   const [nft, setNft] = useState({
     name: "",
     description: "",
@@ -84,7 +85,8 @@ const GlobalProvider = ({ children }) => {
     onsaleTrigger,
     setOnsaleTrigger,
     purchaseTrigger,
-    setPurchaseTrigger
+    setPurchaseTrigger,
+    getAllonsaleNftListRef
   }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex, onsaleTrigger, purchaseTrigger])
   return (
     <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>

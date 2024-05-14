@@ -5,7 +5,7 @@ import { SaleNftContract } from "../../../contracts";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 
-const Collection = () => {
+const Nft = () => {
   const { onsaleNftList, setOnsaleNftList, getAllonsaleNftListRef, account, onsaleTrigger, purchaseTrigger } = useContext(GlobalContext);
   const [grid, cardWidth] = useOutletContext();
   const allNftCount = useRef(0);
@@ -37,16 +37,13 @@ const Collection = () => {
     fetchOnsaleNftIdsInContract();
   }, [onsaleTrigger]);
 
-  // ipfsNftsList[0].metadata.keyvalues.nftKeyvaluesList
   const getNewOnsaleNfts = ipfsNftsList => {
-    let newOnsaleNfts = [];
+    const newOnsaleNfts = [];
     ipfsNftsList.forEach(data => {
-      // const nftName = data.metadata.name;
-      const collectionIpfs = data.ipfs_pin_hash;
-      const parsedCollectionNftList = JSON.parse(data.metadata.keyvalues.nftKeyvaluesList);
-      const newCollectionNftList = parsedCollectionNftList.map(v => ({ ...v, nftName: v.name, tokenUrl: `${collectionIpfs}/${v.fileName}` }))
-      newOnsaleNfts = [...newOnsaleNfts, ...newCollectionNftList];
-      // newOnsaleNfts.push({ ...metaData, nftName, tokenUrl });
+      const nftName = data.metadata.name;
+      const tokenUrl = data.ipfs_pin_hash;
+      const metaData = data.metadata.keyvalues;
+      newOnsaleNfts.push({ ...metaData, nftName, tokenUrl });
     })
     return newOnsaleNfts;
   }
@@ -63,7 +60,7 @@ const Collection = () => {
     };
 
     if (query) {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`, options)
+      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
         .then((response) => response.json())
         .then((response) => {
           const ipfsDatas = response.rows;
@@ -75,13 +72,13 @@ const Collection = () => {
         })
         .catch((err) => console.error(err));
     } else {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`, options)
+      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`, options)
         // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
         // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isCollection":{"value":"false","op":"eq"}}`, options)
         .then((response) => response.json())
         .then((response) => {
           const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
+          allNftCount.current = response.count;
           const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
           const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
 
@@ -142,7 +139,7 @@ const Collection = () => {
   )
 }
 
-export default Collection;
+export default Nft;
 
 const MarketWrap = styled.div`
   display: grid;

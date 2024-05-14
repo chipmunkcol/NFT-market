@@ -37,7 +37,8 @@ export const ipfsPutOptions = (jsonKeyvalues) => {
 };
 
 export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
-  const { numberOfSales, priceHistory, owner } = ipfsData.metadata.keyvalues;
+  const { numberOfSales, priceHistory, owner, isCollection } =
+    ipfsData.metadata.keyvalues;
   const checkNumberOfSales = numberOfSales
     ? { numberOfSales: numberOfSales }
     : { numberOfSales: 0 };
@@ -53,6 +54,7 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
       owner,
       isOnsale: String(true),
       nftPrice: price,
+      isCollection: String(isCollection),
       ...checkNumberOfSales,
       ...checkPriceHistory,
     },
@@ -72,6 +74,33 @@ export const getTargetNftToIpfsDataMetadata = async (tokenUrl) => {
   );
   const result = await res.json();
   return result.rows[0];
+};
+
+export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
+  const res = await getTargetNftToIpfsDataMetadata(tokenUrl);
+  const nftKeyvaluesList = JSON.parse(res.metadata.keyvalues.nftKeyvaluesList);
+
+  const _newNftKeyvaluesList = nftKeyvaluesList.map((nft, index) => ({
+    ...nft,
+    nftId: parseInt(nftIds[index]),
+  }));
+  const newNftKeyvaluesList = JSON.stringify(_newNftKeyvaluesList);
+
+  const name = res.metadata.name ? res.metadata.name : "";
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: tokenUrl,
+    name,
+    keyvalues: {
+      ...res.metadata.keyvalues,
+      nftKeyvaluesList: newNftKeyvaluesList,
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
 };
 
 export const getAddedPriceHistory = (priceHistory, owner, price) => {
@@ -131,14 +160,15 @@ export const getImageIpfsHash = async (file) => {
   return resData.IpfsHash;
 };
 
-export const pinJsonToIPFS = async (imageIpfsHash, jsonData, metaData) => {
+export const pinJsonToIPFS = async (imageIpfsHash, metaData, jsonData) => {
   const { name, description, attributes } = jsonData;
   const jsonContent = JSON.stringify({
     name,
     description,
     image: imageIpfsHash,
-    attributes,
+    attributes: JSON.stringify(attributes),
   });
+  // const jsonMetadata = JSON.stringify(metaData);
 
   const options = {
     method: "POST",
@@ -178,4 +208,24 @@ export const pinFileToIPFS = async (files, metaData) => {
   });
   const result = await res.json();
   return result.IpfsHash;
+};
+
+export const validateFormData = (account, jsonData, file) => {
+  if (!account) {
+    alert("지갑을 연결해주세요");
+    return false;
+  }
+  if (!jsonData.name) {
+    alert("이름을 입력해주세요");
+    return false;
+  }
+  if (!jsonData.description) {
+    alert("설명을 입력해주세요");
+    return false;
+  }
+  if (!file) {
+    alert("파일을 선택해주세요");
+    return false;
+  }
+  return true;
 };

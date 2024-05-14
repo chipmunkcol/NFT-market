@@ -2,7 +2,7 @@ import styled from "styled-components";
 import useGetImgaeUrl from "../../../hooks/useGetImageUrl";
 
 const HomeNftCard = ({ nftData }) => {
-  const { name, tokenUrl, keyvalues } = nftData;
+  const { name, tokenUrl, nftPrice } = nftData;
   const imageUrl = useGetImgaeUrl(tokenUrl);
 
   return (
@@ -14,8 +14,8 @@ const HomeNftCard = ({ nftData }) => {
         <h3>{name}</h3>
         {
           nftData.soldPrice ? (
-            <p>{nftData.soldPrice} ETH</p>
-          ) : <p>{keyvalues.nftPrice} ETH</p>
+            <p>{nftData?.soldPrice} ETH</p>
+          ) : <p>{nftPrice} ETH</p>
         }
       </TopContent>
     </TopItemBox>

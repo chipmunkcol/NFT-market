@@ -45,14 +45,14 @@ function Home() {
   const [maxPriceNftData, setMaxPriceNftData] = useState({
     name: '',
     tokenUrl: '',
-    soldPrice: 0,
-    keyvalues: {}
+    nftId: 0,
+    nftPrice: 0,
   });
 
   const [maxPriceNftImageUrl, setMaxPriceNftImageUrl] = useState();
   const [top10Nfts, setTop10Nfts] = useState([]);
   const findMaxPriceSoldNft = nftList => {
-    const priceHistory = JSON.parse(nftList[0].metadata.keyvalues.priceHistory);
+    const priceHistory = JSON.parse(nftList[0].priceHistory);
     let soldPrice = priceHistory[0]?.price;
     let maxPriceSoldNft = nftList[0];
     // if (nftList.length === 1)  {
@@ -60,15 +60,14 @@ function Home() {
     //   return { name, tokenUrl: ipfs_pin_hash, soldPrice, keyvalues }
     // };
     for (let i = 0; i < nftList.length; i++) {
-      const targetNftPriceHistory = JSON.parse(nftList[i].metadata.keyvalues.priceHistory);
+      const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
       const latestSoldPrice = targetNftPriceHistory[0].price;
       if (latestSoldPrice > soldPrice) { // priceHistory
         soldPrice = latestSoldPrice;
         maxPriceSoldNft = nftList[i];
       }
     }
-    const { name, keyvalues } = maxPriceSoldNft.metadata;
-    return { name, tokenUrl: maxPriceSoldNft.ipfs_pin_hash, soldPrice, keyvalues }
+    return { maxPriceSoldNft, soldPrice }
   };
 
   const findTop10NumberOfSales = nftList => {
@@ -78,9 +77,22 @@ function Home() {
 
   const getTopRanking = async () => {
     const res = await fetch('https://api.pinata.cloud/data/pinList?pinStart=20240510&metadata[keyvalues][numberOfSales]={"value":"0","op":"gt"}', ipfsGetOptions);
+    // const res = await fetch('https://api.pinata.cloud/data/pinList?pinStart=20240510&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}', ipfsGetOptions);
     const result = await res.json();
     console.log('result: ', result);
-    const nftList = result.rows;
+    const ipfsList = result.rows;
+    const mintNftList = ipfsList.filter(ipfsData => !ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+    const collectionGroup = ipfsList.filter(ipfsData => ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+
+    let collectionNftList = [];
+    collectionGroup.forEach(collection => {
+      const parsedNftList = JSON.parse(collection.nftKeyvaluesList);
+      const nftList = parsedNftList.map(nft => ({ ...nft, tokenUrl: collection.tokenUrl }));
+      collectionNftList = [...collectionNftList, ...nftList];
+    });
+
+    const nftList = [...mintNftList, ...collectionNftList];
+
     const maxPriceSoldNft = findMaxPriceSoldNft(nftList);
     const top10NftList = findTop10NumberOfSales(nftList);
     setMaxPriceNftData(maxPriceSoldNft);
