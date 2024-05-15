@@ -73,6 +73,14 @@ export const getNftListToIpfs = async (url) => {
   return result.rows;
 };
 
+export const getNftListAndCountToIpfs = async (url) => {
+  const res = await fetch(url, ipfsGetOptions);
+  const result = await res.json();
+  const ipfsDatas = result.rows;
+  const count = result.count;
+  return { ipfsDatas, count };
+};
+
 export const getTargetNftToIpfsDataMetadata = async (tokenUrl) => {
   const res = await fetch(
     `https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`,

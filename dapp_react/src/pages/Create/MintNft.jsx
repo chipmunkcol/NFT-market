@@ -36,6 +36,15 @@ function MintNft() {
     }));
   };
 
+  const onDropHandler = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    const files = [file];
+    const target = { files: files };
+    const temp = { target: target };
+    onchangeHandler(temp);
+  }
+
   const onchangeHandler = async (e) => {
     const file = e.target.files[0];
     setFile(file);
@@ -89,6 +98,7 @@ function MintNft() {
     });
     setFile(null);
     setTags("");
+    inputFileRef.current.value = "";
   };
 
 
@@ -192,8 +202,7 @@ function MintNft() {
   };
 
   const cancelHandler = () => {
-    setFile(null);
-    inputFileRef.current.value = "";
+    resetFormData();
   };
 
   const getIpfsToJsonData = ipfsUrl => {
@@ -213,7 +222,8 @@ function MintNft() {
             {!file ? (
               <InputFileBox
                 onClick={onClickFileHandler}
-                onDrop={onchangeHandler}
+                // onDragOver={onDropHandler}
+                onDrop={onDropHandler}
               >
                 <div style={{ width: "40px", height: "40px" }}>
                   <IconUpload />
@@ -274,7 +284,7 @@ function MintNft() {
           </RightPart>
         </FlexBox>
       </Container>
-    </Background>
+    </Background >
   );
 }
 
