@@ -4,6 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { SaleNftContract } from "../../../contracts";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useOutletContext, useSearchParams } from "react-router-dom";
+import { getNftListToIpfs, ipfsGetOptions } from "../../hooks/common";
 
 const Nft = () => {
   const { onsaleNftList, setOnsaleNftList, getAllonsaleNftListRef, account, onsaleTrigger, purchaseTrigger } = useContext(GlobalContext);
@@ -53,49 +54,32 @@ const Nft = () => {
     return commonNfts
   }
 
+  const getIpfsNftList = async (url) => {
+    const ipfsDatas = await getNftListToIpfs(url);
+    // allNftCount.current = response.count;
+    const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
+    const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
+    setOnsaleNftList(commonNfts);
+    console.log('newOnsaleNfts: ', newOnsaleNfts);
+  }
+
   function getOnsaleNftList() {
-    const options = {
-      method: "GET",
-      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-    };
-
     if (query) {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-          setOnsaleNftList(commonNfts);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
+      // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
+      getIpfsNftList(`https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`);
     } else {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`, options)
-        // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
-        // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isCollection":{"value":"false","op":"eq"}}`, options)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-
-          setOnsaleNftList(prev => [...prev, ...commonNfts]);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
+      // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`, options)
+      getIpfsNftList(`https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`);
     }
   }
 
   useEffect(() => {
-    if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
+    // if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
     // if (onsaleNftList.length - 10 <= offset * 10) return;
     // if (onsaleNftsInContract.length < 1) return;
 
     getOnsaleNftList();
-  }, [query, onsaleNftsInContract, offset, onsaleTrigger, purchaseTrigger]);
+  }, [onsaleNftsInContract, query, offset, onsaleTrigger, purchaseTrigger]);
 
   // 무한스크롤 구현
   const [isLoading, setIsLoading] = useState(false);

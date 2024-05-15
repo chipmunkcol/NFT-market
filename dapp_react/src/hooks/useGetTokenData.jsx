@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { getImageUrl, getIpfsTokenData } from "./common";
 
-const useGetImgaeUrl = tokenUrl => {
-  const [imageUrl, setImageUrl] = useState('');
+const useGetTokenData = tokenUrl => {
+  const [tokenData, setTokenData] = useState('');
   useEffect(() => {
     async function fetchImageUrl() {
       if (tokenUrl) {
         const result = await getIpfsTokenData(tokenUrl);
         const imageUrl = getImageUrl(result.image)
-        setImageUrl(imageUrl);
+        setTokenData({ ...result, image: imageUrl });
       }
     }
 
     fetchImageUrl();
   }, [tokenUrl]);
 
-  return imageUrl;
+  return tokenData;
 }
 
-export default useGetImgaeUrl;
+export default useGetTokenData;

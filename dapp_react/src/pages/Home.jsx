@@ -16,8 +16,10 @@ import premiumCrown from '../assets/images/premium-crown.png';
 
 import Slider from "../components/Slider";
 import { S_Button } from "../styles/styledComponent";
-import { getImageUrl, getIpfsTokenData, ipfsGetOptions } from "../hooks/common";
+import { getImageUrl, getIpfsTokenData, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
 import HomeNftCard from "./Create/homeComponents/HomeNftCard";
+import Top10NftCard from "./homeComponents/Top10NftCard";
+import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
 
 
 const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
@@ -42,14 +44,8 @@ function Home() {
   //   sliderRef.current.slidePrev();
   // }
   // numberOfSales
-  const [maxPriceNftData, setMaxPriceNftData] = useState({
-    name: '',
-    tokenUrl: '',
-    nftId: 0,
-    nftPrice: 0,
-  });
+  const [maxPriceNftData, setMaxPriceNftData] = useState();
 
-  const [maxPriceNftImageUrl, setMaxPriceNftImageUrl] = useState();
   const [top10Nfts, setTop10Nfts] = useState([]);
   const findMaxPriceSoldNft = nftList => {
     const priceHistory = JSON.parse(nftList[0].priceHistory);
@@ -67,34 +63,22 @@ function Home() {
         maxPriceSoldNft = nftList[i];
       }
     }
-    return { maxPriceSoldNft, soldPrice }
+    const newMaxPriceSoldNft = { ...maxPriceSoldNft, soldPrice };
+    return newMaxPriceSoldNft;
   };
 
   const findTop10NumberOfSales = nftList => {
-    nftList.sort((a, b) => a.metadata.keyvalues.numberOfSales - b.metadata.keyvalues.numberOfSales);
+    nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
     return nftList.slice(0, 10);
   }
 
   const getTopRanking = async () => {
-    const res = await fetch('https://api.pinata.cloud/data/pinList?pinStart=20240510&metadata[keyvalues][numberOfSales]={"value":"0","op":"gt"}', ipfsGetOptions);
-    // const res = await fetch('https://api.pinata.cloud/data/pinList?pinStart=20240510&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}', ipfsGetOptions);
-    const result = await res.json();
-    console.log('result: ', result);
-    const ipfsList = result.rows;
-    const mintNftList = ipfsList.filter(ipfsData => !ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
-    const collectionGroup = ipfsList.filter(ipfsData => ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+    const url = 'https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[keyvalues]={"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}';
+    const ipfsList = await getNftListToIpfs(url);
+    const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
 
-    let collectionNftList = [];
-    collectionGroup.forEach(collection => {
-      const parsedNftList = JSON.parse(collection.nftKeyvaluesList);
-      const nftList = parsedNftList.map(nft => ({ ...nft, tokenUrl: collection.tokenUrl }));
-      collectionNftList = [...collectionNftList, ...nftList];
-    });
-
-    const nftList = [...mintNftList, ...collectionNftList];
-
-    const maxPriceSoldNft = findMaxPriceSoldNft(nftList);
-    const top10NftList = findTop10NumberOfSales(nftList);
+    const maxPriceSoldNft = findMaxPriceSoldNft(mintNftList);
+    const top10NftList = findTop10NumberOfSales(mintNftList);
     setMaxPriceNftData(maxPriceSoldNft);
     setTop10Nfts(top10NftList);
   }
@@ -154,19 +138,8 @@ function Home() {
                   <FilterItem>30일</FilterItem>
                 </FilterWrap>
                 <ItemWrap>
-                  {temp.map((item, index) => (
-                    <Item key={index}>
-                      <ItemContent>
-                        <ItemRank>{index + 1}</ItemRank>
-                        <ItemInfo>
-                          <ItemName>name# {item.name}</ItemName>
-                          <ItemPrice>price {item.price} ETH ~</ItemPrice>
-                        </ItemInfo>
-                      </ItemContent>
-                      <ItemImg>
-                        <img src={`https://ipfs.io/ipfs/${item.image}`} alt="test" />
-                      </ItemImg>
-                    </Item>
+                  {top10Nfts.map((nft, index) => (
+                    <Top10NftCard nft={nft} index={index} />
                   ))}
                 </ItemWrap>
               </RankingBox>
@@ -209,16 +182,8 @@ function Home() {
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
                   {
-                    [top10Nfts].slice(0, 3).map((nft, index) => (
-                      <TopItemBox key={`top10-${index}`}>
-                        <TopImgWrap>
-                          <img src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${temp[index].image}`} />
-                        </TopImgWrap>
-                        <TopContent>
-                          {/* <h3>{item} name</h3> */}
-                          <p>price</p>
-                        </TopContent>
-                      </TopItemBox>
+                    top10Nfts.slice(0, 3).map(nft => (
+                      <TopCollectorNftCard nft={nft} />
                     ))
                   }
                 </ul>
@@ -245,7 +210,7 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  <HomeNftCard nftData={maxPriceNftData} />
+                  {maxPriceNftData && <TopCollectorNftCard nft={maxPriceNftData} />}
                 </ul>
                 <ButtonArea>
                   <ButtonBox>
@@ -288,40 +253,6 @@ const ItemWrap = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 5px;
-`;
-const Item = styled.li`
-  ${props => props.theme.variables.flexBetween};
-  padding: 8px 10px;
-  border-radius: 5px;
-  background-color: #2c2d31;
-`;
-const ItemContent = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
-`;
-const ItemRank = styled.div``;
-const ItemImg = styled.div`
-  width: 40px;
-  height: 40px;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-  }
-`;
-const ItemInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  /* align-items: center; */
-  gap: 3px;
-`;
-const ItemName = styled.div``;
-const ItemPrice = styled.div`
-  font-size: 12px;
-  color: #ffffff4d;
 `;
 const FilterWrap = styled.ul`
   display: flex;
@@ -418,33 +349,6 @@ const MainTitle = styled.div`
   }
 `;
 
-const TopItemBox = styled.li`
-  width: 184px;
-`;
-const TopImgWrap = styled.div`
-  width: 100%;
-  height: 184px;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-  }
-
-`;
-const TopContent = styled.div`
-  ${props => props.theme.variables.flexColumn};
-  padding-top: 1rem;
-  gap: 0.5rem;
-  h3 {
-    font-size: 16px;
-    font-weight: 700;
-  }
-  p {
-    font-size: 14px;
-    color: #6c707b;
-  }
-`;
 const TopPickImgWrap = styled.div`
   width: 100px;
   height: 100px;
@@ -566,3 +470,17 @@ export default Home;
 {/* <h2>{account}</h2>
       <button onClick={onClickMint}>Mint 버튼</button>
       {nftHash && <NonSaleNftCard nftHash={nftHash} />} */}
+
+
+// collection 도 ranking top price에 포함
+// const mintNftList = ipfsList.filter(ipfsData => !ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+// const collectionGroup = ipfsList.filter(ipfsData => ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+
+// let collectionNftList = [];
+// collectionGroup.forEach(collection => {
+//   const parsedNftList = JSON.parse(collection.nftKeyvaluesList);
+//   const nftList = parsedNftList.map(nft => ({ ...nft, tokenUrl: collection.tokenUrl }));
+//   collectionNftList = [...collectionNftList, ...nftList];
+// });
+
+// const nftList = [...mintNftList, ...collectionNftList];

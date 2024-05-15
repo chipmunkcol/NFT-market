@@ -31,7 +31,6 @@ const NonSaleNftCard = ({ nft }) => {
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
 
-
   const registerForSaleHandler = async () => {
     const price = Number(priceRef.current?.value);
     const ipfsData = await getTargetNftToIpfsDataMetadata(tokenUrl);
@@ -47,6 +46,7 @@ const NonSaleNftCard = ({ nft }) => {
     const setOnsaleResult = await C_setOnsaleNft(nftId, price, account);
     if (setOnsaleResult.status) {
       alert("판매 등록이 완료되었습니다.");
+      priceRef.current.value = '';
       setOnsaleTrigger(prev => !prev);
     }
   };

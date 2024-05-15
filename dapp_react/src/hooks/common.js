@@ -54,7 +54,7 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
       owner,
       isOnsale: String(true),
       nftPrice: price,
-      isCollection: String(isCollection),
+      isCollection,
       ...checkNumberOfSales,
       ...checkPriceHistory,
     },
@@ -65,6 +65,12 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
     ipfsPutOptions(jsonKeyvalues)
   );
   return result;
+};
+
+export const getNftListToIpfs = async (url) => {
+  const res = await fetch(url, ipfsGetOptions);
+  const result = await res.json();
+  return result.rows;
 };
 
 export const getTargetNftToIpfsDataMetadata = async (tokenUrl) => {
@@ -111,7 +117,7 @@ export const getAddedPriceHistory = (priceHistory, owner, price) => {
 };
 
 export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
-  const { numberOfSales, priceHistory, owner, nftPrice } =
+  const { numberOfSales, priceHistory, owner, nftPrice, isCollection } =
     ipfsData.metadata.keyvalues;
 
   const newPriceHistory = getAddedPriceHistory(priceHistory, owner, nftPrice);
@@ -124,6 +130,7 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
       owner: account,
       isOnsale: String(false),
       nftPrice: 0,
+      isCollection,
       numberOfSales: numberOfSales + 1,
       priceHistory: newPriceHistory,
     },

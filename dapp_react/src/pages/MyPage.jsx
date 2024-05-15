@@ -9,25 +9,8 @@ import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 
 const MyPage = () => {
-  // const [hasProvider, setHasProvider] = useState<boolean | null>(null);
-
-  // console.log("account: ", account);
-  // const [myNfts, setMyNfts] = useState([]);
-  const { account, myNfts, setMyNfts, trigger } = useContext(GlobalContext);
-  // const [approvedState, setApprovedState] = useState(false);
-
-  // const getApprovedStatus = async () => {
-  //   if (!account) return;
-
-  //   try {
-  //     const res = await MintContract.methods
-  //       .isApprovedForAll(account, MintAddress).call();
-  //     // console.log('res: ', res);
-  //     setApprovedState(res);
-  //   } catch (err) {
-  //     console.log('err: ', err);
-  //   }
-  // };
+  const { account, myNfts, setMyNfts, onsaleTrigger } = useContext(GlobalContext);
+  
   const getEthPrice = weiPrice => {
     return web3.utils.fromWei(weiPrice, "ether");
   }
@@ -55,30 +38,6 @@ const MyPage = () => {
     }
   };
 
-  // const [onsaleMyNfts, setOnsaleMyNfts] = useState([]);
-  // const getMyNftsOnsale = async () => {
-  //   if (!account) return;
-
-  //   try {
-  //     const resultNfts = await MintContract.methods.getOnsaleNftsByOwner(account).call();
-  //     if (resultNfts.length < 1) return;
-
-  //     const newOnsaleMyNfts = [];
-  //     resultNfts.forEach(onsaleMyNft => {
-  //       const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
-  //       const parsedId = parseInt(id, 10);
-  //       const parsedPrice = parseInt(price, 10);
-  //       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-  //       newOnsaleMyNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
-  //     });
-
-  //     setOnsaleMyNfts(newOnsaleMyNfts);
-  //     console.log('newMyNfts: ', newOnsaleMyNfts);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   async function init() {
     await getMyNfts();
     // await getMyNftsOnsale();
@@ -86,9 +45,8 @@ const MyPage = () => {
   }
 
   useEffect(() => {
-    setMyNfts([]);
     init();
-  }, [account, trigger]);
+  }, [account, onsaleTrigger]);
 
 
   // truncate account

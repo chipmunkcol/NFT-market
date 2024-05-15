@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import useGetImgaeUrl from "../../../hooks/useGetImageUrl";
+import useGetTokenData from "../../../hooks/useGetTokenData.jsx";
 
 const HomeNftCard = ({ nftData }) => {
   const { name, tokenUrl, nftPrice } = nftData;
-  const imageUrl = useGetImgaeUrl(tokenUrl);
+  const imageUrl = useGetTokenData(tokenUrl).image;
 
   return (
     <TopItemBox>
