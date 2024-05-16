@@ -1,104 +1,84 @@
 import styled from "styled-components";
 import OnsaleNftCard from "../../components/OnsaleNftCard";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SaleNftContract } from "../../../contracts";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useOutletContext, useSearchParams } from "react-router-dom";
+import { getNftListAndCountToIpfs } from "../../hooks/common";
+
+const tempNftKeyvalues = [{ "name": "CryptoKitty #123", "fileName": "test.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "jangkal cat", "fileName": "test10.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "borning monkey", "fileName": "test11.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "zeus", "fileName": "test12.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #222", "fileName": "test2.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #333", "fileName": "test3.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #111", "fileName": "test4.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #222", "fileName": "test5.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #333", "fileName": "test6.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #4444", "fileName": "test7.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }];
 
 const Collection = () => {
-  const { onsaleNftList, setOnsaleNftList, getAllonsaleNftListRef, account, onsaleTrigger, purchaseTrigger } = useContext(GlobalContext);
-  const [grid, cardWidth] = useOutletContext();
+  const { getAllonsaleNftListRef, account, purchaseTrigger } = useContext(GlobalContext);
+  const [gridCss] = useOutletContext();
   const allNftCount = useRef(0);
+  const [offset, setOffset] = useState({ page: 0 });
+  const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
-  console.log('query: ', query);
-  const [offset, setOffset] = useState(0);
-
-  const [onsaleNftsInContract, setOnsaleNftsInContract] = useState([]);
+  const offsetRef = useRef(0);
+  const newNftListRef = useRef([]);
+  console.log('offset: ', offset);
 
   const encodedOffset = encodeURIComponent(
-    offset
+    offsetRef.current * 10
   );
 
   const encodedSearchQuery = encodeURIComponent(
     query
   );
 
-  useEffect(() => {
-    setOffset(0);
-  }, [query]);
+  const url = `https://api.pinata.cloud/data/pinList?pinStart=20240515&pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`;
+  const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=20240515&pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`;
 
-
-  useEffect(() => {
-    async function fetchOnsaleNftIdsInContract() {
-      const _onsaleNftIdsInContract = await SaleNftContract.methods.getOnsaleNfts().call();
-      setOnsaleNftsInContract(_onsaleNftIdsInContract);
-    }
-    fetchOnsaleNftIdsInContract();
-  }, [onsaleTrigger]);
+  // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`, options)
 
   // ipfsNftsList[0].metadata.keyvalues.nftKeyvaluesList
   const getNewOnsaleNfts = ipfsNftsList => {
     let newOnsaleNfts = [];
-    ipfsNftsList.forEach(data => {
-      // const nftName = data.metadata.name;
+    // ipfsNftsList.forEach(data => {
+    ipfsNftsList.slice(0, 1).forEach(data => {
       const collectionIpfs = data.ipfs_pin_hash;
-      const parsedCollectionNftList = JSON.parse(data.metadata.keyvalues.nftKeyvaluesList);
+      // const parsedCollectionNftList = JSON.parse(data.metadata.keyvalues.nftKeyvaluesList);
+      const parsedCollectionNftList = tempNftKeyvalues;
+
       const newCollectionNftList = parsedCollectionNftList.map(v => ({ ...v, nftName: v.name, tokenUrl: `${collectionIpfs}/${v.fileName}` }))
       newOnsaleNfts = [...newOnsaleNfts, ...newCollectionNftList];
-      // newOnsaleNfts.push({ ...metaData, nftName, tokenUrl });
     })
     return newOnsaleNfts;
   }
 
-  const checkContractNftsToIpfsNfts = (onsaleNftsInContract, onsaleNftsInIpfs) => {
-    const commonNfts = onsaleNftsInIpfs.filter(ipfsNft => onsaleNftsInContract.some(contractNft => (parseInt(contractNft.nftId) === ipfsNft.nftId && contractNft.tokenUrl === ipfsNft.tokenUrl)));
-    return commonNfts
-  }
-
-  function getOnsaleNftList() {
-    const options = {
-      method: "GET",
-      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` },
-    };
-
-    if (query) {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`, options)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-          setOnsaleNftList(commonNfts);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
-    } else {
-      fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`, options)
-        // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"}}`, options)
-        // fetch(`https://api.pinata.cloud/data/pinList?pageOffset=${encodedOffset}&metadata[keyvalues]={"isCollection":{"value":"false","op":"eq"}}`, options)
-        .then((response) => response.json())
-        .then((response) => {
-          const ipfsDatas = response.rows;
-          // allNftCount.current = response.count;
-          const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-          const commonNfts = checkContractNftsToIpfsNfts(onsaleNftsInContract, newOnsaleNfts)
-
-          setOnsaleNftList(prev => [...prev, ...commonNfts]);
-          console.log('newOnsaleNfts: ', newOnsaleNfts);
-        })
-        .catch((err) => console.error(err));
-    }
+  const removedNftListByPurchase = (nftId) => {
+    newNftListRef.current = onsaleNftList.filter(nft => nft.nftId !== nftId);
   }
 
   useEffect(() => {
-    if (allNftCount.current !== 0 && allNftCount.current - 10 <= offset * 10) return;
-    // if (onsaleNftList.length - 10 <= offset * 10) return;
-    // if (onsaleNftsInContract.length < 1) return;
+    setOnsaleNftList(newNftListRef.current);
+  }, [purchaseTrigger])
 
-    getOnsaleNftList();
-  }, [query, onsaleNftsInContract, offset, onsaleTrigger, purchaseTrigger]);
+  useEffect(() => {
+    if (allNftCount.current) {
+      setOffset({ page: 0 });
+      offsetRef.current = 0;
+      setOnsaleNftList([]);
+    }
+  }, [query]);
+
+  const getNftListControllerToInfinityScroll = useCallback(async (url) => {
+    const { ipfsDatas, count } = await getNftListAndCountToIpfs(url);
+    allNftCount.current = count;
+    const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
+    setOnsaleNftList(prev => [...prev, ...newOnsaleNfts]);
+  }, [offset]);
+
+  useEffect(() => {
+    if (query) {
+      getNftListControllerToInfinityScroll(queryUrl);
+    } else {
+      getNftListControllerToInfinityScroll(url);
+    }
+  }, [getNftListControllerToInfinityScroll]);
+  // }, [onsaleNftsInContract, query, offset, onsaleTrigger, purchaseTrigger]);
 
   // 무한스크롤 구현
   const [isLoading, setIsLoading] = useState(false);
@@ -106,13 +86,14 @@ const Collection = () => {
 
   const infiniteScrollHandler = () => {
     setIsLoading(true);
-    setOffset(prev => prev + 1);
+    setOffset({ page: offsetRef.current + 1 });
+    offsetRef.current = offsetRef.current + 1;
     setIsLoading(false);
   }
 
   useEffect(() => {
     const observer = new IntersectionObserver((entryies) => {
-      if (entryies[0].isIntersecting && !isLoading && getAllonsaleNftListRef.current?.length > 0) {
+      if (entryies[0].isIntersecting && !isLoading && (allNftCount.current * 10) - 10 > offsetRef.current * 10) {
         infiniteScrollHandler();
       }
     }, { threshold: 1 });
@@ -123,15 +104,14 @@ const Collection = () => {
     return () => observer.disconnect();
   }, [isLoading]);
 
-
   return (
     <>
       {
         onsaleNftList.length < 1 ? (<div>판매중인 NFT가 없습니다.</div>) : (
-          <MarketWrap $grid={grid}>
+          <MarketWrap $gridCss={gridCss}>
             {
               onsaleNftList.map(onsaleNft => (
-                <OnsaleNftCard key={`marketplace-${onsaleNft.nftId}`} nft={onsaleNft} account={account} cardWidth={cardWidth} />
+                <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} removedNftListByPurchase={removedNftListByPurchase} />
               ))
             }
           </MarketWrap>
@@ -146,6 +126,6 @@ export default Collection;
 
 const MarketWrap = styled.div`
   display: grid;
-  grid-template-columns: ${props => props.$grid};
-  gap: 10px;
+  grid-template-columns: ${props => props.$gridCss.gridTemplateColumns};
+  gap: ${props => props.$gridCss.gap};
 `;

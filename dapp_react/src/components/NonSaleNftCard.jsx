@@ -5,7 +5,7 @@ import { web3, MintContract, SaleNftContract, SaleNftAddress } from "../../contr
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 
 // interface props {
 //   nft: {
@@ -33,7 +33,7 @@ const NonSaleNftCard = ({ nft }) => {
 
   const registerForSaleHandler = async () => {
     const price = Number(priceRef.current?.value);
-    const ipfsData = await getTargetNftToIpfsDataMetadata(tokenUrl);
+    const ipfsData = await getTargetNftToIpfsData(tokenUrl);
     console.log('ipfsData: ', ipfsData);
 
     const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
@@ -78,7 +78,8 @@ const NonSaleNftCard = ({ nft }) => {
   return (
     <Styled.Container>
       <Styled.ImgWrap>
-        <Styled.Img src={imageUrl} alt="NFT image" />
+        {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
+        <Styled.BgImg $src={imageUrl} alt="NFT image" />
       </Styled.ImgWrap>
       <Styled.NftInfo>
         <Styled.Name>{nftName}</Styled.Name>
@@ -155,7 +156,7 @@ export default NonSaleNftCard;
 //   });
 // // console.log("res: ", res);
 // if (res.status) {
-//   const result = await getTargetNftToIpfsDataMetadata(tokenUrl);
+//   const result = await getTargetNftToIpfsData(tokenUrl);
 //   console.log('result: ', result);
 //   const jsonKeyvalues = JSON.stringify({
 //     ipfsPinHash: tokenUrl,

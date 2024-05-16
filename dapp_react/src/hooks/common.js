@@ -81,7 +81,7 @@ export const getNftListAndCountToIpfs = async (url) => {
   return { ipfsDatas, count };
 };
 
-export const getTargetNftToIpfsDataMetadata = async (tokenUrl) => {
+export const getTargetNftToIpfsData = async (tokenUrl) => {
   const res = await fetch(
     `https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`,
     ipfsGetOptions
@@ -91,7 +91,7 @@ export const getTargetNftToIpfsDataMetadata = async (tokenUrl) => {
 };
 
 export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
-  const res = await getTargetNftToIpfsDataMetadata(tokenUrl);
+  const res = await getTargetNftToIpfsData(tokenUrl);
   const nftKeyvaluesList = JSON.parse(res.metadata.keyvalues.nftKeyvaluesList);
 
   const _newNftKeyvaluesList = nftKeyvaluesList.map((nft, index) => ({
@@ -243,4 +243,67 @@ export const validateFormData = (account, jsonData, file) => {
     return false;
   }
   return true;
+};
+
+export const getRemovedNftListByPurchase = (nftId, nfts) => {
+  return nfts.filter((nft) => nft.nftId !== nftId);
+};
+
+// 장바구니 구현
+
+export const pinJsonToIPFSForCart = async (owner, nft) => {
+  const jsonContent = JSON.stringify({
+    owner,
+    description: "Market-place 장바구니 구현을 위한 위한 데이터베이스 용 JSON",
+  });
+
+  const metaData = JSON.stringify({
+    name: `cart-${owner}`,
+    keyvalues: {
+      cart: JSON.stringify([nft]),
+    },
+  });
+
+  const options = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      "Content-Type": "application/json",
+    },
+    body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`,
+  };
+
+  const res = await fetch(
+    "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+    options
+  );
+  const result = await res.json();
+  return result.IpfsHash;
+};
+
+const checkDuplicattion = (cartList, nft) => {
+  const isDuplicated = cartList.some((cart) => cart.nftId === nft.nftId);
+  return isDuplicated;
+};
+
+export const P_updateMetadataAddCart = async (cartIpfsHash, nft) => {
+  const res = await getTargetNftToIpfsData(cartIpfsHash);
+  const cartList = JSON.parse(res.metadata.keyvalues.cart);
+  const isDuplicated = checkDuplicattion(cartList, nft);
+  if (isDuplicated) return;
+
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: cartIpfsHash,
+    name: res.metadata.name,
+    keyvalues: {
+      ...res.metadata.keyvalues,
+      cart: [...cartList, nft],
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
 };

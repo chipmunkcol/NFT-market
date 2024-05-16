@@ -10,6 +10,8 @@ const GlobalProvider = ({ children }) => {
   const [onsaleTrigger, setOnsaleTrigger] = useState(false);
   const [purchaseTrigger, setPurchaseTrigger] = useState(false);
   const getAllonsaleNftListRef = useRef(null);
+  const [offset, setOffset] = useState({ page: 0 });
+
   const [nft, setNft] = useState({
     name: "",
     description: "",
@@ -86,8 +88,10 @@ const GlobalProvider = ({ children }) => {
     setOnsaleTrigger,
     purchaseTrigger,
     setPurchaseTrigger,
-    getAllonsaleNftListRef
-  }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex, onsaleTrigger, purchaseTrigger])
+    getAllonsaleNftListRef,
+    offset,
+    setOffset,
+  }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex, onsaleTrigger, purchaseTrigger, offset])
   return (
     <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>
   )

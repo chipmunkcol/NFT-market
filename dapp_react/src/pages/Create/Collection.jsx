@@ -47,9 +47,9 @@ function Collection() {
     });
   };
 
-  useEffect(() => {
-    console.log('collection: ', collection.nfts);
-  }, [collection]);
+  // useEffect(() => {
+  //   console.log('collection: ', collection.nfts);
+  // }, [collection]);
 
   const inputFileRef = useRef();
   const onClickFileHandler = () => {

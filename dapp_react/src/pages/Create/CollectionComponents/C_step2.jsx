@@ -154,6 +154,10 @@ function C_step2() {
       ...prev,
       name: e.target.value,
     }));
+    setJsonData((prev) => ({
+      ...prev,
+      name: e.target.value,
+    }));
   };
 
   const onchangeHandler = async (e) => {

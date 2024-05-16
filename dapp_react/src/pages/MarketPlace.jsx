@@ -22,17 +22,34 @@ const MarketPlace = () => {
   const onChangeSearch = e => {
     searchRef.current = e.target.value;
   }
-  // grid 5, 7
-  const [grid, setGrid] = useState('1fr 1fr 1fr 1fr 1fr');
-  const [cardWidth, setCardWidth] = useState('200px');
+
+  const localStorageGrid = Number(localStorage.getItem('grid'));
+  const [grid, setGrid] = useState(localStorageGrid ? localStorageGrid : 5);
+  const [gridCss, setGridCss] = useState({
+    grid,
+    gridTemplateColumns: 'repeat(5, 1fr)',
+    gap: '10px', // '5px',
+    cardWidth: '193px', // '123px',
+    fontSize: '14px', // '12px',
+  });
   const grid5Hander = () => {
-    setGrid('1fr 1fr 1fr 1fr 1fr');
-    setCardWidth('200px');
+    localStorage.setItem('grid', 5);
+    setGrid(5);
   }
   const grid7Hander = () => {
-    setGrid('1fr 1fr 1fr 1fr 1fr 1fr 1fr');
-    setCardWidth('180px');
+    localStorage.setItem('grid', 8);
+    setGrid(8);
   }
+
+  useEffect(() => {
+    setGridCss({
+      grid,
+      gridTemplateColumns: `repeat(${grid}, 1fr)`,
+      gap: grid === 5 ? '10px' : '5px',
+      cardWidth: grid === 5 ? '193px' : '123px',
+      fontSize: grid === 5 ? '14px' : '12px',
+    });
+  }, [grid]);
 
   const searchNfts = async () => {
     navigate(`/market-place/nft?query=${searchRef.current}`);
@@ -41,9 +58,6 @@ const MarketPlace = () => {
   const onKeydownHandler = e => {
     e.key === 'Enter' && searchNfts();
   }
-
-  // search 구현
-  // const navigate = useNavigate();
 
   // sort 구현
   const onChangeSort = e => {
@@ -69,73 +83,77 @@ const MarketPlace = () => {
   return (
     <Background>
       <Container>
-        <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace
-          <Link to={'nft'}>
-            <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
-          </Link>
-          <Link to={'collection'} >
-            <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
-          </Link>
-        </h1>
-        <div style={{ padding: '10px 0' }}>
-          <FlexWrap>
-            <div>결과 {onsaleNftList?.length}개</div>
-            <div style={{ position: 'relative', width: '400px', height: '48px' }}>
-              <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
-              <IconWrap onClick={searchNfts}>
-                <IconFind />
-              </IconWrap>
-            </div>
-            <div style={{ width: '240px', height: '48px' }}>
-              <Select onChange={onChangeSort}>
-                <option value='updated'>최신순</option>
-                <option value='row'>낮은 가격순</option>
-                <option value='high'>높은 가격순</option>
-              </Select>
-            </div>
-            <IconContainer>
-              <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
-                <IconList $iconPath={iconList} />
-              </IconBox>
-              <IconBox onClick={grid5Hander}>
-                <IconList $iconPath={iconGrid4} />
-              </IconBox>
-              <IconBox onClick={grid7Hander} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
-                <IconList $iconPath={iconGrid9} />
-              </IconBox>
-            </IconContainer>
-          </FlexWrap>
-        </div>
-        <div style={{ paddingTop: '20px' }}>
-          <FlexWrap>
+        <FixArea>
+          <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace
+            <Link to={'nft'}>
+              <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
+            </Link>
+            <Link to={'collection'} >
+              <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
+            </Link>
+          </h1>
+          <div style={{ padding: '10px 0' }}>
+            <FlexWrap>
+              <div>결과 {onsaleNftList?.length}개</div>
+              <div style={{ position: 'relative', width: '400px', height: '48px' }}>
+                <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
+                <IconWrap onClick={searchNfts}>
+                  <IconFind />
+                </IconWrap>
+              </div>
+              <div style={{ width: '240px', height: '48px' }}>
+                <Select onChange={onChangeSort}>
+                  <option value='updated'>최신순</option>
+                  <option value='row'>낮은 가격순</option>
+                  <option value='high'>높은 가격순</option>
+                </Select>
+              </div>
+              <IconContainer>
+                <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
+                  <IconList $iconPath={iconList} />
+                </IconBox>
+                <IconBox onClick={grid5Hander}>
+                  <IconList $iconPath={iconGrid4} />
+                </IconBox>
+                <IconBox onClick={grid7Hander} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
+                  <IconList $iconPath={iconGrid9} />
+                </IconBox>
+              </IconContainer>
+            </FlexWrap>
+          </div>
+        </FixArea>
+        <div style={{ paddingTop: '130px' }}>
+          <FlexWrap style={{ alignItems: 'normal' }} >
             <LeftPart>
               <div>
-                <ul>
-                  <h3>카테고리</h3>
-                  <li>예술</li>
-                  <li>유명인</li>
-                  <li>게임</li>
-                  <li>스포츠</li>
-                  <li>음악</li>
-                  <li>가상자산</li>
-                  <li>프로필 사진</li>
-                </ul>
-              </div>
-              <div>
-                <ul>
-                  <h3>컬렉션</h3>
-                  <li>사용자 1</li>
-                  <li>사용자 2</li>
-                  <li>사용자 3</li>
-                  <li>사용자 4</li>
-                  <li>사용자 5</li>
-                  <li>사용자 6</li>
-                  <li>사용자 7</li>
-                </ul>
+                <div>
+                  <ul>
+                    <h3>카테고리</h3>
+                    <li>예술</li>
+                    <li>유명인</li>
+                    <li>게임</li>
+                    <li>스포츠</li>
+                    <li>음악</li>
+                    <li>가상자산</li>
+                    <li>프로필 사진</li>
+                  </ul>
+                </div>
+                <div>
+                  <ul>
+                    <h3>컬렉션</h3>
+                    <li>사용자 1</li>
+                    <li>사용자 2</li>
+                    <li>사용자 3</li>
+                    <li>사용자 4</li>
+                    <li>사용자 5</li>
+                    <li>사용자 6</li>
+                    <li>사용자 7</li>
+                  </ul>
+                </div>
               </div>
             </LeftPart>
             <RightPart>
-              <Outlet context={[grid, cardWidth]} />
+              <Outlet context={[gridCss]} />
             </RightPart>
           </FlexWrap>
         </div>
@@ -144,6 +162,12 @@ const MarketPlace = () => {
   );
 }
 
+const FixArea = styled.div`
+  width: 95%;
+  position: fixed;
+  background-color: white;
+  z-index: 1;
+`;
 
 const IconContainer = styled.div`
   display: flex;
@@ -227,7 +251,7 @@ const LeftPart = styled.div`
 `;
 const RightPart = styled.div`
   width: 84%;
-  padding-left: 1rem;
+  /* padding-left: 1rem; */
   text-align: center;
 `;
 
@@ -236,7 +260,7 @@ const Container = styled.div`
   overflow: hidden;
   color: black;
 
-  padding: 1rem 2rem;
+  padding: 0rem 2rem;
 `;
 
 

@@ -1,30 +1,29 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { S_Button } from "../../styles/styledComponent";
 import { useEffect } from "react";
-import { json } from "react-router-dom";
+import { GlobalContext } from "../../context/GlobalContext";
+import { getTargetNftToIpfsData } from "../../hooks/common";
+import CartNftCard from "./CartNftCard";
 
 function Cart({ cartModalClose }) {
-
-  const [nftsInCart, setNftsInCart] = useState(JSON.parse(localStorage.getItem('cart')) || []);
+  const { account } = useContext(GlobalContext);
+  const cartIpfsHash = localStorage.getItem(`cart-${account}`);
+  const [nftsInCart, setNftsInCart] = useState([]);
   const onclick = e => {
     e.stopPropagation();
   }
 
-  // const tempArray = [1, 2, 3, 4, 5, 6, 7];
-  // const tempArray = [];
-  const removeCartHandler = async (nft) => {
-    const cart = await JSON.parse(localStorage.getItem('cart'));
-    const newCart = cart.filter(item => item.id !== nft.id);
-    const jsonNewCart = JSON.stringify(newCart);
-    localStorage.setItem('cart', jsonNewCart);
-    setNftsInCart(newCart);
-  }
-
-  const imgUrl = (image) => {
-    return `${import.meta.env.VITE_GATEWAY_URL
-      }/ipfs/${image}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`
-  };
+  useEffect(() => {
+    const getCartData = async () => {
+      if (!cartIpfsHash) return;
+      const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
+      const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
+      const cartList = JSON.parse(res.metadata.keyvalues.cart);
+      setNftsInCart(cartList);
+    }
+    getCartData();
+  }, [account]);
 
   // cart price
   const cartPrice = nftsInCart?.reduce((acc, cur) => {
@@ -33,17 +32,6 @@ function Cart({ cartModalClose }) {
     }
     return acc;
   }, 0) || 0;
-
-  const checkToggleHandler = (nft) => {
-    const newCart = nftsInCart.map(item => {
-      if (item.id === nft.id) {
-        return { ...item, checked: !item.checked }
-      }
-      return item;
-    });
-    setNftsInCart(newCart);
-    localStorage.setItem('cart', JSON.stringify(newCart));
-  }
 
   return (
     <Overlay onClick={cartModalClose}>
@@ -60,19 +48,7 @@ function Cart({ cartModalClose }) {
             <ItemWrap>
               {nftsInCart.map((nft) => {
                 return (
-                  <Item key={nft}>
-                    <SelectBox onClick={() => checkToggleHandler(nft)}>
-                      <input type="checkbox" checked={nft.checked} />
-                    </SelectBox>
-                    <ImgWrap>
-                      <img src={imgUrl(nft?.image)} alt="nft" />
-                    </ImgWrap>
-                    <ContentWrap>
-                      <div>상품명: {nft?.name}</div>
-                      <div>가격: {nft?.price}</div>
-                    </ContentWrap>
-                    <button onClick={() => removeCartHandler(nft)}>삭제</button>
-                  </Item>
+                  <CartNftCard key={`cart-${nft.id}`} nft={nft} />
                 )
               })}
             </ItemWrap>
@@ -117,50 +93,6 @@ const CloseBtnWrap = styled.div`
     background-color: #cccccc;
   }
   cursor: pointer;
-`;
-
-const SelectBox = styled.div`
-  width: 17px;
-  height: 17px;
-  input {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const ContentWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 150px;
-  font-size: 0.8rem;
-`;
-
-const ImgWrap = styled.div`
-width: 50px;
-    height: 50px;
-    img {
-      width: 100%;
-    height: 100%;
-    border-radius: 10px;
-    }
-`;
-
-const Item = styled.li`
-  display: flex;
-  /* justify-content: space-between; */
-  align-items: center;
-  gap: 20px;
-  /* padding: 0px 30px 0 10px; */
-  button {
-    background-color: #e25120;
-    border-radius: 8px;
-    padding: 0 12px 0 10px;
-    height: 30px;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-  }
 `;
 
 const ItemWrap = styled.ul`

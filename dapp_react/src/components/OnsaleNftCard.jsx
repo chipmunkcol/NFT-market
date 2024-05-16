@@ -6,7 +6,8 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsDataMetadata } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, pinJsonToIPFSForCart } from "../hooks/common";
+import iconCart from "../assets/images/icon-cart.png";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -19,26 +20,14 @@ import { P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftTo
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
 
 // nftId, nftName, tokenUrl, nftPrice 
-const OnsaleNftCard = ({ nft, account, cardWidth }) => {
-  const { nftId, nftName, tokenUrl, nftPrice } = nft;
+const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
+  const { nftId, nftName, tokenUrl, nftPrice, owner } = nft;
   const { setPurchaseTrigger } = useContext(GlobalContext);
-  const [isMyNft, setIsMyNft] = useState(false);
-
-  // function checkMyNft(nftId) {
-  //   const res = myNfts.some((myNft) => myNft.nftId === nftId);
-  //   setIsMyNft(res);
-  // }
-
-  // useEffect(() => {
-  //   checkMyNft(id);
-  // }, [myNfts]);
-  // useEffect(() => {
-  //   setIsMyNft(account === owner?.toLowerCase());
-  // }, [account]);
+  const isMyNft = account === owner?.toLowerCase();
 
   async function purchaseNftHandler(nftId) {
     try {
-      const ipfsData = await getTargetNftToIpfsDataMetadata(tokenUrl);
+      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
       const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
       if (!updateResult.ok) return;
 
@@ -46,6 +35,7 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
       const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
+        removedNftListByPurchase(nftId);
         alert('NFT 구매에 성공했습니다.');
         setPurchaseTrigger(prev => !prev);
       }
@@ -56,14 +46,15 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
   }
 
   // 장바구니에 담기
-  const addCartHandler = nft => {
-    const cart = JSON.parse(localStorage.getItem('cart'));
-    const customNft = { ...nft, checked: true };
-    if (!cart) {
-      localStorage.setItem('cart', JSON.stringify([customNft]));
+  const addCartHandler = async nft => {
+    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
+    if (!cartIpfsHash) {
+      cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
+      cartIpfsHash && localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
     } else {
-      cart.push(customNft);
-      localStorage.setItem('cart', JSON.stringify(cart));
+      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+      const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
+      console.log('updateMetadataResult: ', updateMetadataResult);
     }
   }
 
@@ -96,37 +87,100 @@ const OnsaleNftCard = ({ nft, account, cardWidth }) => {
   return (
     <Styled.Container>
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
-      <ImgWrap $cardWidth={cardWidth} >
-        <Styled.Img src={imageUrl} alt="NFT image" />
+      <ImgWrap $gridCss={gridCss} >
+        {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
+        <BgImg $src={imageUrl} alt="NFT image" />
       </ImgWrap>
-      <Styled.Name>{nftName}</Styled.Name>
-      <OnsalePriceWrap>
-        가격 : {nftPrice} ETH ($
-        {(Number(nftPrice) * 2928).toFixed(2)}
-        )
-      </OnsalePriceWrap>
+      <Content>
+        <Styled.Name>{nftName}</Styled.Name>
+        <OnsalePriceWrap>
+          가격 : {nftPrice} ETH ($
+          {(Number(nftPrice) * 2928).toFixed(2)}
+          )
+        </OnsalePriceWrap>
+      </Content>
       {
-        !isMyNft && <ButtonWrap>
-          <S_Button onClick={() => purchaseNftHandler(nftId)}>구매하기</S_Button>
-          <S_Button onClick={() => addCartHandler(nft)}>💛</S_Button>
-        </ButtonWrap>
+        !isMyNft && (
+          <ButtonWrap>
+            <PurchaseBtn $gridCss={gridCss} onClick={() => purchaseNftHandler(nftId)}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
+            <CartBtn onClick={() => addCartHandler(nft)} >
+              <CartImg>
+                <img src={iconCart} alt="장바구니" />
+              </CartImg>
+            </CartBtn>
+          </ButtonWrap>)
       }
     </Styled.Container>
   );
 };
 
+const BgImg = styled.div`
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+  /* object-fit: cover; */
+  background-image: url(${props => props.$src});
+  background-size: 100%;
+  background-position: center;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    background-size: 110%;
+  }
+`;
+
+const Content = styled.div`
+  /* height: 100px; */
+  padding-top: 10px;
+  padding-bottom: 20px;
+`;
+
+const CartImg = styled.div`
+  width: 16px;
+  height: 16px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const PurchaseBtn = styled.div`
+  width: calc(100% - 41px);
+    height: 30px;
+    background-color: rgba(32, 129, 226, 1);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 0 0 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      background-color: rgba(32, 129, 226, 0.8);
+    }
+`;
+
+const CartBtn = styled(PurchaseBtn)`
+  width: 40px;
+  border-radius: 0 0 10px 0;
+  height: 30px;
+`;
+
 const ImgWrap = styled.div`
-  width: ${props => props.$cardWidth};
-  height: ${props => props.$cardWidth};
+  width: ${props => props.$gridCss.cardWidth};
+  height: ${props => props.$gridCss.cardWidth};
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
 `;
 
 const ButtonWrap = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  gap: 10px;
+  justify-content: space-between;
+  color: white;
 `;
 
 const OnsalePriceWrap = styled.div`
