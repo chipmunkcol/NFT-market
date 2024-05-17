@@ -51,10 +51,6 @@ function Home() {
     const priceHistory = JSON.parse(nftList[0].priceHistory);
     let soldPrice = priceHistory[0]?.price;
     let maxPriceSoldNft = nftList[0];
-    // if (nftList.length === 1)  {
-    //   const { name, ipfs_pin_hash, keyvalues } = maxPriceSoldNft.metadata;
-    //   return { name, tokenUrl: ipfs_pin_hash, soldPrice, keyvalues }
-    // };
     for (let i = 0; i < nftList.length; i++) {
       const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
       const latestSoldPrice = targetNftPriceHistory[0].price;
@@ -73,7 +69,7 @@ function Home() {
   }
 
   const getTopRanking = async () => {
-    const url = 'https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[keyvalues]={"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}';
+    const url = 'https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}';
     const ipfsList = await getNftListToIpfs(url);
     const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
 

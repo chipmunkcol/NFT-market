@@ -297,7 +297,46 @@ export const P_updateMetadataAddCart = async (cartIpfsHash, nft) => {
     name: res.metadata.name,
     keyvalues: {
       ...res.metadata.keyvalues,
-      cart: [...cartList, nft],
+      cart: JSON.stringify([...cartList, nft]),
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
+};
+
+export const P_updateMetadataRemoveCart = async (cartIpfsHash, _nftId) => {
+  const res = await getTargetNftToIpfsData(cartIpfsHash);
+  const cartList = JSON.parse(res.metadata.keyvalues.cart);
+  const newCartList = cartList.filter((cart) => cart.nftId !== _nftId);
+
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: cartIpfsHash,
+    name: res.metadata.name,
+    keyvalues: {
+      ...res.metadata.keyvalues,
+      cart: JSON.stringify(newCartList),
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
+};
+
+export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
+  const res = await getTargetNftToIpfsData(cartIpfsHash);
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: cartIpfsHash,
+    name: res.metadata.name,
+    keyvalues: {
+      ...res.metadata.keyvalues,
+      cart: JSON.stringify([]),
     },
   });
 

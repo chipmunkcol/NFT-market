@@ -54,7 +54,10 @@ const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
     } else {
       const paredCartIpfsHash = JSON.parse(cartIpfsHash);
       const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
-      console.log('updateMetadataResult: ', updateMetadataResult);
+
+      if (updateMetadataResult.ok) {
+        alert('장바구니에 담겼습니다.');
+      }
     }
   }
 

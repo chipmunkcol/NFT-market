@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { S_Button } from "../../styles/styledComponent";
 import { useEffect } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import { getTargetNftToIpfsData } from "../../hooks/common";
+import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData } from "../../hooks/common";
 import CartNftCard from "./CartNftCard";
+import { SaleNftContract, web3 } from "../../../contracts";
 
 function Cart({ cartModalClose }) {
   const { account } = useContext(GlobalContext);
@@ -20,18 +21,105 @@ function Cart({ cartModalClose }) {
       const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
       const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
       const cartList = JSON.parse(res.metadata.keyvalues.cart);
-      setNftsInCart(cartList);
+      const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
+      setNftsInCart(newCartList);
+      console.log('newCartList: ', newCartList);
     }
     getCartData();
   }, [account]);
 
   // cart price
-  const cartPrice = nftsInCart?.reduce((acc, cur) => {
-    if (cur.checked) {
-      return acc + cur.price;
+  const [cartPrice, setCartPrice] = useState(0);
+  const [checkedList, setCheckedList] = useState([]);
+
+  const calculateCartPrice = () => {
+    const _cartPrice = nftsInCart?.reduce((acc, cur) => {
+      if (cur.checked) {
+        return acc + Number(cur.nftPrice);
+      }
+      return acc;
+    }, 0) || 0;
+
+    setCartPrice(_cartPrice);
+  }
+  const calculateCheckedList = () => {
+    const _checkedList = nftsInCart?.filter(nft => nft.checked);
+    setCheckedList(_checkedList);
+  }
+
+  useEffect(() => {
+    calculateCartPrice();
+    calculateCheckedList();
+  }, [nftsInCart]);
+
+  // file check
+
+  const removeCheckdNft = (nft) => {
+    const newNfts = [...nftsInCart];
+    const removedNfts = newNfts.map(n => n.nftId === nft.nftId ? { ...n, checked: false } : n);
+    setNftsInCart(removedNfts);
+  }
+
+  const addCheckedNft = (nft) => {
+    const newNfts = [...nftsInCart];
+    const addedNfts = newNfts.map(n => n.nftId === nft.nftId ? { ...n, checked: true } : n);
+    setNftsInCart(addedNfts);
+  }
+
+  const R_removeCartHandler = (nft) => {
+    const newNfts = [...nftsInCart];
+    const removedNfts = newNfts.filter(n => n.nftId !== nft.nftId);
+    setNftsInCart(removedNfts);
+  }
+
+  const R_removeAllCartHandler = () => {
+    setNftsInCart([]);
+  }
+
+  const propsFunction = {
+    removeCheckdNft,
+    addCheckedNft,
+    R_removeCartHandler
+  };
+
+  const removeAllCartHandler = async () => {
+    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
+    if (!cartIpfsHash) return;
+
+    const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+    const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
+    if (updateMetadataResult.ok) {
+      R_removeAllCartHandler();
     }
-    return acc;
-  }, 0) || 0;
+  }
+
+  const purchaseNftHandler = async (nft) => {
+    const { nftId, nftPrice, tokenUrl } = nft;
+    try {
+      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
+      if (!updateResult.ok) return;
+
+      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
+      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      // console.log('res: ', res);
+      if (res.status) {
+        // 로딩 스피너 걸어주자
+      }
+      return true;
+    } catch (err) {
+      console.log('err: ', err);
+      return false;
+    }
+  }
+
+  const purchaseNftController = () => {
+    const promises = checkedList.map(nft => purchaseNftHandler(nft));
+
+    Promise.all(promises).then(() => {
+      alert('NFT 구매가 완료되었습니다.');
+    });
+  }
 
   return (
     <Overlay onClick={cartModalClose}>
@@ -45,18 +133,29 @@ function Cart({ cartModalClose }) {
         </div>
         <ItemBox>
           {nftsInCart.length > 0 ? (
-            <ItemWrap>
-              {nftsInCart.map((nft) => {
-                return (
-                  <CartNftCard key={`cart-${nft.id}`} nft={nft} />
-                )
-              })}
-            </ItemWrap>
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+
+                <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
+                  {checkedList.length} items
+                </div>
+                <DeleteAll onClick={removeAllCartHandler}>
+                  <span>전체 삭제</span>
+                </DeleteAll>
+              </div>
+              <ItemWrap>
+                {nftsInCart.map((nft) => {
+                  return (
+                    <CartNftCard key={`cart-${nft.nftId}`} nft={nft} propsFunction={propsFunction} />
+                  )
+                })}
+              </ItemWrap>
+            </>
           ) : <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
         <CartBottom>
-          <BtnWrap>
+          <BtnWrap onClick={purchaseNftController}>
             <button>구매하기</button>
           </BtnWrap>
         </CartBottom>
@@ -64,6 +163,24 @@ function Cart({ cartModalClose }) {
     </Overlay>
   )
 }
+
+const DeleteAll = styled.div`
+font-size: 11px;
+  cursor: pointer;
+    &:hover {
+      color: #e25120;
+      text-decoration: underline;
+    }
+`;
+
+const SelectBox = styled.div`
+  width: 17px;
+  height: 17px;
+  input {
+    width: 100%;
+    height: 100%;
+  }
+`;
 
 const CartBottom = styled.div`
   width: 100%;
@@ -104,7 +221,7 @@ const ItemWrap = styled.ul`
 
 const ItemBox = styled.div`
   width: 100%;
-  padding: 1.3rem 1.3rem 1.3rem 1rem;
+  padding: 1rem 1.3rem 1.3rem 1rem;
   height: calc(100% - 105px);
   overflow: auto;
   /* display: flex; */
@@ -137,3 +254,15 @@ const Container = styled.div`
 `;
 
 export default Cart;
+
+
+// const toggleCheckAll = e => {
+//   let newNfts = [...nftsInCart];
+//   if (e.target.checked) {
+//     newNfts = newNfts.map(nft => ({ ...nft, checked: true }));
+//     setNftsInCart(newNfts);
+//   } else {
+//     newNfts = newNfts.map(nft => ({ ...nft, checked: false }));
+//     setNftsInCart(newNfts);
+//   }
+// }
