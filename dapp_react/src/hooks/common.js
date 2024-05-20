@@ -346,3 +346,53 @@ export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
   );
   return result;
 };
+
+export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, account) {
+  try {
+    const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+    const updateResult = await P_updateMetadataPurchase(
+      nftId,
+      ipfsData,
+      account
+    );
+    if (!updateResult.ok) return;
+
+    const weiPrice = web3.utils.toWei(nftPrice, "ether");
+    const res = await SaleNftContract.methods
+      .purchaseNft(nftId)
+      .send({ from: account, value: weiPrice });
+    // console.log('res: ', res);
+    if (res.status) {
+      return true;
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return false;
+  }
+}
+
+// 장바구니에 담기
+export const addCartHandler = async (nft, account) => {
+  let cartIpfsHash = localStorage.getItem(`cart-${account}`);
+
+  try {
+    if (!cartIpfsHash) {
+      cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
+      cartIpfsHash &&
+        localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
+    } else {
+      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+      const updateMetadataResult = await P_updateMetadataAddCart(
+        paredCartIpfsHash,
+        nft
+      );
+
+      if (updateMetadataResult.ok) {
+        return true;
+      }
+    }
+  } catch (err) {
+    console.log("err: ", err);
+    return false;
+  }
+};

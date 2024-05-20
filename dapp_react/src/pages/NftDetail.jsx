@@ -1,6 +1,45 @@
+import { useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
+import useGetTokenData from "../hooks/useGetTokenData";
+import { useContext, useEffect, useState } from "react";
+import { P_updateMetadataPurchase, addCartHandler, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import iconCart from "../assets/images/icon-cart.png";
+import { GlobalContext } from "../context/GlobalContext";
 
 function NftDetail() {
+  const params = useParams();
+  const { ipfsHash, nftId } = params;
+  const tokenData = useGetTokenData(ipfsHash);
+  const { name, description, image, attributes } = tokenData;
+  const { account } = useContext(GlobalContext);
+  console.log('tokenData: ', tokenData);
+  const [metadata, setMetadata] = useState({
+    nftPrice: 0,
+    owner: '',
+    tokenUrl: '',
+    isOnsale: "true",
+    isCollection: "false",
+    numberOfSales: 0,
+    priceHistory: [],
+  });
+
+  useEffect(() => {
+    async function fetchMetadata() {
+      const res = await getTargetNftToIpfsData(ipfsHash);
+      const _metadata = res.metadata.keyvalues;
+      console.log('metadata: ', _metadata);
+      setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: JSON.parse(_metadata.priceHistory) });
+    }
+    fetchMetadata();
+  }, []);
+
+  const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
+    const result = await purchaseNftHandler(nftId, tokenUrl, nftPrice, account);
+    if (result) {
+      alert('NFT 구매에 성공했습니다.');
+    }
+  }
+
   return (
     <Background>
       <Container>
@@ -22,57 +61,63 @@ function NftDetail() {
                 </div>
               </header>
               <ImgWrap>
-                <img />
+                <img src={image} />
               </ImgWrap>
             </ImgBox>
           </LeftPart>
           <RightPart>
-            <div>
-              <div>
-                <h1>nft name</h1>
-                <div>Owned by [nft owner]</div>
-              </div>
-              <div>
-                <div>
-                  <button>구매하기</button>
-                </div>
-                <div>
-                  <button>장바구니</button>
+            <div style={{ padding: '5px 0 0 20px' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <h1>{name}</h1>
+                  <div>Owned by <span style={{ color: "#2081e2cc" }}>{metadata.owner}</span></div>
                 </div>
               </div>
-            </div>
-            <div>
-              <div>
-                Description
-              </div>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-                vehicula, risus nec tincidunt ultricies, purus nunc laoreet
-                turpis, a vehicula felis odio vel libero. Donec vehicula, risus
-                nec tincidunt ultricies, purus nunc laoreet turpis, a vehicula
-                felis odio vel libero.
-              </p>
-            </div>
-            <div>
-              <div>
-                Traits
-              </div>
-              <div>
-                <ul>
-                  <li>
-                    <div>characteristic</div>
-                    <div>예술</div>
-                  </li>
-                  <li>
-                    <div>characteristic</div>
-                    <div>유명인</div>
-                  </li>
-                  <li>
-                    <div>characteristic</div>
-                    <div>게임</div>
-                  </li>
-                </ul>
-              </div>
+              <PriceBox>
+                <h3>
+                  Price Info
+                </h3>
+                <p>
+                  <span style={{ color: "#8a939b" }}>Current price</span> <br />
+                  {metadata.nftPrice} ETH
+                  <div>
+                    <ButtonWrap>
+                      <PurchaseBtn onClick={() => purchaseController(nftId, ipfsHash, metadata.nftPrice, account)}>지금 구매하기</PurchaseBtn>
+                      <CartBtn onClick={() => addCartHandler(metadata, account)} >
+                        <CartImg>
+                          <img src={iconCart} alt="장바구니" />
+                        </CartImg>
+                      </CartBtn>
+                    </ButtonWrap>
+                  </div>
+                </p>
+              </PriceBox>
+              <DescriptionBox>
+                <h3>
+                  Description
+                </h3>
+                <p>
+                  <span style={{ color: "#8a939b" }}>By</span> <span>{name}Deployer</span> <br />
+                  {description}
+                </p>
+              </DescriptionBox>
+              <AttribuesBox>
+                <h3>
+                  Traits
+                </h3>
+                <p>
+                  <ul>
+                    {
+                      attributes && attributes.map(attr => (
+                        <li key={`nft-detail-${ipfsHash}-${nftId}`}>
+                          <span>{attr.trait_type}</span>: {attr.value}
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </p>
+
+              </AttribuesBox>
             </div>
           </RightPart>
         </Flex>
@@ -80,6 +125,35 @@ function NftDetail() {
     </Background>
   );
 }
+
+const DescriptionBox = styled.div`
+  ${props => props.theme.variables.flexGap('column', '0px')}
+  border: 1px solid rgba(18, 18, 18, 0.12);
+  color: rgb(18, 18, 18);
+  background-color: rgb(253, 253, 253);
+  border-radius: 10px;
+  margin-bottom: 10px;
+
+  h3 {
+    border-bottom: 1px solid rgba(18, 18, 18, 0.12);
+    padding: 10px;
+  }
+  p {
+    padding: 20px;
+    overflow: auto;
+    height: 80px;
+    font-size: 16px;
+    span {
+      /* font-weight: 600; */
+    }
+  }
+`;
+
+const PriceBox = styled(DescriptionBox)`
+  p {
+  }
+`;
+const AttribuesBox = styled(DescriptionBox)``;
 
 const Flex = styled.div`
   display: flex;
@@ -134,6 +208,49 @@ const Container = styled.div`
   overflow: hidden;
   color: rgba(18, 18, 18, 1);
   /* padding: 0 50px 0 30px; */
+`;
+
+
+const CartImg = styled.div`
+  width: 16px;
+  height: 16px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const PurchaseBtn = styled.div`
+  width: calc(100% - 41px);
+    height: 30px;
+    background-color: rgba(32, 129, 226, 1);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+      background-color: rgba(32, 129, 226, 0.8);
+    }
+`;
+
+const CartBtn = styled(PurchaseBtn)`
+  width: 40px;
+  border-radius: 0 10px 10px 0;
+  height: 30px;
+`;
+
+const ButtonWrap = styled.div`
+  /* position: absolute;
+  bottom: 0; */
+  /* width: 100%; */
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
 `;
 
 export default NftDetail; 

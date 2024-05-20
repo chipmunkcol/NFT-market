@@ -22,7 +22,7 @@ function MintNft() {
     ],
   });
   const [file, setFile] = useState(null);
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState([]);
   const onchangeNameData = (e) => {
     setJsonData((prev) => ({
       ...prev,
@@ -97,7 +97,7 @@ function MintNft() {
       ],
     });
     setFile(null);
-    setTags("");
+    setTags([]);
     inputFileRef.current.value = "";
   };
 
@@ -132,7 +132,7 @@ function MintNft() {
       name: jsonData.name,
       description: jsonData.description,
       image: imageIpfsHash,
-      attributes: tags
+      attributes: JSON.stringify(jsonData.attributes)
     });
 
     const options = {
@@ -164,7 +164,8 @@ function MintNft() {
           owner: account,
           description: jsonData.description,
           isOnsale: String(false),
-          isCollection: String(false)
+          isCollection: String(false),
+          tags: tags.join('')
         },
       });
 
@@ -190,17 +191,6 @@ function MintNft() {
     }
   };
 
-  // 태그
-  const handleTags = (e) => {
-    let str = "#";
-    str = tags + str + e.target.value + " ";
-    setTags(str);
-  };
-
-  const onChangeInputSpecific = (e) => {
-    setTags(e.target.value);
-  };
-
   const cancelHandler = () => {
     resetFormData();
   };
@@ -208,6 +198,19 @@ function MintNft() {
   const getIpfsToJsonData = ipfsUrl => {
     const url = `https://gateway.pinata.cloud/ipfs/${ipfsUrl}`;
     return url;
+  }
+
+  // 태그
+  const addTagHandler = e => {
+    const value = e.target.value;
+    if (tags.includes(value)) {
+      return;
+    }
+    setTags(prev => [...prev, value]);
+  }
+
+  const removeTagHandler = (tag) => {
+    setTags(prev => prev.filter(item => item !== tag));
   }
 
   return (
@@ -266,7 +269,7 @@ function MintNft() {
               태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로
               표시되며 아이템 페이지에도 나열됩니다.
             </p>
-            <select style={{ marginBottom: "5px" }} onChange={handleTags}>
+            <select style={{ marginBottom: "5px" }} onChange={addTagHandler}>
               <option style={{ display: "none" }}>ex</option>
               <option>예술</option>
               <option>유명인</option>
@@ -275,18 +278,49 @@ function MintNft() {
               <option>가상자산</option>
               <option>프로필 사진</option>
             </select>
-            <InputSpecific
-              placeholder="#예술 #유명인 #게임"
-              value={tags}
-              onChange={onChangeInputSpecific}
-            />
-            <S_Button onClick={handleSubmission}>생성</S_Button>
+            <TagBox>
+              {
+                tags.map(tag => (
+                  <Tag>
+                    {tag}
+                    <span onClick={() => removeTagHandler(tag)}>X</span>
+                  </Tag>
+                ))
+              }
+            </TagBox>
+            <div>
+              <S_Button onClick={handleSubmission}>생성</S_Button>
+            </div>
           </RightPart>
         </FlexBox>
       </Container>
     </Background >
   );
 }
+
+const Tag = styled.div`
+    background-color: darkgray;
+    color: white;
+    border-radius: 40px;
+    padding: 4px 9px;
+    font-size: 11px;
+    margin-right: 5px;
+
+    span {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+`;
+
+const TagBox = styled.div`
+  height: 30px;
+  border: 1px solid rgba(18, 18, 18, 0.32);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 20px;
+`;
 
 const CancelWrap = styled.div`
   position: absolute;

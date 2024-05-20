@@ -125,7 +125,7 @@ const MarketPlace = () => {
         <div style={{ paddingTop: '130px' }}>
           <FlexWrap style={{ alignItems: 'normal' }} >
             <LeftPart>
-              <div>
+              <CategoryBox>
                 <div>
                   <ul>
                     <h3>카테고리</h3>
@@ -150,7 +150,7 @@ const MarketPlace = () => {
                     <li>사용자 7</li>
                   </ul>
                 </div>
-              </div>
+              </CategoryBox>
             </LeftPart>
             <RightPart>
               <Outlet context={[gridCss]} />
@@ -161,6 +161,33 @@ const MarketPlace = () => {
     </Background>
   );
 }
+
+const CategoryBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5Px;
+  }
+
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  li {
+    font-size: 16px;
+    cursor: pointer;
+    &:hover {
+      color: #007bff;
+    }
+  
+  }
+`;
 
 const FixArea = styled.div`
   width: 95%;

@@ -35,6 +35,13 @@ const theme = {
       justify-content: space-between;
       align-items: center;
     `,
+    flexGap(direction, gap) {
+      return `
+        display: flex;
+        flex-direction: ${direction};
+        gap: ${gap};
+      `;
+    },
   },
 };
 

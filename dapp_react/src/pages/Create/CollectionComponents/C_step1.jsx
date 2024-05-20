@@ -40,29 +40,24 @@ function C_step() {
   };
 
   // 태그
-  // const handleTags = (e) => {
-  //   let str = "#";
-  //   str = collection.nfts[collectionIndex].tags + str + e.target.value + " ";
-  //   setTags(prev => ({
-  //     ...prev,
-  //     tags: str
-  //   }));
-  // };
+  const addTagHandler = e => {
+    const value = e.target.value;
+    if (collection.tags.includes(value)) {
+      return;
+    }
+    // setTags(prev => [...prev, value]);
+    setCollection(prev => ({
+      ...prev,
+      tags: [...prev.tags, value]
+    }));
+  };
 
-  // const onChangeInputTags = (e) => {
-  //   setCollection(prev => ({
-  //     ...prev,
-  //     nfts: prev.nfts.map((nft, index) => {
-  //       if (index === collectionIndex) {
-  //         return {
-  //           ...nft,
-  //           tags: e.target.value
-  //         }
-  //       }
-  //       return nft;
-  //     })
-  //   }));
-  // };
+  const removeTagHandler = (tag) => {
+    setCollection(prev => ({
+      ...prev,
+      tags: prev.tags.filter(item => item !== tag)
+    }));
+  }
 
   return (
     <RightPart>
@@ -92,7 +87,7 @@ function C_step() {
         표시되며 아이템 페이지에도 나열됩니다.
       </p>
       <select style={{ marginBottom: "5px" }}
-      // onChange={handleTags}
+        onChange={addTagHandler}
       >
         <option style={{ display: "none" }}>ex</option>
         <option>예술</option>
@@ -102,11 +97,16 @@ function C_step() {
         <option>가상자산</option>
         <option>프로필 사진</option>
       </select>
-      <InputSpecific
-        placeholder="#예술 #유명인 #게임"
-        value={collection.nfts[collectionIndex]?.tags}
-      // onChange={onChangeInputTags}
-      />
+      <TagBox>
+        {
+          collection.tags.map(tag => (
+            <Tag>
+              {tag}
+              <span onClick={() => removeTagHandler(tag)}>X</span>
+            </Tag>
+          ))
+        }
+      </TagBox>
       {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
       <Link to={"/create-collection/step-2"}>
         <S_Button >다음</S_Button>
@@ -123,6 +123,31 @@ const InputText = styled.input`
   border: 1px solid rgba(18, 18, 18, 0.32);
   border-radius: 5px;
   margin-bottom: 1rem;
+`;
+
+
+const Tag = styled.div`
+    background-color: darkgray;
+    color: white;
+    border-radius: 40px;
+    padding: 4px 9px;
+    font-size: 11px;
+    margin-right: 5px;
+
+    span {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+`;
+
+const TagBox = styled.div`
+  height: 30px;
+  border: 1px solid rgba(18, 18, 18, 0.32);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 20px;
 `;
 
 const InputSpecific = styled(InputText)``;

@@ -10,6 +10,7 @@ export const tempNftArray = [
     isCollection: false,
     isOnsale: true,
     priceHistory: [],
+    tags: "예술유명인음악"
   },
   {
     name: "jangkal cat",
@@ -22,6 +23,7 @@ export const tempNftArray = [
     isCollection: false,
     isOnsale: true,
     priceHistory: [],
+    tags: "게임가상자산"
   },
   {
     name: "51billion",
@@ -34,6 +36,7 @@ export const tempNftArray = [
     isCollection: false,
     isOnsale: true,
     priceHistory: [],
+    tags: "게임가상자산"
   },
   {
     name: "jangkal cat",
@@ -46,6 +49,7 @@ export const tempNftArray = [
     isCollection: false,
     isOnsale: true,
     priceHistory: [],
+    tags: "프로필사진예술"
   },
   {
     name: "51billion",
@@ -58,6 +62,7 @@ export const tempNftArray = [
     isCollection: false,
     isOnsale: true,
     priceHistory: [],
+    tags: "예술"
   },
   {
     name: "jangkal cat",

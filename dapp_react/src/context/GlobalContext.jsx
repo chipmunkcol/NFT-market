@@ -30,12 +30,13 @@ const GlobalProvider = ({ children }) => {
     name: "",
     description: "",
     image: "",
-    attributes: [
-      {
-        trait_type: "",
-        value: "",
-      }
-    ],
+    // attributes: [
+    //   {
+    //     trait_type: "",
+    //     value: "",
+    //   }
+    // ],
+    tags: [],
     nfts: [], // type: nft[]
     nftsLength: 0,
     perPrice: 0,

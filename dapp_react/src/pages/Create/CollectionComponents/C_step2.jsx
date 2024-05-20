@@ -62,6 +62,7 @@ function C_step2() {
         nftPrice: perPriceRef.current,
         numberOfSales: 0,
         priceHistory: JSON.stringify([]),
+        tags: collection.tags.join('')
       };
       nftKeyvaluesList.push(nftKeyvaluesObject);
     })
@@ -81,7 +82,8 @@ function C_step2() {
         isOnsale: String(true),
         nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
         isCollection: String(true),
-        numberOfSales: 0
+        numberOfSales: 0,
+        tags: collection.tags.join('')
       }
     });
 

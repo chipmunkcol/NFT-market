@@ -8,6 +8,7 @@ import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
 import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, pinJsonToIPFSForCart } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
+import { useNavigate } from "react-router-dom";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -87,10 +88,16 @@ const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
     fetchIpfsData();
   }, [tokenUrl]);
 
+  // Detail page
+  const navigate = useNavigate();
+  const navigateDetailPage = () => {
+    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+  }
+
   return (
     <Styled.Container>
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
-      <ImgWrap $gridCss={gridCss} >
+      <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
         {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
         <BgImg $src={imageUrl} alt="NFT image" />
       </ImgWrap>
@@ -175,6 +182,8 @@ const ImgWrap = styled.div`
   height: ${props => props.$gridCss.cardWidth};
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
+
+  cursor: pointer;
 `;
 
 const ButtonWrap = styled.div`
