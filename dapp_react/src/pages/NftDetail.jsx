@@ -4,7 +4,10 @@ import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
 import { P_updateMetadataPurchase, addCartHandler, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
+import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
+import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
+import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
 
 function NftDetail() {
   const params = useParams();
@@ -28,7 +31,12 @@ function NftDetail() {
       const res = await getTargetNftToIpfsData(ipfsHash);
       const _metadata = res.metadata.keyvalues;
       console.log('metadata: ', _metadata);
-      setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: JSON.parse(_metadata.priceHistory) });
+      // const priceHistory = JSON.parse(_metadata.priceHistory);
+      // console.log('priceHistory: ', priceHistory);
+      // setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: JSON.parse(_metadata.priceHistory) });
+      let temp = [{ soldTime: '2024-05-01', nftPrice: 0.1 }, { soldTime: '2024-05-06', nftPrice: 0.7 },
+      { soldTime: '2024-05-11', nftPrice: 1.3 }, { soldTime: '2024-05-20', nftPrice: 3 }];
+      setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: temp });
     }
     fetchMetadata();
   }, []);
@@ -40,6 +48,15 @@ function NftDetail() {
     }
   }
 
+  // const data = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
+  // { name: 'Page B', uv: 300, pv: 2400, amt: 2400 },
+  // { name: 'Page C', uv: 200, pv: 2400, amt: 2400 },
+  // { name: 'Page D', uv: 278, pv: 2400, amt: 2400 },
+  // { name: 'Page E', uv: 189, pv: 2400, amt: 2400 },
+  // { name: 'Page F', uv: 239, pv: 2400, amt: 2400 },
+  // { name: 'Page G', uv: 349, pv: 2400, amt: 2400 }
+  // ];
+
   return (
     <Background>
       <Container>
@@ -49,21 +66,47 @@ function NftDetail() {
               <header>
                 <div>
                   {/* 이더리움 등 icon */}
-                  <icon />
+                  <SymbolImg>
+                    <img src={sepoliaSymbol} alt="sepolia-symbol" />
+                  </SymbolImg>
                 </div>
                 <div>
-                  {/* view original (pinata) */}
-                  <icon />
-                </div>
-                <div>
-                  {/* like icon */}
-                  <icon />
+                  <div>
+                    {/* view original (pinata) */}
+                    <a href={image} target="_blank" >
+                      <ExpandImg />
+                    </a>
+                  </div>
+                  <div>
+                    {/* like icon */}
+                    <icon />
+                  </div>
                 </div>
               </header>
               <ImgWrap>
                 <img src={image} />
               </ImgWrap>
             </ImgBox>
+
+            <AttribuesBox style={{ marginTop: '20px' }}>
+              <h3>
+                Traits
+              </h3>
+              <p>
+                <ul>
+                  {
+                    attributes?.length > 0 ? attributes.map(attr => (
+                      <li key={`nft-detail-${ipfsHash}-${nftId}`}>
+                        <div style={{ fontSize: '12px', color: '#545454' }}>{attr.trait_type}</div>
+                        <div style={{ fontSize: '14px', color: '#121212' }}>{attr.value}</div>
+                      </li>
+                    )) :
+                      <li>None</li>
+                  }
+                </ul>
+              </p>
+
+            </AttribuesBox>
           </LeftPart>
           <RightPart>
             <div style={{ padding: '5px 0 0 20px' }}>
@@ -78,8 +121,11 @@ function NftDetail() {
                   Price Info
                 </h3>
                 <p>
-                  <span style={{ color: "#8a939b" }}>Current price</span> <br />
-                  {metadata.nftPrice} ETH
+                  <div style={{ color: "#8a939b" }}>Current price</div>
+                  <div>
+                    <span style={{ fontSize: '30px', fontWeight: '700', color: '#121212', marginRight: '5px' }}>{metadata.nftPrice} ETH</span>
+                    <span style={{ fontSize: '15px', color: '#545454' }}>$1323.33</span>
+                  </div>
                   <div>
                     <ButtonWrap>
                       <PurchaseBtn onClick={() => purchaseController(nftId, ipfsHash, metadata.nftPrice, account)}>지금 구매하기</PurchaseBtn>
@@ -92,32 +138,34 @@ function NftDetail() {
                   </div>
                 </p>
               </PriceBox>
+              <PriceHistory>
+                <h3>
+                  Price Info
+                </h3>
+                <p style={{ fontSize: '11px' }}>
+                  {/* <div style={{ display: 'flex' }}> */}
+                  <span>Volume (ETH)</span>
+
+                  <LineChart width={600} height={200} data={metadata.priceHistory} >
+                    <Line type="monotone" dataKey="nftPrice" stroke="#8884d8" />
+                    {/* <CartesianGrid stroke="#ccc" /> */}
+                    <XAxis dataKey="soldTime" />
+                    <YAxis />
+                    <Tooltip />
+                  </LineChart>
+                  {/* </div> */}
+                </p>
+
+              </PriceHistory>
               <DescriptionBox>
                 <h3>
                   Description
                 </h3>
-                <p>
-                  <span style={{ color: "#8a939b" }}>By</span> <span>{name}Deployer</span> <br />
-                  {description}
+                <p style={{ height: '100px', overflow: 'auto' }}>
+                  <div style={{ color: '#8a939b' }}>By <span>{name}Deployer</span></div>
+                  <div>{description}</div>
                 </p>
               </DescriptionBox>
-              <AttribuesBox>
-                <h3>
-                  Traits
-                </h3>
-                <p>
-                  <ul>
-                    {
-                      attributes && attributes.map(attr => (
-                        <li key={`nft-detail-${ipfsHash}-${nftId}`}>
-                          <span>{attr.trait_type}</span>: {attr.value}
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </p>
-
-              </AttribuesBox>
             </div>
           </RightPart>
         </Flex>
@@ -139,21 +187,30 @@ const DescriptionBox = styled.div`
     padding: 10px;
   }
   p {
+    ${props => props.theme.variables.flexGap('column', '10px')}
     padding: 20px;
-    overflow: auto;
-    height: 80px;
     font-size: 16px;
-    span {
-      /* font-weight: 600; */
-    }
   }
 `;
 
 const PriceBox = styled(DescriptionBox)`
-  p {
+`;
+const PriceHistory = styled(DescriptionBox)``;
+const AttribuesBox = styled(DescriptionBox)`
+  ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  li {
+    ${props => props.theme.variables.flexColumn}
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    font-weight: bold;
   }
 `;
-const AttribuesBox = styled(DescriptionBox)``;
 
 const Flex = styled.div`
   display: flex;
@@ -173,9 +230,9 @@ const ImgBox = styled.div`
   header {
     width: 100%;
     height: 40px;
-    display: flex;
-    justify-content: space-between;
+    ${props => props.theme.variables.flexBetween};
     gap: 10px;
+    padding: 5px 10px;
   }
 `;
 const ImgWrap = styled.div`
@@ -210,10 +267,24 @@ const Container = styled.div`
   /* padding: 0 50px 0 30px; */
 `;
 
+const SymbolImg = styled.div`
+  width: 20px;
+  height: 20px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+const ExpandImg = styled(expandIcon)`
+  width: 14px;
+  height: 14px;
+  fill: rgba(32, 129, 226, 0.8);
+`;
+
 
 const CartImg = styled.div`
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
 
   img {
     width: 100%;
@@ -222,8 +293,8 @@ const CartImg = styled.div`
 `;
 
 const PurchaseBtn = styled.div`
-  width: calc(100% - 41px);
-    height: 30px;
+  width: calc(100% - 56px);
+    height: 100%;
     background-color: rgba(32, 129, 226, 1);
     font-size: 14px;
     font-weight: 700;
@@ -238,9 +309,9 @@ const PurchaseBtn = styled.div`
 `;
 
 const CartBtn = styled(PurchaseBtn)`
-  width: 40px;
+  width: 55px;
   border-radius: 0 10px 10px 0;
-  height: 30px;
+  height: 100%;
 `;
 
 const ButtonWrap = styled.div`
@@ -248,6 +319,8 @@ const ButtonWrap = styled.div`
   bottom: 0; */
   /* width: 100%; */
   width: 300px;
+  height: 45px;
+  margin-top: 20px;
   display: flex;
   justify-content: space-between;
   color: white;
