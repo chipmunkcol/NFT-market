@@ -6,11 +6,13 @@ import { GlobalContext } from "../../context/GlobalContext";
 import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData } from "../../hooks/common";
 import CartNftCard from "./CartNftCard";
 import { SaleNftContract, web3 } from "../../../contracts";
+import Spinner from "../../components/Spinner";
 
 function Cart({ cartModalClose }) {
   const { account } = useContext(GlobalContext);
   const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const onclick = e => {
     e.stopPropagation();
   }
@@ -18,12 +20,14 @@ function Cart({ cartModalClose }) {
   useEffect(() => {
     const getCartData = async () => {
       if (!cartIpfsHash) return;
+      setIsLoading(true);
       const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
       const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
       const cartList = JSON.parse(res.metadata.keyvalues.cart);
       const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
       setNftsInCart(newCartList);
       console.log('newCartList: ', newCartList);
+      setIsLoading(false);
     }
     getCartData();
   }, [account]);
@@ -132,26 +136,35 @@ function Cart({ cartModalClose }) {
           </CloseBtnWrap>
         </div>
         <ItemBox>
-          {nftsInCart.length > 0 ? (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          {/* {nftsInCart.length > 0 ? (
+            <> */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
 
-                <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
-                  {checkedList.length} items
-                </div>
-                <DeleteAll onClick={removeAllCartHandler}>
-                  <span>전체 삭제</span>
-                </DeleteAll>
-              </div>
-              <ItemWrap>
-                {nftsInCart.map((nft) => {
-                  return (
-                    <CartNftCard key={`cart-${nft.nftId}`} nft={nft} propsFunction={propsFunction} />
-                  )
-                })}
-              </ItemWrap>
-            </>
-          ) : <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
+            <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
+              {checkedList.length} items
+            </div>
+            {nftsInCart.length > 0 &&
+              <DeleteAll onClick={removeAllCartHandler}>
+                <span>전체 삭제</span>
+              </DeleteAll>
+            }
+          </div>
+          {isLoading ? <Spinner _custom={{
+            color: '#3498db',
+            size: '20px',
+            height: '150px'
+          }} /> :
+            nftsInCart.length > 0 &&
+            <ItemWrap>
+              {nftsInCart.map((nft) => {
+                return (
+                  <CartNftCard key={`cart-${nft.nftId}`} nft={nft} propsFunction={propsFunction} />
+                )
+              })}
+            </ItemWrap>
+          }
+          {
+            !isLoading && nftsInCart.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
         <CartBottom>

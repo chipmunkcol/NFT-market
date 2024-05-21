@@ -4,6 +4,10 @@ export const GlobalContext = createContext({});
 
 const GlobalProvider = ({ children }) => {
   const [account, setAccount] = useState("");
+  const [loadingState, setLoadingState] = useState({
+    isLoading: false,
+    message: ""
+  });
   const [myNfts, setMyNfts] = useState([]);
   const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [trigger, setTrigger] = useState(false);
@@ -92,7 +96,9 @@ const GlobalProvider = ({ children }) => {
     getAllonsaleNftListRef,
     offset,
     setOffset,
-  }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex, onsaleTrigger, purchaseTrigger, offset])
+    loadingState,
+    setLoadingState
+  }), [account, myNfts, onsaleNftList, trigger, nft, collection, collectionIndex, onsaleTrigger, purchaseTrigger, offset, loadingState])
   return (
     <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>
   )

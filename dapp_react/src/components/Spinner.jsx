@@ -41,5 +41,5 @@ border: 3px solid #f3f3f3; /* Light grey */
     width: ${props => props.$custom.size};
     height: ${props => props.$custom.size};
     animation: ${spin} 1s linear infinite;
-    margin-right: 10px;
+    /* margin-right: 10px; */
 `;
