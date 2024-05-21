@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateFormData } from "../../../hooks/common";
+import { ReactComponent as openseaSymbol } from "../../../assets/images/opensea-symbol.svg"
 
 function C_step2() {
 
@@ -263,12 +264,14 @@ function C_step2() {
         </div>
       </div>
       <h2 style={{ marginBottom: '10px' }}>수익에 대해</h2>
-      <p style={{ marginBottom: '10px' }}>기본 판매 수익을 받으려면 지갑을 추가하세요.
+      <p style={{ marginBottom: '10px' }}>
         OpenSea는 기본 판매에 대해 5%의 수수료를 받습니다.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
         <div style={{ display: 'flex', gap: '5px' }}>
-          <InputText type="text" style={{ width: '80%', marginBottom: '5px' }} />
+          <UserAddressBox style={{ width: '80%', marginBottom: '5px' }}>
+            {account}
+          </UserAddressBox>
           <RateBox>
             <div>95</div>
             <div>%</div>
@@ -276,7 +279,7 @@ function C_step2() {
         </div>
         <div style={{ display: 'flex', gap: '5px' }}>
           <MyAddressBox>
-            <div style={{ width: '15px', height: '15px', borderRadius: '50%', backgroundColor: 'blueviolet' }}></div>
+            <OpenseaSymbol />
             <div>오픈씨</div>
           </MyAddressBox>
           <RateBox>
@@ -304,6 +307,11 @@ function C_step2() {
     </RightPart>
   )
 }
+
+const OpenseaSymbol = styled(openseaSymbol)`
+  width: 20px;
+  height: 20px;
+`;
 
 const PreviewFile = styled.div`
   position: relative;
@@ -344,6 +352,7 @@ const MyAddressBox = styled.div`
   border: 1px solid rgba(18, 18, 18, 0.12);
   background-color: rgb(242, 244, 245);
 `;
+const UserAddressBox = styled(MyAddressBox)``;
 
 const RateBox = styled.div`
   width: 20%;
@@ -377,6 +386,7 @@ const InputText = styled.input`
   border-radius: 12px;
   border: 1px solid rgba(18, 18, 18, 0.12);
   margin-bottom: 1rem;
+  /* background-color: rgb(242, 244, 245); */
 `;
 
 // const InputSpecific = styled(InputText)``;

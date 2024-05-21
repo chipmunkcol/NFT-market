@@ -173,8 +173,9 @@ const InputFileBox = styled.div`
 
 const TitleBox = styled.div`
   width: 100%;
-  padding-top: 130px;
-  height: 210px;
+  padding-bottom: 20px;
+  /* padding-top: 130px; */
+  /* height: 210px; */
 
   p {
     margin-top: 10px;

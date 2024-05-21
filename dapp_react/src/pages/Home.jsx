@@ -20,6 +20,7 @@ import { getImageUrl, getIpfsTokenData, getNftListToIpfs, ipfsGetOptions } from 
 import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
+import Spinner from "../components/Spinner";
 
 
 const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
@@ -44,6 +45,7 @@ function Home() {
   //   sliderRef.current.slidePrev();
   // }
   // numberOfSales
+  const [isLoading, setIsLoading] = useState(false);
   const [maxPriceNftData, setMaxPriceNftData] = useState();
 
   const [top10Nfts, setTop10Nfts] = useState([]);
@@ -80,7 +82,12 @@ function Home() {
   }
 
   useEffect(() => {
-    getTopRanking();
+    async function fetchData() {
+      setIsLoading(true);
+      await getTopRanking();
+      setIsLoading(false);
+    }
+    fetchData();
   }, []);
 
   // useEffect(() => {
@@ -134,7 +141,9 @@ function Home() {
                   <FilterItem>30일</FilterItem>
                 </FilterWrap>
                 <ItemWrap>
-                  {top10Nfts.map((nft, index) => (
+                  {/* <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> */}
+
+                  {isLoading ? <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> : top10Nfts.map((nft, index) => (
                     <Top10NftCard nft={nft} index={index} />
                   ))}
                 </ItemWrap>
@@ -177,11 +186,12 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {
+                  {isLoading ? <Spinner /> :
                     top10Nfts.slice(0, 3).map(nft => (
                       <TopCollectorNftCard nft={nft} />
                     ))
                   }
+                  {/* <Spinner /> */}
                 </ul>
                 <ButtonArea>
                   <ButtonBox>
@@ -206,7 +216,7 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {maxPriceNftData && <TopCollectorNftCard nft={maxPriceNftData} />}
+                  {isLoading ? <Spinner /> : <TopCollectorNftCard nft={maxPriceNftData} />}
                 </ul>
                 <ButtonArea>
                   <ButtonBox>

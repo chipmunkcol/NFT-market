@@ -2,6 +2,7 @@ import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 
 const TopCollectorNftCard = ({ nft }) => {
+  if (!nft) return null;
   const { name, image } = useGetTokenData(nft.tokenUrl);
   const { nftPrice, nftId } = nft;
 
