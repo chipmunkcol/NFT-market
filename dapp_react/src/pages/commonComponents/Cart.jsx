@@ -95,7 +95,6 @@ function Cart({ cartModalClose }) {
     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
 
     const updateMetadataResult = await handleWithLoading(P_updateMetadataRemoveAllCart(paredCartIpfsHash), '장바구니에서 삭제 중입니다');
-    // const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
     if (updateMetadataResult.ok) {
       R_removeAllCartHandler();
     }

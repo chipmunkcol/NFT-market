@@ -21,6 +21,8 @@ import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
 import Spinner from "../components/Spinner";
+import { dummyNfts } from "../components/dummyNfts";
+import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
 
 
 const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
@@ -84,7 +86,7 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      await getTopRanking();
+      // await getTopRanking();
       setIsLoading(false);
     }
     fetchData();
@@ -110,10 +112,8 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [test1, test2, test3, test4, test1, test2, test3, test4].map((item, index) => (
-                    <ImgWrap key={`testMovingBg-${index}`}>
-                      <Img src={item} alt="test" />
-                    </ImgWrap>
+                  dummyNfts.map(nft => (
+                    <MoveBgNftCard nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -121,10 +121,8 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [test1, test2, test3, test4, test1, test2, test3, test4].reverse().map((item, index) => (
-                    <ImgWrap key={`testMovingBg2-${index}`}>
-                      <Img src={item} alt="test" />
-                    </ImgWrap>
+                  dummyNfts.reverse().map(nft => (
+                    <MoveBgNftCard nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>
@@ -152,10 +150,8 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [test1, test2, test3, test4, test1, test2, test3, test4].map((item, index) => (
-                    <ImgWrap key={`testMovingBg3-${index}`}>
-                      <Img src={item} alt="test" />
-                    </ImgWrap>
+                  dummyNfts.map(nft => (
+                    <MoveBgNftCard nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -163,10 +159,8 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [test1, test2, test3, test4, test1, test2, test3, test4].reverse().map((item, index) => (
-                    <ImgWrap key={`testMovingBg4-${index}`}>
-                      <Img src={item} alt="test" />
-                    </ImgWrap>
+                  dummyNfts.reverse().map(nft => (
+                    <MoveBgNftCard nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>

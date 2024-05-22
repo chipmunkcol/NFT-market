@@ -3,12 +3,14 @@ import useGetTokenData from "../../hooks/useGetTokenData";
 import { P_updateMetadataRemoveCart } from "../../hooks/common";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
+import useAsyncTask from "../../hooks/useAsyncTask";
 
 const CartNftCard = ({ nft, propsFunction }) => {
   const { account } = useContext(GlobalContext);
   const { nftId, nftName, tokenUrl, nftPrice, owner } = nft;
   const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);
+  const { handleWithLoading } = useAsyncTask();
 
 
   const checkToggleHandler = (e) => {
@@ -25,7 +27,8 @@ const CartNftCard = ({ nft, propsFunction }) => {
     if (!cartIpfsHash) return;
 
     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-    const updateMetadataResult = await P_updateMetadataRemoveCart(paredCartIpfsHash, nft.nftId);
+    const updateMetadataResult = await handleWithLoading(P_updateMetadataRemoveCart(paredCartIpfsHash, nft.nftId), '장바구니에서 삭제 중입니다');
+
     if (updateMetadataResult.ok) {
       R_removeCartHandler(nft);
     }
