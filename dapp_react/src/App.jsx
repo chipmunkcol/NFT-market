@@ -11,6 +11,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
 import Cart from "./pages/commonComponents/Cart";
+import MainSpinner from "./components/MainSpinner";
 // import Slider from "./components/Slider";
 // import { useRef } from "react";
 
@@ -136,50 +137,53 @@ function App() {
   }
 
   return (
-    <Container>
-      <Header id="header">
-        <Navbar>
-          <Link to={'/'}>
-            <img src="vite.svg" alt="logo" />
-          </Link>
-          <Link to={'/market-place/nft'}>
-            <Nav>Marketplace</Nav>
-          </Link>
-          <Link to={'/create'}>
-            <Nav>Create</Nav>
-          </Link>
-        </Navbar>
-        {!account ? (
-          <ButtonWrap>
-            <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
-          </ButtonWrap>) : (
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
-            <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
-            <Link to={`/mypage/${account}`}>
-              <Nav>MyPage</Nav>
+    <>
+      <MainSpinner />
+      <Container>
+        <Header id="header">
+          <Navbar>
+            <Link to={'/'}>
+              <img src="vite.svg" alt="logo" />
             </Link>
-            <div>|</div>
-            <CartWrap onClick={cartModalOpen}>Cart</CartWrap>
-          </div>
-        )
-        }
-        <Menubar>
-          ☰
-        </Menubar>
-        {/* Cart Component */}
-        {cartModal && <Cart cartModalClose={cartModalClose} />}
-      </Header>
-      {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
-      <ContainerHome>
-        {/* <Background> */}
+            <Link to={'/market-place/nft'}>
+              <Nav>Marketplace</Nav>
+            </Link>
+            <Link to={'/create'}>
+              <Nav>Create</Nav>
+            </Link>
+          </Navbar>
+          {!account ? (
+            <ButtonWrap>
+              <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
+            </ButtonWrap>) : (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
+              <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
+              <Link to={`/mypage/${account}`}>
+                <Nav>MyPage</Nav>
+              </Link>
+              <div>|</div>
+              <CartWrap onClick={cartModalOpen}>Cart</CartWrap>
+            </div>
+          )
+          }
+          <Menubar>
+            ☰
+          </Menubar>
+          {/* Cart Component */}
+          {cartModal && <Cart cartModalClose={cartModalClose} />}
+        </Header>
         {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
-        <Outlet />
-        {/* </Background> */}
-      </ContainerHome>
-      <Footer>
-        Footer 영역입니다
-      </Footer>
-    </Container>
+        <ContainerHome>
+          {/* <Background> */}
+          {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
+          <Outlet />
+          {/* </Background> */}
+        </ContainerHome>
+        <Footer>
+          Footer 영역입니다
+        </Footer>
+      </Container>
+    </>
   );
 }
 
@@ -211,7 +215,7 @@ const Header = styled.div`
   top: 0;
   height: 72px;
   width: 100vw;
-  z-index: 999;
+  z-index: 998;
   /* margin-top: 100px; */
   padding: 0 50px 0 2rem;
   /* background-color: rgba(0, 0, 0, 0.7); */

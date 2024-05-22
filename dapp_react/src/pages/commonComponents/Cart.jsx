@@ -7,12 +7,14 @@ import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetada
 import CartNftCard from "./CartNftCard";
 import { SaleNftContract, web3 } from "../../../contracts";
 import Spinner from "../../components/Spinner";
+import useAsyncTask from "../../hooks/useAsyncTask";
 
 function Cart({ cartModalClose }) {
   const { account } = useContext(GlobalContext);
   const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { handleWithLoading } = useAsyncTask();
   const onclick = e => {
     e.stopPropagation();
   }
@@ -91,7 +93,9 @@ function Cart({ cartModalClose }) {
     if (!cartIpfsHash) return;
 
     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-    const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
+
+    const updateMetadataResult = await handleWithLoading(P_updateMetadataRemoveAllCart(paredCartIpfsHash), '장바구니에서 삭제 중입니다');
+    // const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
     if (updateMetadataResult.ok) {
       R_removeAllCartHandler();
     }
