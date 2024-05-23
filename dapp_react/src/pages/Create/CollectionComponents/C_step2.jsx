@@ -78,8 +78,6 @@ function C_step2() {
       name: collection.name,
       keyvalues: {
         owner: account,
-        description: collection.description,
-        attributes: JSON.stringify(collection.attributes),
         isOnsale: String(true),
         nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
         isCollection: String(true),

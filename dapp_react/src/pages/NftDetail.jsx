@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { P_updateMetadataPurchase, addCartHandler, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import { P_updateMetadataPurchase, addCartHandler, getCurrentYMD, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
@@ -26,17 +26,29 @@ function NftDetail() {
     priceHistory: [],
   });
 
+  const getNewPriceHistory = (priceHistory) => {
+    const newPriceHistory = priceHistory.reverse().map(price => {
+      return {
+        ...price,
+        soldTime: getCurrentYMD(price.soldTime),
+      }
+    });
+    return newPriceHistory;
+
+  }
+
   useEffect(() => {
     async function fetchMetadata() {
       const res = await getTargetNftToIpfsData(ipfsHash);
       const _metadata = res.metadata.keyvalues;
       console.log('metadata: ', _metadata);
-      // const priceHistory = JSON.parse(_metadata.priceHistory);
-      // console.log('priceHistory: ', priceHistory);
-      // setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: JSON.parse(_metadata.priceHistory) });
-      let temp = [{ soldTime: '2024-05-01', nftPrice: 0.1 }, { soldTime: '2024-05-06', nftPrice: 0.7 },
-      { soldTime: '2024-05-11', nftPrice: 1.3 }, { soldTime: '2024-05-20', nftPrice: 3 }];
-      setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: temp });
+      const priceHistory = JSON.parse(_metadata.priceHistory);
+      console.log('priceHistory: ', priceHistory);
+      const newPriceHistory = getNewPriceHistory(priceHistory);
+      setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: newPriceHistory });
+      // let temp = [{ soldTime: '2024-05-01', nftPrice: 0.1 }, { soldTime: '2024-05-06', nftPrice: 0.7 },
+      // { soldTime: '2024-05-11', nftPrice: 1.3 }, { soldTime: '2024-05-20', nftPrice: 3 }];
+      // setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: temp });
     }
     fetchMetadata();
   }, []);
@@ -47,15 +59,6 @@ function NftDetail() {
       alert('NFT 구매에 성공했습니다.');
     }
   }
-
-  // const data = [{ name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
-  // { name: 'Page B', uv: 300, pv: 2400, amt: 2400 },
-  // { name: 'Page C', uv: 200, pv: 2400, amt: 2400 },
-  // { name: 'Page D', uv: 278, pv: 2400, amt: 2400 },
-  // { name: 'Page E', uv: 189, pv: 2400, amt: 2400 },
-  // { name: 'Page F', uv: 239, pv: 2400, amt: 2400 },
-  // { name: 'Page G', uv: 349, pv: 2400, amt: 2400 }
-  // ];
 
   return (
     <Background>
@@ -95,7 +98,7 @@ function NftDetail() {
               <p>
                 <ul>
                   {
-                    attributes?.length > 0 ? attributes.map(attr => (
+                    (typeof (attributes) === 'object' && attributes?.length > 0) ? attributes.map(attr => (
                       <li key={`nft-detail-${ipfsHash}-${nftId}`}>
                         <div style={{ fontSize: '12px', color: '#545454' }}>{attr.trait_type}</div>
                         <div style={{ fontSize: '14px', color: '#121212' }}>{attr.value}</div>
@@ -124,7 +127,9 @@ function NftDetail() {
                   <div style={{ color: "#8a939b" }}>Current price</div>
                   <div>
                     <span style={{ fontSize: '30px', fontWeight: '700', color: '#121212', marginRight: '5px' }}>{metadata.nftPrice} ETH</span>
-                    <span style={{ fontSize: '15px', color: '#545454' }}>$1323.33</span>
+                    <span style={{ fontSize: '15px', color: '#545454' }}>($
+                      {(Number(metadata.nftPrice) * 2928).toFixed(2)}
+                      )</span>
                   </div>
                   <div>
                     <ButtonWrap>
@@ -146,8 +151,10 @@ function NftDetail() {
                   {/* <div style={{ display: 'flex' }}> */}
                   <span>Volume (ETH)</span>
 
+                  {/* 그래프 라이브러리 */}
+                  {/* 그래프 라이브러리 */}
                   <LineChart width={600} height={200} data={metadata.priceHistory} >
-                    <Line type="monotone" dataKey="nftPrice" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="price" stroke="#8884d8" />
                     {/* <CartesianGrid stroke="#ccc" /> */}
                     <XAxis dataKey="soldTime" />
                     <YAxis />

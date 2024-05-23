@@ -9,7 +9,7 @@ import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 
 const MyPage = () => {
-  const { account, myNfts, setMyNfts, onsaleTrigger } = useContext(GlobalContext);
+  const { account, setMyNfts } = useContext(GlobalContext);
   
   const getEthPrice = weiPrice => {
     return web3.utils.fromWei(weiPrice, "ether");
@@ -46,7 +46,7 @@ const MyPage = () => {
 
   useEffect(() => {
     init();
-  }, [account, onsaleTrigger]);
+  }, [account]);
 
 
   // truncate account
@@ -82,11 +82,11 @@ const MyPage = () => {
               Collected
             </NavButton>
           </div>
-          <div>
+          {/* <div>
             <NavButton>
               Favorited
             </NavButton>
-          </div>
+          </div> */}
           <div style={{ position: 'absolute', bottom: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
 
         </div>
@@ -114,28 +114,16 @@ const MyPage = () => {
               </NavButton>
                 </Link>
             </div>
-            <div>
+            {/* <div>
                 <Link to={"sold"}>
               <NavButton>
                   Sold
               </NavButton>
                 </Link>
-            </div>
+            </div> */}
           </LeftPart>
           <RightPart>
-            {/* <div style={{ fontSize: '24px', fontWeight: '700', marginBottom: '10px' }}>{myNfts.length > 0 ? myNfts.length : 0} deals</div>
-            <Button $isApproved={approvedState} onClick={!approvedState ? approvedNftHandler : alertAleadyApproved} >{approvedState ? 'Approved' : 'Not approved'}</Button> */}
-
-            {/* {myNfts.length > 0 && (
-              <MyNftsWrap>
-                {myNfts.map((nft, index) => (
-                  <NonSaleNftCard key={index} nft={nft} account={account} />
-                ))}
-              </MyNftsWrap>
-            )}
-            {myNfts.length < 1 && <h2>No NFTs</h2>} */}
-            {/* Outlet */}
-            <Outlet context={[myNfts, account]} />
+            <Outlet />
           </RightPart>
         </FlexWrap>
 

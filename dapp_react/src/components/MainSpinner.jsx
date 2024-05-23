@@ -1,4 +1,4 @@
-import { useContext, useEffect, useNeon } from "react";
+import { useContext, useEffect } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 import styled from "styled-components";
 import SepliaSymbol from "../assets/images/sepolia-symbol.png"
@@ -6,6 +6,7 @@ import SepliaSymbol from "../assets/images/sepolia-symbol.png"
 const MainSpinner = () => {
   const { loadingState } = useContext(GlobalContext);
   const { isLoading, message } = loadingState;
+
 
   useEffect(() => {
     const $body = document.querySelector('body');
@@ -26,7 +27,7 @@ const MainSpinner = () => {
           <Spinner />
           <MessageBox>
             <FadeMessage style={{ fontSize: '18px' }}>Interacting with a smart contract...</FadeMessage>
-            <Message>{message}, 잠시만 기다려주세요.</Message>
+            <NeonMessage>{message}, 잠시만 기다려주세요.</NeonMessage>
           </MessageBox>
         </SpinnerBox>
       </BgWrap>
@@ -60,7 +61,8 @@ const Icon = styled.div`
 `;
 
 const BgWrap = styled.div`
-  position: absolute;
+  /* position: absolute; */
+  position: fixed;
 left: 0;
 top: 0;
 width: 100%;
@@ -122,7 +124,7 @@ const MessageBox = styled.div`
   /* position: relative; */
   /* top: 90px; */
   /* height: 55px; */
-  ${props => props.theme.variables.flexColumn};
+  ${props => props.theme.variables.flexColumn}
   gap: 10px;
 `;
 

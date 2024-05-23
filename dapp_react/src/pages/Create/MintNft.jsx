@@ -1,15 +1,28 @@
 import { MintContract } from "../../../contracts/index";
 import styled from "styled-components";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { S_Button } from "../../styles/styledComponent";
 import { useState } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import iconUpload from "../../assets/images/icon-upload.png";
 import { getImageIpfsHash, validateFormData } from "../../hooks/common";
+import { useDropzone } from "react-dropzone";
+import useAsyncTask from "../../hooks/useAsyncTask";
+import { useNavigate } from "react-router-dom";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
+  const { handleWithLoading } = useAsyncTask();
+  const navigate = useNavigate();
+  const onDropHandler = useCallback(e => {
+    const file = e[0];
+    const files = [file];
+    const target = { files: files };
+    const temp = { target: target };
+    onchangeHandler(temp);
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop: onDropHandler })
   const [jsonData, setJsonData] = useState({
     name: "",
     description: "",
@@ -36,14 +49,6 @@ function MintNft() {
     }));
   };
 
-  const onDropHandler = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    const files = [file];
-    const target = { files: files };
-    const temp = { target: target };
-    onchangeHandler(temp);
-  }
 
   const onchangeHandler = async (e) => {
     const file = e.target.files[0];
@@ -98,7 +103,7 @@ function MintNft() {
     });
     setFile(null);
     setTags([]);
-    inputFileRef.current.value = "";
+    // inputFileRef.current.value = "";
   };
 
 
@@ -147,6 +152,16 @@ function MintNft() {
   }
 
   // 판매등록 함수
+  const mintNftController = async () => {
+    const res = await handleWithLoading(() => handleSubmission(), 'NFT 발행 중입니다');
+    if (res) {
+      resetFormData();
+      const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);
+      if (result) {
+        navigate(`/mypage/${account}`)
+      }
+    }
+  }
   const handleSubmission = async () => {
     try {
       const validateResult = validateFormData(account, jsonData, file);
@@ -160,9 +175,7 @@ function MintNft() {
       const metaData = JSON.stringify({
         name: jsonData.name,
         keyvalues: {
-          name: jsonData.name,
           owner: account,
-          description: jsonData.description,
           isOnsale: String(false),
           isCollection: String(false),
           tags: tags.join('')
@@ -182,12 +195,12 @@ function MintNft() {
           .userMintNft(jsonData.name, tokenUrl)
           .send({ from: account });
         if (mintResult.status) {
-          alert("NFT 발행 성공");
-          resetFormData();
+          return true;
         }
       }
     } catch (error) {
       console.log(error);
+      return false;
     }
   };
 
@@ -213,6 +226,28 @@ function MintNft() {
     setTags(prev => prev.filter(item => item !== tag));
   }
 
+  // const isDuplication = useRef(false);
+
+  // const handleDragOverStyle = e => {
+  //   if (isDuplication.current) return;
+  //   isDuplication.current = true;
+  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행합니다.
+  //   e.stopPropagation();
+  //   const $table = document.querySelector('#inputFileBox');
+  //   $table.style.boxShadow = '0px 0px 8px 0px #2390FF';
+  //   $table.style.border = '1px solid #1D8DFF';
+  // }
+
+  // const handleDragEndStyle = e => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   const $table = document.querySelector('#inputFileBox');
+  //   $table.style.boxShadow = 'none';
+  //   $table.style.border = '1px dashed rgba(18, 18, 18, 0.32)';
+  //   isDuplication.current = false;
+  // };
+
+
   return (
     <Background>
       <Container>
@@ -224,11 +259,13 @@ function MintNft() {
           <LeftPart>
             {!file ? (
               <InputFileBox
+                id="inputFileBox"
                 onClick={onClickFileHandler}
-                // onDragOver={onDropHandler}
-                onDrop={onDropHandler}
+                $isDragActive={isDragActive}
+                // onDrop={onDropHandler}
+                {...getRootProps()}
               >
-                <div style={{ width: "40px", height: "40px" }}>
+                <div style={{ width: "40px", height: "40px" }} >
                   <IconUpload />
                 </div>
                 <h2>미디어 파일 끌어다 놓기</h2>
@@ -249,6 +286,7 @@ function MintNft() {
               ref={inputFileRef}
               style={{ display: "none" }}
               onChange={onchangeHandler}
+              {...getInputProps()}
             />
           </LeftPart>
           <RightPart>
@@ -281,7 +319,7 @@ function MintNft() {
             <TagBox>
               {
                 tags.map(tag => (
-                  <Tag>
+                  <Tag key={`tag-${tag}`}>
                     {tag}
                     <span onClick={() => removeTagHandler(tag)}>X</span>
                   </Tag>
@@ -289,7 +327,7 @@ function MintNft() {
               }
             </TagBox>
             <div>
-              <S_Button onClick={handleSubmission}>생성</S_Button>
+              <S_Button onClick={mintNftController}>생성</S_Button>
             </div>
           </RightPart>
         </FlexBox>
@@ -379,7 +417,9 @@ const InputFileBox = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border: 1px dashed rgba(18, 18, 18, 0.32);
+  /* border: 1px dashed rgba(18, 18, 18, 0.32); */
+  border: ${props => props.$isDragActive ? '1px solid #1D8DFF' : '1px dashed rgba(18, 18, 18, 0.32)'};
+  box-shadow: ${props => props.$isDragActive ? '0px 0px 8px 0px #2390FF' : 'none'};
   border-radius: 10px;
 
   h2 {

@@ -1,98 +1,103 @@
 import styled from "styled-components";
 import React, { FC, useContext, useEffect, useRef, useState } from "react";
-import { web3, MintContract, SaleNftContract, SaleNftAddress } from "../../contracts/index";
+import { MintContract, SaleNftAddress } from "../../contracts/index";
 // import { toWei } from "web3-utils";
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import useAsyncTask from "../hooks/useAsyncTask";
+import useGetTokenData from "../hooks/useGetTokenData";
+import { useNavigate } from "react-router-dom";
 
-// interface props {
-//   nft: {
-//     id: number;
-//     name: string;
-//     description: string;
-//     image: string;
-//     // nftHash: string;
-//     // registerPrice: number;
-//     // nftType: number;
-//   };
-//   account: string;
-// }
-
-// const NonSaleNftCard: FC<props> = ({ nft, account }) => {
 
 // nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
   const { nftId, nftName, tokenUrl } = nft;
   // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
-  const { setOnsaleTrigger, account } = useContext(GlobalContext)
+  const { setMyNfts, account, myNfts } = useContext(GlobalContext);
+  const tokenData = useGetTokenData(tokenUrl);
+  const { description, image, attributes } = tokenData;
+  const { handleWithLoading } = useAsyncTask();
 
   // const [registerPrice, setRegisterPrice] = useState(0);
   const priceRef = useRef(null);
 
-  const registerForSaleHandler = async () => {
-    const price = Number(priceRef.current?.value);
-    const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-    console.log('ipfsData: ', ipfsData);
+  const updateMyNfts = () => {
+    const newMyNfts = myNfts.map((nft) => {
+      if (nft.nftId === nftId) {
+        return {
+          ...nft,
+          nftPrice: Number(priceRef.current.value),
+          owner: account,
+        };
+      }
+      return nft;
+    });
+    setMyNfts(newMyNfts);
+  }
 
-    const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
-    if (!updateResult.ok) return;
-
-    const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
-    console.log('result: ', approveResult);
-    if (!approveResult.status) return;
-
-    const setOnsaleResult = await C_setOnsaleNft(nftId, price, account);
-    if (setOnsaleResult.status) {
-      alert("판매 등록이 완료되었습니다.");
+  const setOnsaleController = async () => {
+    const res = await handleWithLoading(async () => await registerSetOnsale(), '판매 등록 중입니다');
+    if (res) {
+      updateMyNfts();
       priceRef.current.value = '';
-      setOnsaleTrigger(prev => !prev);
+      // alert("판매 등록이 완료되었습니다.");
+    }
+  }
+
+
+  const validatePrice = () => {
+    if (!priceRef.current?.value) {
+      alert('가격을 입력해주세요');
+      return false;
+    }
+    return true;
+  }
+
+  const registerSetOnsale = async () => {
+    if (!validatePrice()) return;
+
+    try {
+      const price = Number(priceRef.current?.value);
+      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+      // console.log('ipfsData: ', ipfsData);
+
+      const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
+      if (!updateResult.ok) return;
+
+      const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+      // console.log('result: ', approveResult);
+      if (!approveResult.status) return;
+
+      const setOnsaleResult = await C_setOnsaleNft(nftId, price, account);
+      if (setOnsaleResult.status) {
+        return true;
+      }
+    } catch (error) {
+      console.error('Error setting onsale:', error);
+      return false;
     }
   };
 
-  const [, setIpfsData] = useState({
-    name: '',
-    description: '',
-    image: '',
-    attributes: []
-  });
+  const navigate = useNavigate();
+  const navigateDetailPage = () => {
+    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+  }
 
-  const [imageUrl, setImageUrl] = useState('');
-  useEffect(() => {
-    if (!tokenUrl) return;
+  const truncatedDes = description?.length > 15 ? description?.slice(0, 15) + '...' : description;
 
-    async function fetchIpfsData() {
-      try {
-        const tokenData = await getIpfsTokenData(tokenUrl);
-        setIpfsData(tokenData);
-        setImageUrl(getImageUrl(tokenData.image));
-      } catch (error) {
-        console.error('Error fetching IPFS data:', error);
-      }
-    }
-
-    fetchIpfsData();
-  }, [tokenUrl]);
 
   return (
     <Styled.Container>
-      <Styled.ImgWrap>
+      <ImgWrap onClick={navigateDetailPage}>
         {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
-        <Styled.BgImg $src={imageUrl} alt="NFT image" />
-      </Styled.ImgWrap>
-      <Styled.NftInfo>
+        <Styled.BgImg $src={image} alt="NFT image" />
+      </ImgWrap>
+      <Content>
         <Styled.Name>{nftName}</Styled.Name>
-        {/* {registerPrice !== 0 && (
-          <Price>
-            가격 : {registerPrice} ETH ($
-            {(Number(registerPrice) * 2928)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            )
-          </Price>
-        )} */}
-      </Styled.NftInfo>
+        <div style={{ marginTop: '5px' }}>{truncatedDes}</div>
+      </Content>
       <SaleRegistrationWrap>
         <Input
           type="number"
@@ -100,16 +105,29 @@ const NonSaleNftCard = ({ nft }) => {
           // onChange={onChangePrice}
           placeholder="단위: ETH"
         />
-        <Button onClick={registerForSaleHandler}>판매 등록</Button>
+        <Button onClick={setOnsaleController}>판매 등록</Button>
       </SaleRegistrationWrap>
     </Styled.Container>
   );
 };
 
+const Content = styled.div`
 
-const Price = styled.div`
-  padding-top: 0.5rem;
+padding-top: 10px;
+  padding-bottom: 20px;
 `;
+
+const ImgWrap = styled.div`
+width: 193px;
+  height: 193px;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+
+  cursor: pointer;
+`;
+// const Price = styled.div`
+//   padding-top: 0.5rem;
+// `;
 const Input = styled.input`
   width: calc(100% - 80px);
   border-bottom-left-radius: 0.75rem;

@@ -1,14 +1,13 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import { MintContract } from "../../../contracts";
 import NonSaleNftCard from "../../components/NonSaleNftCard";
 import styled from "styled-components";
-import OnsaleNftCard from "../../components/OnsaleNftCard";
-import { useOutletContext } from "react-router-dom";
+import OnsaleNftCard from "../mypageComponents/OnsaleNftCard";
 
 // nftId, nftName, tokenUrl, nftPrice 
 const All = () => {
-  const [myNfts, account] = useOutletContext();
+  // const [myNfts, account] = useOutletContext();
+  const { myNfts, account } = useContext(GlobalContext);
   const onsaleMyNfts = myNfts.filter(nft => nft.nftPrice);
   const nonsaleMyNfts = myNfts.filter(nft => !nft.nftPrice);
 
@@ -17,20 +16,14 @@ const All = () => {
     <Container>
       {myNfts.length > 0 && (
         <MyNftsWrap>
-          {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(nft => ( */}
-          {/* {myNfts.map(nft => (
-            !nft.isOnsale ?
-              <NonSaleNftCard key={nft.id} nft={nft} account={account} /> :
-              <OnsaleNftCard key={nft.id} nft={nft} account={account} />
-          ))} */}
           {
             onsaleMyNfts.map(nft => (
-              <OnsaleNftCard key={`${nft.id}-${nft.name}`} nft={nft} account={account} />
+              <OnsaleNftCard key={`mypage-all-onsale-${nft.id}-${nft.name}`} nft={nft} account={account} />
             ))
           }
           {
             nonsaleMyNfts.map(nft => (
-              <NonSaleNftCard key={`${nft.id}-${nft.name}`} nft={nft} account={account} />
+              <NonSaleNftCard key={`mypage-all-nonsale-${nft.id}-${nft.name}`} nft={nft} account={account} />
             ))
           }
         </MyNftsWrap>

@@ -1,11 +1,19 @@
-import { useContext, } from "react";
+import { useContext, useEffect, useState, } from "react";
 import { GlobalContext } from "../context/GlobalContext";
 
 function useAsyncTask() {
   const { setLoadingState } = useContext(GlobalContext);
-  // const [executeState, setExecuteStatus] = useState({
+  const [executeStatus, setExecuteStatus] = useState({
+    isExecuting: false,
+    message: '',
+  });
+  // const handleWithLoading = async (promise, message) => {
+  //   setLoadingState({ isLoading: true, message });
+  //   const result = await promise();
+  //   setLoadingState({ isLoading: false, message: "" });
+  //   return result;
+  // }
 
-  // });
   /**
    * 
    * @param {Promise<*>} promise 
@@ -13,11 +21,31 @@ function useAsyncTask() {
    * @returns {Promise<*>} promise function 결과 값
    */
   const handleWithLoading = async (promise, message) => {
-    setLoadingState({ isLoading: true, message });
-    const result = await promise;
-    setLoadingState({ isLoading: false, message: "" });
+    setExecuteStatus({
+      isExecuting: true,
+      message,
+    });
+    const result = await promise();
+    setExecuteStatus({
+      isExecuting: false,
+      message: '',
+    });
     return result;
   }
+
+  useEffect(() => {
+    if (executeStatus.isExecuting) {
+      setLoadingState({
+        isLoading: executeStatus.isExecuting,
+        message: executeStatus.message,
+      });
+    } else {
+      setLoadingState({
+        isLoading: executeStatus.isExecuting,
+        message: '',
+      });
+    }
+  }, [executeStatus]);
 
   return {
     handleWithLoading

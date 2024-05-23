@@ -55,6 +55,13 @@ const MarketPlace = () => {
     navigate(`/market-place/nft?query=${searchRef.current}`);
   };
 
+  const categoryHandler = (e) => {
+    if (e.target.nodeName !== 'LI') return;
+
+    const category = e.target.innerText;
+    navigate(`/market-place/nft?category=${category}`);
+  }
+
   const onKeydownHandler = e => {
     e.key === 'Enter' && searchNfts();
   }
@@ -127,7 +134,7 @@ const MarketPlace = () => {
             <LeftPart>
               <CategoryBox>
                 <div>
-                  <ul>
+                  <ul onClick={categoryHandler}>
                     <h3>카테고리</h3>
                     <li>예술</li>
                     <li>유명인</li>
@@ -139,7 +146,7 @@ const MarketPlace = () => {
                   </ul>
                 </div>
                 <div>
-                  <ul>
+                  <ul onClick={categoryHandler}>
                     <h3>컬렉션</h3>
                     <li>사용자 1</li>
                     <li>사용자 2</li>

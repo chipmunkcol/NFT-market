@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import NonSaleNftCard from "../../components/NonSaleNftCard";
 import { useOutletContext } from "react-router-dom";
+import { useContext } from "react";
+import { GlobalContext } from "../../context/GlobalContext";
 
 function Nonsale() {
-  const [myNfts, account] = useOutletContext();
-  const nonsaleMyNfts = myNfts.filter(nft => !nft.isOnsale);
+  const { myNfts, account } = useContext(GlobalContext);
+  const nonsaleMyNfts = myNfts.filter(nft => !nft.nftPrice);
 
   return (
     <Container>
@@ -12,7 +14,7 @@ function Nonsale() {
         <MyNftsWrap>
           {
             nonsaleMyNfts.map(nft => (
-              <NonSaleNftCard key={nft.id} nft={nft} account={account} />
+              <NonSaleNftCard key={`mypage-nonsale-${nft.id}-${nft.name}`} nft={nft} account={account} />
             ))
           }
         </MyNftsWrap>

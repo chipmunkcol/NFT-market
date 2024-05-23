@@ -6,9 +6,10 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, pinJsonToIPFSForCart } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
 import { useNavigate } from "react-router-dom";
+import useAsyncTask from "../hooks/useAsyncTask";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -21,10 +22,24 @@ import { useNavigate } from "react-router-dom";
 // const OnsaleNftCard: FC<props> = ({ nft }) => {
 
 // nftId, nftName, tokenUrl, nftPrice 
-const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
-  const { nftId, nftName, tokenUrl, nftPrice, owner } = nft;
-  const { setPurchaseTrigger } = useContext(GlobalContext);
+const OnsaleNftCard = ({ nft, account, gridCss }) => {
+  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner } = nft;
+  const { handleWithLoading } = useAsyncTask();
   const isMyNft = account === owner?.toLowerCase();
+
+  const purchaseController = async () => {
+    const res = await handleWithLoading(async () => await purchaseNftHandler(nftId), 'NFT 구매 중입니다');
+    if (res) {
+      // alert('NFT 구매에 성공했습니다.');
+      const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
+      if (result) {
+        navigate(`/mypage/${account}`)
+      } else {
+        window.reload();
+      }
+    }
+  };
+
 
   async function purchaseNftHandler(nftId) {
     try {
@@ -36,13 +51,11 @@ const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
       const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
-        removedNftListByPurchase(nftId);
-        alert('NFT 구매에 성공했습니다.');
-        setPurchaseTrigger(prev => !prev);
+        return true;
       }
-
     } catch (err) {
       console.log('err: ', err);
+      return false;
     }
   }
 
@@ -60,8 +73,7 @@ const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
         alert('장바구니에 담겼습니다.');
       }
     }
-  }
-
+  };
 
   const [ipfsData, setIpfsData] = useState({
     name: '',
@@ -104,21 +116,26 @@ const OnsaleNftCard = ({ nft, account, gridCss, removedNftListByPurchase }) => {
       <Content>
         <Styled.Name>{nftName}</Styled.Name>
         <OnsalePriceWrap>
-          가격 : {nftPrice} ETH ($
+          Price : {nftPrice} ETH ($
           {(Number(nftPrice) * 2928).toFixed(2)}
           )
         </OnsalePriceWrap>
+        <div style={{ color: '#cccccc', marginTop: '5px', fontSize: '12px' }}>
+          Last sale: {previousPrice} ETH
+        </div>
       </Content>
       {
-        !isMyNft && (
+        !isMyNft ? (
           <ButtonWrap>
-            <PurchaseBtn $gridCss={gridCss} onClick={() => purchaseNftHandler(nftId)}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
+            <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
             <CartBtn onClick={() => addCartHandler(nft)} >
               <CartImg>
                 <img src={iconCart} alt="장바구니" />
               </CartImg>
             </CartBtn>
-          </ButtonWrap>)
+          </ButtonWrap>) : (
+          <div style={{ color: '#cccccc' }}>Ownered by: {getTruncatedAccount(account)}</div>
+        )
       }
     </Styled.Container>
   );
@@ -178,8 +195,8 @@ const CartBtn = styled(PurchaseBtn)`
 `;
 
 const ImgWrap = styled.div`
-  width: ${props => props.$gridCss.cardWidth};
-  height: ${props => props.$gridCss.cardWidth};
+  width: ${props => props.$gridCss?.cardWidth ? props.$gridCss.cardWidth : '193px'};
+  height: ${props => props.$gridCss?.cardWidth ? props.$gridCss.cardWidth : '193px'};
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
 

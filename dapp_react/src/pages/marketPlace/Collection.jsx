@@ -9,7 +9,7 @@ import { getNftListAndCountToIpfs } from "../../hooks/common";
 const tempNftKeyvalues = [{ "name": "CryptoKitty #123", "fileName": "test.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "jangkal cat", "fileName": "test10.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "borning monkey", "fileName": "test11.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "zeus", "fileName": "test12.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #222", "fileName": "test2.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #333", "fileName": "test3.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #111", "fileName": "test4.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #222", "fileName": "test5.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #333", "fileName": "test6.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #4444", "fileName": "test7.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }];
 
 const Collection = () => {
-  const { getAllonsaleNftListRef, account, purchaseTrigger } = useContext(GlobalContext);
+  const { account } = useContext(GlobalContext);
   const [gridCss] = useOutletContext();
   const allNftCount = useRef(0);
   const [offset, setOffset] = useState({ page: 0 });
@@ -17,7 +17,6 @@ const Collection = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
   const offsetRef = useRef(0);
-  const newNftListRef = useRef([]);
   console.log('offset: ', offset);
 
   const encodedOffset = encodeURIComponent(
@@ -48,13 +47,6 @@ const Collection = () => {
     return newOnsaleNfts;
   }
 
-  const removedNftListByPurchase = (nftId) => {
-    newNftListRef.current = onsaleNftList.filter(nft => nft.nftId !== nftId);
-  }
-
-  useEffect(() => {
-    setOnsaleNftList(newNftListRef.current);
-  }, [purchaseTrigger])
 
   useEffect(() => {
     if (allNftCount.current) {
@@ -111,7 +103,7 @@ const Collection = () => {
           <MarketWrap $gridCss={gridCss}>
             {
               onsaleNftList.map(onsaleNft => (
-                <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} removedNftListByPurchase={removedNftListByPurchase} />
+                <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} />
               ))
             }
           </MarketWrap>

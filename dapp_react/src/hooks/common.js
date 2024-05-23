@@ -37,8 +37,7 @@ export const ipfsPutOptions = (jsonKeyvalues) => {
 };
 
 export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
-  const { numberOfSales, priceHistory, owner, isCollection } =
-    ipfsData.metadata.keyvalues;
+  const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
   const checkNumberOfSales = numberOfSales
     ? { numberOfSales: numberOfSales }
     : { numberOfSales: 0 };
@@ -50,11 +49,10 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
     ipfsPinHash: ipfsData.ipfs_pin_hash,
     name: ipfsData.metadata.name,
     keyvalues: {
+      ...ipfsData.metadata.keyvalues,
       nftId,
-      owner,
       isOnsale: String(true),
       nftPrice: price,
-      isCollection,
       ...checkNumberOfSales,
       ...checkPriceHistory,
     },
@@ -64,6 +62,8 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
     "https://api.pinata.cloud/pinning/hashMetadata",
     ipfsPutOptions(jsonKeyvalues)
   );
+  // const temp = await result.json();
+  // console.log("temp: ", temp);
   return result;
 };
 
@@ -127,6 +127,18 @@ export const getCurrentTime = () => {
   return String(date);
 };
 
+/**
+ *
+ * @param {string} date
+ */
+export const getCurrentYMD = (date) => {
+  const dateObject = new Date(date);
+  const year = String(dateObject.getFullYear()).slice(2);
+  const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObject.getDate()).padStart(2, "0");
+  return `${year}/${month}/${day}`;
+};
+
 export const getAddedPriceHistory = (priceHistory, owner, price) => {
   const _priceHistory = JSON.parse(priceHistory);
   const newPriceHistory = [..._priceHistory];
@@ -136,7 +148,7 @@ export const getAddedPriceHistory = (priceHistory, owner, price) => {
 };
 
 export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
-  const { numberOfSales, priceHistory, owner, nftPrice, isCollection } =
+  const { numberOfSales, priceHistory, owner, nftPrice } =
     ipfsData.metadata.keyvalues;
 
   const newPriceHistory = getAddedPriceHistory(priceHistory, owner, nftPrice);
@@ -145,11 +157,10 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
     ipfsPinHash: ipfsData.ipfs_pin_hash,
     name: ipfsData.metadata.name,
     keyvalues: {
+      ...ipfsData.metadata.keyvalues,
       nftId,
-      owner: account,
       isOnsale: String(false),
       nftPrice: 0,
-      isCollection,
       numberOfSales: numberOfSales + 1,
       priceHistory: newPriceHistory,
     },
@@ -406,4 +417,11 @@ export const addCartHandler = async (nft, account) => {
     console.log("err: ", err);
     return false;
   }
+};
+
+export const getTruncatedAccount = (account) => {
+  if (typeof account !== "string") return null;
+  return account
+    ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
+    : null;
 };

@@ -27,7 +27,7 @@ const CartNftCard = ({ nft, propsFunction }) => {
     if (!cartIpfsHash) return;
 
     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-    const updateMetadataResult = await handleWithLoading(P_updateMetadataRemoveCart(paredCartIpfsHash, nft.nftId), '장바구니에서 삭제 중입니다');
+    const updateMetadataResult = await handleWithLoading(() => P_updateMetadataRemoveCart(paredCartIpfsHash, nft.nftId), '장바구니에서 삭제 중입니다');
 
     if (updateMetadataResult.ok) {
       R_removeCartHandler(nft);

@@ -39,7 +39,7 @@ export const BgImg = styled.div`
 `;
 
 export const ImgWrap = styled.div`
-  width: 100%;
+  width: 193px;
   height: 200px;
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;

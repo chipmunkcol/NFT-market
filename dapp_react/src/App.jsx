@@ -12,6 +12,7 @@ import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
 import Cart from "./pages/commonComponents/Cart";
 import MainSpinner from "./components/MainSpinner";
+import { getTruncatedAccount } from "./hooks/common";
 // import Slider from "./components/Slider";
 // import { useRef } from "react";
 
@@ -110,13 +111,6 @@ function App() {
     };
   }, [account]);
 
-  // truncate account
-  const [truncatedAccount, setTruncatedAccount] = useState(null);
-  useEffect(() => {
-    if (!account) return;
-    setTruncatedAccount(`${account?.substring(0, 6)}...${account?.substring(account?.length - 4)}`);
-  }, [account]);
-
 
   // async function connectSaleNftOnMintContract() {
   //   await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
@@ -157,7 +151,7 @@ function App() {
               <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
             </ButtonWrap>) : (
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
-              <div style={{ fontSize: '11px' }}>{truncatedAccount}</div>
+              <div style={{ fontSize: '11px' }}>{getTruncatedAccount(account)}</div>
               <Link to={`/mypage/${account}`}>
                 <Nav>MyPage</Nav>
               </Link>

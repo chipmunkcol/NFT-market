@@ -4,6 +4,7 @@ import { ReactComponent as openseaSymbol } from '../assets/images/opensea-symbol
 import { ReactComponent as imageSymbol } from '../assets/images/image-symbol.svg';
 import { ReactComponent as gridSymbol } from '../assets/images/grid4-symbol.svg';
 import Slider from "./Create/Slider";
+import { useEffect } from "react";
 
 function TempNav() {
   return (
@@ -71,6 +72,9 @@ function TempNav() {
 
 function Create() {
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Background>
