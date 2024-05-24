@@ -27,6 +27,43 @@
 1. 그냥 커스텀하기가 너무 좋아서 이쪽이 맞는거 같음 nft 민팅 시에 해당 내용을 metadata에 저장 후에 query로 구현하는게 용이해보임 배포시 속도와 가스비는 덤이고, 무엇보다 내가 sc쪽 전문으로 구현하는게 아니니까 내쪽에서 해결해보는걸로 하자
    Pinata 관련 내용[https://docs.pinata.cloud/pinning/listing-files]
 
+## 0. 그냥 이것저것
+
+- URI 사용시 주의할점
+
+1. Pinata 에서 제공하는 api query 사용하다보니까 생각보다 관련 지식이 필요함
+   우선 전날하는 URL 는 string 형태여야 되는데 변수형태로 전달하려면 encodeURIComponent 함수로 변경해서 전달
+   특히 pinata 에서 제공하는 쿼리 중 "tags":{"value":"${encodedCategory}","op":"like"} 부분에서 좀 막혔었는데
+    docs 에서 아래처럼 사용하라길래 "value":"%${encodedCategory}%", "value":${encodedCategory} (encodedCategory 에 %% 같이 인코딩)
+   등등 이것저것 넣어봤는데 fetching 이 계속 안돼서 이것저것 찾아보면서 넣어봤는데 docs 에서 말한 % 도 인코딩을 해서 넣어야되고, "" 을 감싸줘야 되는.. 별거 아닌데 url 특징을 잘 모르면 헤매기 좋은 것 같다. 아래는 알고 넘어가자
+   - encodeURIComponent는 url 일부 분만 인코딩 하는 것 권장 프로토콜, 호스트, 포트 등은 잘못 인코딩 될 수 있음
+   - 인코딩 된 url을 서버에서 사용할 때는 decodeURIComponent로 디코딩
+   - 공백 -> %20, / -> %2F, ' -> %27 등등 특수문자 같은거 인코딩해야 됨
+   - 액티브 파라미터: 지정한 파라미터 값에 따라 화면 내용이 바뀌는 경우
+   - 패시브 파라미터: 서버 프로그램이 내부적으로 사용하는 url 파라미터, 파라미터 값에 따라 콘텐츠가 바뀌지 않음. 웹로그 분석 툴에서 추적 유저ID별로 데이터를 분류하고 처리하는 과정에서 활용
+
+```
+    ?metadata[keyvalues]={"exampleKey":{"value":"testValue%","op":"like"}}
+    (값 앞의 %는 그 앞에 무엇이든 올 수 있음을 의미하고, 뒤의 % 기호는 그 뒤에 모든 문자가 올 수 있음을 의미합니다.)
+```
+
+```
+ const encodedOffset = encodeURIComponent(
+    offsetRef.current * 10
+  );
+
+ const encodedUpdateDate = encodeURIComponent(
+    '20240523'
+  );
+
+  const encodedCategory = encodeURIComponent(
+    `%${category}%`
+  );
+
+const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+
+```
+
 ## 3. Solidity dive
 
 - 인프런 대니월드 강의[https://www.inflearn.com/course/%EB%B8%94%EB%A1%9D%EC%B2%B4%EC%9D%B8-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EC%BD%94%EC%9D%B8%EC%A0%9C%EC%9E%91#curriculum]
