@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 // import { MintContract, web3 } from "../../contracts/index";
 import styled from "styled-components";
-import { SaleNftContract } from "../../contracts/index"
 import { GlobalContext } from "../context/GlobalContext";
 // import { S_Button, S_Wallet_Button } from "../styles/styledComponent";
 import bgMain from '../assets/images/bg-main.png';
@@ -15,7 +14,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 
 // const dummyData = [{ name: '111', price: 3, isOnsale: true }, { name: '222', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }];
 const MarketPlace = () => {
-  const { onsaleNftList, setOnsaleNftList, getAllonsaleNftListRef, account } = useContext(GlobalContext);
+  const { onsaleNftList } = useContext(GlobalContext);
   const navigate = useNavigate();
   const searchRef = useRef('');
 
@@ -66,27 +65,6 @@ const MarketPlace = () => {
     e.key === 'Enter' && searchNfts();
   }
 
-  // sort 구현
-  const onChangeSort = e => {
-    const sortType = e.target.value;
-    if (sortType === 'updated') {
-      setOnsaleNftList(getAllonsaleNftListRef.current);
-    } else if (sortType === 'row') {
-      sortAsceNfts();
-    } else if (sortType === 'high') {
-      sortDescNfts();
-    }
-  }
-  const sortAsceNfts = () => {
-    const sortedNfts = [...getAllonsaleNftListRef.current].sort((a, b) => a.price - b.price);
-    setOnsaleNftList(sortedNfts);
-  }
-  const sortDescNfts = () => {
-    const sortedNfts = [...getAllonsaleNftListRef.current].sort((a, b) => b.price - a.price);
-    setOnsaleNftList(sortedNfts);
-  }
-
-
   return (
     <Background>
       <Container>
@@ -109,7 +87,7 @@ const MarketPlace = () => {
                 </IconWrap>
               </div>
               <div style={{ width: '240px', height: '48px' }}>
-                <Select onChange={onChangeSort}>
+                <Select >
                   <option value='updated'>최신순</option>
                   <option value='row'>낮은 가격순</option>
                   <option value='high'>높은 가격순</option>

@@ -153,7 +153,7 @@ function MintNft() {
 
   // 판매등록 함수
   const mintNftController = async () => {
-    const res = await handleWithLoading(() => handleSubmission(), 'NFT 발행 중입니다');
+    const res = await handleWithLoading(handleSubmission, 'NFT 발행 중입니다');
     if (res) {
       resetFormData();
       const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);

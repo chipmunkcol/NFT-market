@@ -18,12 +18,12 @@ const All = () => {
         <MyNftsWrap>
           {
             onsaleMyNfts.map(nft => (
-              <OnsaleNftCard key={`mypage-all-onsale-${nft.id}-${nft.name}`} nft={nft} account={account} />
+              <OnsaleNftCard key={`mypage-all-onsale-${nft.nftId}-${nft.nftName}`} nft={nft} account={account} />
             ))
           }
           {
             nonsaleMyNfts.map(nft => (
-              <NonSaleNftCard key={`mypage-all-nonsale-${nft.id}-${nft.name}`} nft={nft} account={account} />
+              <NonSaleNftCard key={`mypage-all-nonsale-${nft.nftId}-${nft.nftName}`} nft={nft} account={account} />
             ))
           }
         </MyNftsWrap>

@@ -1,11 +1,7 @@
 import { web3, SaleNftContract } from "../../contracts/index";
 
 export const getImageUrl = (imageIpfsHash) => {
-  return `${
-    import.meta.env.VITE_GATEWAY_URL
-  }/ipfs/${imageIpfsHash}?pinataGatewayToken=${
-    import.meta.env.VITE_GATEWAY_TOKEN
-  }`;
+  return `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${imageIpfsHash}`;
 };
 
 export const getIpfsTokenData = async (tokenUrl) => {
@@ -107,6 +103,44 @@ export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
     keyvalues: {
       ...res.metadata.keyvalues,
       nftKeyvaluesList: newNftKeyvaluesList,
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
+};
+
+export const P_updateMetadataAirdrop = async (tempIpfs, collectionIpfs) => {
+  const res = await getTargetNftToIpfsData(tempIpfs);
+
+  const name = res.metadata.name;
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: collectionIpfs,
+    name,
+    keyvalues: {
+      ...res.metadata.keyvalues,
+    },
+  });
+
+  const result = await fetch(
+    "https://api.pinata.cloud/pinning/hashMetadata",
+    ipfsPutOptions(jsonKeyvalues)
+  );
+  return result;
+};
+
+export const P_removeMetadataAirdrop = async (tempIpfs, account) => {
+  const res = await getTargetNftToIpfsData(tempIpfs);
+
+  const name = res.metadata.name;
+  const jsonKeyvalues = JSON.stringify({
+    ipfsPinHash: tempIpfs,
+    name,
+    keyvalues: {
+      owner: account,
     },
   });
 
@@ -245,6 +279,38 @@ export const pinFileToIPFS = async (files, metaData) => {
   });
   const result = await res.json();
   return result.IpfsHash;
+};
+
+export const validateCollectionData = (account, collection) => {
+  if (!account) {
+    alert("지갑을 연결해주세요");
+    return false;
+  }
+  if (collection.nfts?.length < 1) {
+    alert("NFT Collection으로 발행할 json 파일을 업로드해주세요");
+    return false;
+  }
+  if (!collection.name) {
+    alert("이름을 입력해주세요");
+    return false;
+  }
+  if (!collection.perPrice) {
+    alert("판매 가격을 입력해주세요");
+    return false;
+  }
+  if (!collection.startAt) {
+    alert("Air drop 예정 시간을 입력해주세요");
+    return false;
+  }
+  if (!collection.preReleaseJsonData.file) {
+    alert("사전 공개 이미지를 업로드해주세요");
+    return false;
+  }
+  if (!collection.preReleaseJsonData.description) {
+    alert("사전 공개 설명을 입력해주세요");
+    return false;
+  }
+  return true;
 };
 
 export const validateFormData = (account, jsonData, file) => {

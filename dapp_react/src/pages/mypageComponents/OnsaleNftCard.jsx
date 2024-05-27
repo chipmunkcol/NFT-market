@@ -5,13 +5,19 @@ import { useNavigate } from "react-router-dom";
 // import { getTruncatedAccount } from "../../hooks/common";
 
 export default function OnsaleNftCard({ nft, account }) {
-  const { nftId, nftName, tokenUrl, nftPrice } = nft;
-  const tokenData = useGetTokenData(tokenUrl);
+  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs } = nft;
+  const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${nftName}` : tokenUrl;
+  const tokenData = useGetTokenData(toeknUrlRevealedCheck);
   const { description, image, attributes } = tokenData;
 
   const navigate = useNavigate();
   const navigateDetailPage = () => {
-    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    if (collectionIpfs) {
+      navigate(`/nft-detail/collection/${tokenUrl}/${nftId}`);
+    }
+    else {
+      navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    }
   }
 
   const truncatedDes = description?.length > 15 ? description?.slice(0, 15) + '...' : description;

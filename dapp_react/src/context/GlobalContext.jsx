@@ -32,45 +32,35 @@ const GlobalProvider = ({ children }) => {
   const [collectionIndex, setCollectionIndex] = useState(0);
   const [collection, setCollection] = useState({
     name: "",
-    description: "",
-    image: "",
-    // attributes: [
-    //   {
-    //     trait_type: "",
-    //     value: "",
-    //   }
-    // ],
+    // description: "",
+    // image: "",
     tags: [],
     nfts: [], // type: nft[]
     nftsLength: 0,
     perPrice: 0,
     startAt: 0,
-    preReleaseIpfsHash: "",
-    preReleaseDescription: "",
-    address: "",
+    preReleaseJsonData: {
+      description: "",
+      file: null,
+    }
+    // preReleaseIpfsHash: "",
+    // preReleaseDescription: "",
+    // address: "",
   });
 
   const resetCollection = () => {
-    setCollection(
-      {
-        name: "",
+    setCollection({
+      name: "",
+      tags: [],
+      nfts: [],
+      nftsLength: 0,
+      perPrice: 0,
+      startAt: 0,
+      preReleaseJsonData: {
         description: "",
-        image: "",
-        attributes: [
-          {
-            trait_type: "",
-            value: "",
-          }
-        ],
-        files: null,
-        filesLength: 0,
-        perPrice: 0,
-        startAt: 0,
-        preReleaseIpfsHash: "",
-        preReleaseDescription: "",
-        address: "",
+        file: null,
       }
-    );
+    });
   }
 
   const contextValue = useMemo(() => ({

@@ -219,8 +219,13 @@ const MintABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+      {
         internalType: "string",
-        name: "_collectionIpfsHash",
+        name: "_tempTokenUrl",
         type: "string",
       },
     ],
@@ -269,6 +274,11 @@ const MintABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
         internalType: "string",
         name: "",
         type: "string",
@@ -280,6 +290,11 @@ const MintABI = [
         internalType: "uint256",
         name: "startAt",
         type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "tempTokenUrl",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -307,8 +322,13 @@ const MintABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+      {
         internalType: "string",
-        name: "_ipfsHash",
+        name: "_tempTokenUrl",
         type: "string",
       },
     ],
@@ -326,10 +346,51 @@ const MintABI = [
             name: "startAt",
             type: "uint256",
           },
+          {
+            internalType: "string",
+            name: "tempTokenUrl",
+            type: "string",
+          },
         ],
         internalType: "struct MyNft.Collection",
         name: "",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "getMyCollections",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256[]",
+            name: "ids",
+            type: "uint256[]",
+          },
+          {
+            internalType: "uint256",
+            name: "startAt",
+            type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "tempTokenUrl",
+            type: "string",
+          },
+        ],
+        internalType: "struct MyNft.Collection[]",
+        name: "",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -741,6 +802,35 @@ const MintABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "userCollectionsKeys",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+      {
         internalType: "string[]",
         name: "_fileNameList",
         type: "string[]",
@@ -949,8 +1039,8 @@ const SaleNftABI = [
   },
 ] as const;
 
-export const MintAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
-export const SaleNftAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
+export const MintAddress = "0x09635F643e140090A9A8Dcd712eD6285858ceBef";
+export const SaleNftAddress = "0xc5a5C42992dECbae36851359345FE25997F5C42d";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 export const SaleNftContract = new web3.eth.Contract(

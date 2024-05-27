@@ -11,11 +11,15 @@ import Slider from "./CollectionComponents/Slider";
 import { Outlet } from "react-router-dom";
 
 function Collection() {
-  const { account, collection, setCollection } = useContext(GlobalContext);
+  const { account, collection, setCollection, resetCollection } = useContext(GlobalContext);
 
   const [files, setFiles] = useState(null);
   const onchangeHandler = (e) => {
     const fileList = Object.values(e.target.files)
+    if (fileList.length > 10) {
+      alert('현재 버전에서는 최대 10개의 파일까지 업로드할 수 있습니다. 감사합니다👩‍💻');
+      return;
+    }
     setFiles(fileList);
 
     fileList.forEach(file => {
@@ -58,10 +62,7 @@ function Collection() {
 
 
   const cancelHandler = () => {
-    setCollection(prev => ({
-      ...prev,
-      nfts: [],
-    }));
+    resetCollection();
     setFiles(null);
     inputFileRef.current.value = "";
   };
@@ -86,7 +87,7 @@ function Collection() {
                 <h2>클릭해서 폴더 업로드</h2>
                 <h3>폴더 찾아보기</h3>
                 <h4>최대 크기: 50MB</h4>
-                <h4>JPG, PNG, GIF, SVG, MP4</h4>
+                <h4>JSON</h4>
               </InputFileBox>
             ) : (
               <div style={{ width: '100%', height: '100%', minHeight: '425px', maxHeight: '555px' }}>
@@ -104,7 +105,7 @@ function Collection() {
           </LeftPart>
 
           {/* router_Outlet */}
-          <Outlet context={files} />
+          <Outlet context={{ files, setFiles }} />
         </FlexBox>
       </Container>
     </Background>

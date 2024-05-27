@@ -6,104 +6,105 @@ import { Link, json, useNavigate, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
-import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateFormData } from "../../../hooks/common";
+import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
 import { ReactComponent as openseaSymbol } from "../../../assets/images/opensea-symbol.svg"
+import useAsyncTask from "../../../hooks/useAsyncTask";
 
 function C_step2() {
 
   const navigate = useNavigate();
-  const { collection, setCollection, account } = useContext(GlobalContext);
-  const files = useOutletContext();
+  const { handleWithLoading } = useAsyncTask();
+  const { collection, setCollection, resetCollection, account } = useContext(GlobalContext);
+  const { files, setFiles } = useOutletContext();
   const [progress, setProgress] = useState(0);
 
-  const [file, setFile] = useState(null);
-  const [jsonData, setJsonData] = useState({
-    name: "",
-    description: "",
-    image: "",
-    attributes: [
-      {
-        trait_type: "",
-        value: "",
-      }
-    ],
-  });
-
+  // const [file, setFile] = useState(null);
   const resetFormData = () => {
-    setJsonData({
-      name: "",
-      description: "",
-      image: "",
-      attributes: [
-        {
-          trait_type: "",
-          value: "",
-        }
-      ],
-    });
-    setFile(null);
+    resetCollection();
+    setFiles(null);
+  }
+
+  const submissionController = async () => {
+    const result = await handleWithLoading(handleSubmisstion, 'Collection을 생성하는 중입니다');
+    if (result) {
+      resetFormData();
+      const result = window.confirm(`Collection 발행 성공 \nMyPage로 확인하러 가기`);
+      if (result) {
+        navigate(`/mypage/${account}`)
+      } else {
+        navigate('/create-collection/step-1');
+      }
+    }
   }
 
   const handleSubmisstion = async () => {
-    // const formData = new FormData();
-    const validatedResult = validateFormData(account, jsonData, file);
-    if (!validatedResult) return;
-
-    let fileNameList = [];
-    let nftKeyvaluesList = [];
-    Array.from(files).forEach(async (file, index) => {
-      // formData.append("file", file);
-      const fileName = file.name
-      fileNameList.push(fileName);
-      const nftKeyvaluesObject = {
-        name: collection.nfts[index].name,
-        fileName,
-        owner: account,
-        isOnsale: String(true),
-        nftPrice: perPriceRef.current,
-        numberOfSales: 0,
-        priceHistory: JSON.stringify([]),
-        tags: collection.tags.join('')
-      };
-      nftKeyvaluesList.push(nftKeyvaluesObject);
-    })
-
-    let imageIpfsHash = jsonData.image;
-    if (!imageIpfsHash) {
-      imageIpfsHash = await getImageIpfsHash(file);
-    }
+    try {
+      const validatedResult = validateCollectionData(account, collection);
+      if (!validatedResult) return;
 
 
-    const metaData = JSON.stringify({
-      name: collection.name,
-      keyvalues: {
-        owner: account,
-        isOnsale: String(true),
-        nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
-        isCollection: String(true),
-        numberOfSales: 0,
-        tags: collection.tags.join('')
-      }
-    });
+      const imageIpfsHash = await getImageIpfsHash(collection.preReleaseJsonData.file);
 
-    let tempIpfsHash;
-    if (file.type === "application/json") {
-      tempIpfsHash = await pinFileToIPFS(metaData);
-    } else {
-      tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, metaData, jsonData);
-    }
+      let fileNameList = [];
+      let nftKeyvaluesList = [];
+      Array.from(files).forEach(async (file, index) => {
+        // formData.append("file", file);
+        const fileName = file.name
+        fileNameList.push(fileName);
+        const nftKeyvaluesObject = {
+          name: collection.nfts[index].name,
+          fileName,
+          owner: account,
+          isOnsale: String(true),
+          nftPrice: collection.perPrice,
+          numberOfSales: 0,
+          tokenUrl: imageIpfsHash,
+          priceHistory: JSON.stringify([]),
+          tags: collection.tags.join('')
+        };
+        nftKeyvaluesList.push(nftKeyvaluesObject);
+      })
 
-    if (tempIpfsHash) {
+      const metaData = JSON.stringify({
+        name: collection.name,
+        keyvalues: {
+          owner: account,
+          isOnsale: String(true),
+          nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
+          isCollection: String(true),
+          numberOfSales: 0,
+          tags: collection.tags.join(''),
+          isHide: String(true)
+        }
+      });
+      const jsonData = JSON.stringify({
+        name: collection.name,
+        description: collection.preReleaseJsonData.description,
+        image: imageIpfsHash,
+      });
+      const tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, metaData, jsonData);
+      if (!tempIpfsHash) return;
+
+      const collectionMetadata = JSON.stringify({
+        name: collection.name,
+        keyvalues: {
+          owner: account,
+        }
+      });
+
+      const collectionIpfsHash = await pinFileToIPFS(files, collectionMetadata);
+      if (!collectionIpfsHash) return;
+
       const isHide = true;
       // const startAt = new Date(startAtRef.current).getTime() - Date.now();
       const startAt = 120;
-      const mintResult = await MintContract.methods.userMintCollection(fileNameList, tempIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
+      const mintResult = await MintContract.methods.userMintCollection(account, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
       if (!mintResult.status) return;
-      const getCollectionResult = await MintContract.methods.getCollectionData(tempIpfsHash).call();
+      const getCollectionResult = await MintContract.methods.getCollectionData(account, tempIpfsHash).call();
       console.log('result: ', getCollectionResult);
 
       const updateMetadataResult = await P_AddNftIdOnCollection(tempIpfsHash, getCollectionResult.ids);
-      console.log('updateMetadataResult: ', updateMetadataResult);
+      if (!updateMetadataResult.ok) return;
 
       getCollectionResult.ids.forEach(async (nftId) => {
         const parsedId = parseInt(nftId);
@@ -111,12 +112,15 @@ function C_step2() {
         console.log('result: ', approveResult);
         if (!approveResult.status) return;
 
-        const onsaleResult = await C_setOnsaleNft(parsedId, perPriceRef.current, account);
+        const onsaleResult = await C_setOnsaleNft(parsedId, collection.perPrice, account);
         console.log('onsaleResult: ', onsaleResult);
         if (!onsaleResult.status) return;
       });
-      resetFormData();
-      navigate('/create-collection/step-1');
+      return true;
+
+    } catch (err) {
+      console.error(err);
+      return false;
     }
   }
 
@@ -124,29 +128,32 @@ function C_step2() {
     console.log(progress);
   }, [progress]);
 
-  const perPriceRef = useRef(null);
-  const startAtRef = useRef(null);
+  // const perPriceRef = useRef(null);
+  // const startAtRef = useRef(null);
   const onChangePerPrice = (e) => {
-    perPriceRef.current = e.target.value;
-    // setCollection((prev) => ({
-    //   ...prev,
-    //   perPrice: e.target.value
-    // }))
+    // perPriceRef.current = e.target.value;
+    setCollection((prev) => ({
+      ...prev,
+      perPrice: e.target.value
+    }))
   }
 
   const onChangeStartAtData = (e) => {
-    console.log('e.target.value: ', e.target.value);
-    startAtRef.current = e.target.value;
-    // setCollection((prev) => ({
-    //   ...prev,
-    //   startAt: e.target.value
-    // }));
+    // console.log('e.target.value: ', e.target.value);
+    // startAtRef.current = e.target.value;
+    setCollection((prev) => ({
+      ...prev,
+      startAt: e.target.value
+    }));
   };
 
-  const onchangeDescData = (e) => {
-    setJsonData((prev) => ({
+  const onchangePreReleaseDesc = (e) => {
+    setCollection((prev) => ({
       ...prev,
-      description: e.target.value,
+      preReleaseJsonData: {
+        ...prev.preReleaseJsonData,
+        description: e.target.value
+      }
     }));
   };
 
@@ -155,45 +162,18 @@ function C_step2() {
       ...prev,
       name: e.target.value,
     }));
-    setJsonData((prev) => ({
-      ...prev,
-      name: e.target.value,
-    }));
   };
 
-  const onchangeHandler = async (e) => {
+  const onChangePreReleaseImage = async (e) => {
     const file = e.target.files[0];
-    setFile(file);
-
-    if (file.type === "application/json") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const res = JSON.parse(reader.result);
-
-        const name = res.name ? res.name : "";
-        const description = res.description ? res.description : "";
-        const image = res.image ? res.image : "";
-        const attributes = res.attributes ? res.attributes : [
-          {
-            trait_type: "",
-            value: "",
-          }
-        ];
-        const newJsonData = {
-          name,
-          description,
-          image,
-          attributes,
-        };
-        setJsonData(prev => (
-          {
-            ...prev,
-            ...newJsonData
-          }
-        ));
+    setCollection((prev) => ({
+      ...prev,
+      preReleaseJsonData: {
+        ...prev.preReleaseJsonData,
+        file: file
       }
-      reader.readAsText(file);
-    }
+    }));
+
   };
   const inputFileRef = useRef();
   const onClickFileHandler = () => {
@@ -201,19 +181,25 @@ function C_step2() {
   };
 
   const cancelHandler = () => {
-    setFile(null);
+    setCollection((prev) => ({
+      ...prev,
+      preReleaseJsonData: {
+        ...prev.preReleaseJsonData,
+        file: null
+      }
+    }));
     inputFileRef.current.value = "";
   };
 
 
   return (
     <RightPart>
-      <div>NFT 총 수량 {collection.filesLength}개</div>
+      <div style={{ marginBottom: '20px', }}>NFT 총 수량 {files?.length}개</div>
       <InputLabel>Collection Name</InputLabel>
       <InputText type="text" onChange={onchangeNameData} />
       <InputLabel>NFT당 가격 * (일괄 적용됩니다)</InputLabel>
       <InputText type="number" onChange={onChangePerPrice} />
-      <InputLabel>민트 시작 날짜 및 시간</InputLabel>
+      <InputLabel>Air drop 시작 날짜 및 시간</InputLabel>
       <InputText type="date" onChange={onChangeStartAtData} />
       <div>
         <h2 style={{ marginBottom: '10px' }}>사전 공개</h2>
@@ -227,15 +213,14 @@ function C_step2() {
             <InputTextArea
               style={{ width: '80%', height: '100px' }}
               placeholder="Bycl monkey is Comming soon!"
-              value={jsonData.description}
-              onChange={onchangeDescData}
+              onChange={onchangePreReleaseDesc}
             />
 
           </div>
           <PreReleaseWrap>
             <div style={{ height: '150px' }}>
               <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickFileHandler}>
-                {!file ? (
+                {!collection.preReleaseJsonData.file ? (
                   <>
                     <div style={{ width: '20px', height: '20px', fontSize: '20px' }}>
                       +
@@ -244,11 +229,11 @@ function C_step2() {
                       ref={inputFileRef}
                       type="file"
                       style={{ display: 'none' }}
-                      onChange={onchangeHandler}
+                      onChange={onChangePreReleaseImage}
                     />
                   </>) : (
                   <PreviewFile>
-                    <img src={jsonData.image ? getImageUrl(jsonData.image) : URL.createObjectURL(file)} alt="preview" />
+                    <img src={URL.createObjectURL(collection.preReleaseJsonData.file)} alt="preview" />
                     <CancelWrap>
                       <CancelBtn onClick={cancelHandler}>x</CancelBtn>
                     </CancelWrap>
@@ -297,7 +282,7 @@ function C_step2() {
             <div style={{ height: '100%', borderRight: '1px solid gray' }} />
           </div>
           <div>
-            <S_Button onClick={handleSubmisstion}>저장</S_Button>
+            <S_Button onClick={submissionController}>저장</S_Button>
           </div>
         </div>
       </div>

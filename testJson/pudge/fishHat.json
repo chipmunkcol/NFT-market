@@ -1,0 +1,23 @@
+{
+  "name": "pudge penguins #3",
+  "description": "WELCOME TO THE HOME OF THE PENGUINS, THE HUDDLE!🐧",
+  "image": "QmT5r7tK3mrVsFpjSJnU17RGkp2danxEiM5Nd95xGXADN4",
+  "attributes": [
+    {
+      "trait_type": "FACE",
+      "value": "Cross-Eyed"
+    },
+    {
+      "trait_type": "HEAD",
+      "value": "fish-head"
+    },
+    {
+      "trait_type": "Advantages",
+      "value": "Cute"
+    },
+    {
+      "trait_type": "Own",
+      "value": "Hodl"
+    }
+  ]
+}

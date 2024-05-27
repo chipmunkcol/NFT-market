@@ -29,33 +29,51 @@ contract MyNft is ERC721Enumerable {
   struct Collection {
     uint[] ids;
     uint startAt;
+    string tempTokenUrl;
   }
-  mapping(string => Collection) public collectionDatas;
+  // mapping(string => Collection) public collectionDatas;
+  mapping(address => mapping(string => Collection)) public collectionDatas;
+  mapping(address => string[]) public userCollectionsKeys;
 
-  function getCollectionData(string memory _ipfsHash) view public returns(Collection memory) {
+  function getMyCollections(address _address) view public returns(Collection[] memory) {
+    uint userKeyLength = userCollectionsKeys[_address].length;
+    Collection[] memory collections = new Collection[](userKeyLength);
+
+    for (uint i = 0; i < userKeyLength; i ++) {
+      string memory tempTokenUrl = userCollectionsKeys[_address][i];
+      collections[i] = collectionDatas[_address][tempTokenUrl];
+    }
+
+    return collections;
+  }
+
+  function getCollectionData(address _address, string memory _tempTokenUrl) view public returns(Collection memory) {
     // uint[] memory collectionDatas = collectionDatas[_ipfsHash];
     // uint collectionStartAt = collectionDatas.startAt; 
     // return (collectionIds, collectionStartAt);
-    return collectionDatas[_ipfsHash]; 
+    return collectionDatas[_address][_tempTokenUrl]; 
   }
 
-  function userMintCollection(string[] memory _fileNameList, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
+  function userMintCollection(address _address, string[] memory _fileNameList, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
     uint timeStamp = block.timestamp;
     for (uint i = 0; i < _fileNameList.length; i ++) {
       uint id = totalSupply() + 1;
       tokenUrls[id].tokenName = _fileNameList[i];
-      tokenUrls[id].tokenUrl = string(abi.encodePacked(_ipfsHash, '/', _fileNameList[i]));
+      // tokenUrls[id].tokenUrl = string(abi.encodePacked(_ipfsHash, '/', _fileNameList[i]));
+      tokenUrls[id].tokenUrl = _ipfsHash;
       tokenUrls[id].isHide = _isHide;
       tokenUrls[id].tempTokenUrl = _tempTokenUrl;
 
       _mint(msg.sender, id);
-      collectionDatas[_ipfsHash].ids.push(id);
+      collectionDatas[_address][_tempTokenUrl].ids.push(id);
     }
-    collectionDatas[_ipfsHash].startAt = timeStamp + _startAt * 1 seconds;
+    collectionDatas[_address][_tempTokenUrl].startAt = timeStamp + _startAt * 1 seconds;
+    collectionDatas[_address][_tempTokenUrl].tempTokenUrl = _tempTokenUrl;
+    userCollectionsKeys[_address].push(_tempTokenUrl);
   }
 
-  function airdrop(string memory _collectionIpfsHash) public {
-    Collection memory collectionData = getCollectionData(_collectionIpfsHash);
+  function airdrop(address _address, string memory _tempTokenUrl) public {
+    Collection memory collectionData = getCollectionData(_address, _tempTokenUrl);
     require(collectionData.startAt < block.timestamp, "No!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, Airdrop not started yet");
 
     for (uint i = 0; i < collectionData.ids.length; i ++) {
@@ -109,6 +127,8 @@ contract MyNft is ERC721Enumerable {
     }
     return nftData;
   }
+
+  // function getMyCollection() {}
 
   function getTokenUrl(uint _nftId) view public returns (string memory) {
     if (tokenUrls[_nftId].isHide == false) {

@@ -61,7 +61,7 @@ function C_step() {
 
   return (
     <RightPart>
-      <div>
+      <div style={{ marginBottom: '20px' }}>
         <h2>No. #{collectionIndex + 1} </h2>
         <h3>총 수량 {collection.nfts.length} 개</h3>
       </div>

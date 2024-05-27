@@ -1,0 +1,23 @@
+{
+  "name": "square punks #2",
+  "description": "10K Unique collectible Square Punks on Base.🐱‍👤",
+  "image": "QmbQ63rr2HM7TXp8HXPDo5HazKdHJ1nf8cc9arFf7vCWXz",
+  "attributes": [
+    {
+      "trait_type": "FACE",
+      "value": "cigarette"
+    },
+    {
+      "trait_type": "HEAD",
+      "value": "Skin-head"
+    },
+    {
+      "trait_type": "Advantages",
+      "value": "Cute"
+    },
+    {
+      "trait_type": "Own",
+      "value": "Hodl"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
 import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
+import AirdropNftCard from "./mypageComponents/AirdropNftCard";
 
 const MyPage = () => {
   const { account, setMyNfts } = useContext(GlobalContext);
@@ -38,10 +39,23 @@ const MyPage = () => {
     }
   };
 
+  // air drop
+  const [ myCollections, setMyCollections ] = useState([]);
+  const getMyCollections = async () => {
+    if (!account) return;
+
+    try {
+      const myCollection = await MintContract.methods.getMyCollections(account).call();
+      // console.log('myCollection: ', myCollection);
+      setMyCollections(myCollection);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function init() {
     await getMyNfts();
-    // await getMyNftsOnsale();
-    // await getApprovedStatus();
+    await getMyCollections();
   }
 
   useEffect(() => {
@@ -75,18 +89,24 @@ const MyPage = () => {
             </FlexWrap>
           </P_Info>
         </ProfileContainer>
-
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '1rem 2rem', gap: '30px', marginTop: "20px" }}>
-          <div>
+      
+        <div style={{ position: 'relative', display: 'flex', flexDirection:'column', padding: '1rem 2rem', minHeight:'100px', gap: '30px', marginTop: "20px" }}>
+          <div style={{ position: 'absolute', top: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
+          <div style={{ display:'flex' }}>
             <NavButton>
-              Collected
+              Air drop
             </NavButton>
+            <div style={{ width:'100%' }}>
+              <ul style={{ padding: '0 7rem' }}>
+                {
+                  myCollections.length > 0 &&
+                  myCollections.map(collection => (
+                    <AirdropNftCard collection={collection} account={account} />
+                  ))
+                }
+              </ul>
+            </div>
           </div>
-          {/* <div>
-            <NavButton>
-              Favorited
-            </NavButton>
-          </div> */}
           <div style={{ position: 'absolute', bottom: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
 
         </div>

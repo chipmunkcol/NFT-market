@@ -35,15 +35,10 @@ const Nft = () => {
     `%${category}%`
   );
 
-  // const url = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"}}`;
-  // const url = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"tags":{"value":"%유명인%","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-  
   const url = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
   const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
   const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-  // const queryCategoryUrl = `https://api.pinata.cloud/data/pinList?pinStart==${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"tags":{"value":${encodedCategory},"op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-  // const urlRef = useRef(url);
-  // const queryUrlRef = useRef(queryUrl);
+  
   // ipfsNftsList[0].metadata.keyvalues
   const getPreviousPrice = priceHistory => {
     const parsedPriceHistory = JSON.parse(priceHistory);

@@ -1,0 +1,23 @@
+{
+  "name": "pudge penguins #7",
+  "description": "WELCOME TO THE HOME OF THE PENGUINS, THE HUDDLE!🐧",
+  "image": "QmW613YXoWZNqod4QcWGoyjA6kJ3EV4iebnmknPXmaXAAN",
+  "attributes": [
+    {
+      "trait_type": "FACE",
+      "value": "Red-glasses"
+    },
+    {
+      "trait_type": "HEAD",
+      "value": "fish-head"
+    },
+    {
+      "trait_type": "Advantages",
+      "value": "Cute"
+    },
+    {
+      "trait_type": "Own",
+      "value": "Hodl"
+    }
+  ]
+}

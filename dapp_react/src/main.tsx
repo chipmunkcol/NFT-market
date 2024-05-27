@@ -25,6 +25,7 @@ import Onsale from "./pages/mypageComponents/Onsale.jsx";
 import Sold from "./pages/mypageComponents/Sold.jsx";
 import NftDetail from "./pages/NftDetail";
 import { createBrowserRouter } from "react-router-dom";
+import CollectionNftDetail from "./pages/CollectionNftDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -50,8 +51,20 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "nft-detail/:ipfsHash/:nftId",
-        element: <NftDetail />,
+        // path: "nft-detail/:ipfsHash",
+        // path: "nft-detail/:ipfsHash/:nftId",
+        // element: <NftDetail />,
+        path: "nft-detail",
+        children: [
+          {
+            path: ":ipfsHash/:nftId",
+            element: <NftDetail />,
+          },
+          {
+            path: "collection/:ipfsHash/:nftId",
+            element: <CollectionNftDetail />,
+          },
+        ],
       },
       {
         path: "create",
