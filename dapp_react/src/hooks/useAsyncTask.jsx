@@ -7,12 +7,6 @@ function useAsyncTask() {
     isExecuting: false,
     message: '',
   });
-  // const handleWithLoading = async (promise, message) => {
-  //   setLoadingState({ isLoading: true, message });
-  //   const result = await promise();
-  //   setLoadingState({ isLoading: false, message: "" });
-  //   return result;
-  // }
 
   /**
    * 

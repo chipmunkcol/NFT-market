@@ -23,7 +23,7 @@ import useAsyncTask from "../hooks/useAsyncTask";
 
 // nftId, nftName, tokenUrl, nftPrice 
 const OnsaleNftCard = ({ nft, account, gridCss }) => {
-  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner } = nft;
+  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
   const { handleWithLoading } = useAsyncTask();
   const isMyNft = account === owner?.toLowerCase();
 
@@ -89,7 +89,15 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
     async function fetchIpfsData() {
       try {
-        const tokenData = await getIpfsTokenData(tokenUrl);
+        let tokenData;
+        if (isReveal) {
+          const revealedTokenUrl = `${tokenUrl}/${fileName}`;
+          tokenData = await getIpfsTokenData(revealedTokenUrl);
+        } else {
+          // const revealedTokenUrl = `${tokenUrl}/${fileName}`;
+          // tokenData = await getIpfsTokenData(revealedTokenUrl);
+          tokenData = await getIpfsTokenData(tokenUrl);
+        }
         setIpfsData(tokenData);
         setImageUrl(getImageUrl(tokenData.image));
       } catch (error) {
@@ -103,7 +111,11 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   // Detail page
   const navigate = useNavigate();
   const navigateDetailPage = () => {
-    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    if (collectionIpfs) {
+      navigate(`/nft-detail/collection/${tokenUrl}/${nftId}`);
+    } else {
+      navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    }
   }
 
   return (

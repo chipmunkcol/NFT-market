@@ -45,9 +45,10 @@ const MyPage = () => {
     if (!account) return;
 
     try {
-      const myCollection = await MintContract.methods.getMyCollections(account).call();
+      const myCollections = await MintContract.methods.getMyCollections(account).call();
       // console.log('myCollection: ', myCollection);
-      setMyCollections(myCollection);
+      const notRevealedCollections = myCollections.filter(collection => collection.isReveal === false);
+      setMyCollections(notRevealedCollections);
     } catch (error) {
       console.log(error);
     }

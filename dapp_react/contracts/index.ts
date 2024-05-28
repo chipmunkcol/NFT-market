@@ -1039,8 +1039,8 @@ const SaleNftABI = [
   },
 ] as const;
 
-export const MintAddress = "0x09635F643e140090A9A8Dcd712eD6285858ceBef";
-export const SaleNftAddress = "0xc5a5C42992dECbae36851359345FE25997F5C42d";
+export const MintAddress = "0xFD471836031dc5108809D173A067e8486B9047A3";
+export const SaleNftAddress = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc";
 
 export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 export const SaleNftContract = new web3.eth.Contract(

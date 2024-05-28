@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { addCartHandler, getCurrentYMD, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
@@ -13,16 +13,21 @@ function CollectionNftDetail() {
   const params = useParams();
   const { ipfsHash, nftId } = params;
   const nftIdByParam = Number(nftId);
-  const tokenData = useGetTokenData(ipfsHash);
-  const { name, description, image, attributes } = tokenData;
+
+  // const tokenData = useGetTokenData(ipfsHash);
+  const [tokenData, setTokenData] = useState({});
+  // const { name, description, image, attributes } = tokenData;
   const { account } = useContext(GlobalContext);
   console.log('tokenData: ', tokenData);
   const [metadata, setMetadata] = useState({
     nftPrice: 0,
     owner: '',
     tokenUrl: '',
+    fileName: '',
+    nftId: 0,
     isOnsale: "true",
     isCollection: "false",
+    isReveal: "false",
     numberOfSales: 0,
     priceHistory: [],
   });
@@ -37,6 +42,8 @@ function CollectionNftDetail() {
     return newPriceHistory;
 
   }
+
+
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -54,6 +61,28 @@ function CollectionNftDetail() {
     }
     fetchMetadata();
   }, []);
+
+  useEffect(() => {
+
+    async function fetchIpfsData() {
+      try {
+        let tokenData;
+        if (metadata.isReveal) {
+          const revealedTokenUrl = `${ipfsHash}/${metadata.fileName}`;
+          tokenData = await getIpfsTokenData(revealedTokenUrl);
+        } else {
+
+          const revealedTokenUrl = `${ipfsHash}/${metadata.fileName}`;
+          tokenData = await getIpfsTokenData(revealedTokenUrl);
+          // tokenData = await getIpfsTokenData(ipfsHash);
+        }
+        setTokenData(tokenData);
+      } catch (error) {
+        console.error('Error fetching IPFS data:', error);
+      }
+    }
+    metadata.nftPrice && fetchIpfsData();
+  }, [metadata]);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
     const result = await purchaseNftHandler(nftId, tokenUrl, nftPrice, account);
@@ -78,7 +107,7 @@ function CollectionNftDetail() {
                 <div>
                   <div>
                     {/* view original (pinata) */}
-                    <a href={image} target="_blank" >
+                    <a href={getImageUrl(tokenData.image)} target="_blank" >
                       <ExpandImg />
                     </a>
                   </div>
@@ -89,7 +118,7 @@ function CollectionNftDetail() {
                 </div>
               </header>
               <ImgWrap>
-                <img src={image} />
+                <img src={getImageUrl(tokenData.image)} />
               </ImgWrap>
             </ImgBox>
 
@@ -100,7 +129,7 @@ function CollectionNftDetail() {
               <p>
                 <ul>
                   {
-                    (typeof (attributes) === 'object' && attributes?.length > 0) ? attributes.map(attr => (
+                    (typeof (tokenData?.attributes) === 'object' && tokenData.attributes?.length > 0) ? tokenData.attributes.map(attr => (
                       <li key={`nft-detail-${ipfsHash}-${nftId}`}>
                         <div style={{ fontSize: '12px', color: '#545454' }}>{attr.trait_type}</div>
                         <div style={{ fontSize: '14px', color: '#121212' }}>{attr.value}</div>
@@ -117,7 +146,7 @@ function CollectionNftDetail() {
             <div style={{ padding: '5px 0 0 20px' }}>
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <h1>{name}</h1>
+                  <h1>{tokenData.name}</h1>
                   <div>Owned by <span style={{ color: "#2081e2cc" }}>{metadata.owner}</span></div>
                 </div>
               </div>
@@ -172,7 +201,7 @@ function CollectionNftDetail() {
                 </h3>
                 <p style={{ height: '100px', overflow: 'auto' }}>
                   <div style={{ color: '#8a939b' }}>By <span>{name}Deployer</span></div>
-                  <div>{description}</div>
+                  <div>{tokenData.description}</div>
                 </p>
               </DescriptionBox>
             </div>

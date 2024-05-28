@@ -30,6 +30,7 @@ contract MyNft is ERC721Enumerable {
     uint[] ids;
     uint startAt;
     string tempTokenUrl;
+    bool isReveal;
   }
   // mapping(string => Collection) public collectionDatas;
   mapping(address => mapping(string => Collection)) public collectionDatas;
@@ -76,6 +77,7 @@ contract MyNft is ERC721Enumerable {
     Collection memory collectionData = getCollectionData(_address, _tempTokenUrl);
     require(collectionData.startAt < block.timestamp, "No!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, Airdrop not started yet");
 
+    collectionDatas[_address][_tempTokenUrl].isReveal = true;
     for (uint i = 0; i < collectionData.ids.length; i ++) {
       uint tokenId = collectionData.ids[i];
       tokenUrls[tokenId].isHide = false;

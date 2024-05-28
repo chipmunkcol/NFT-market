@@ -93,6 +93,7 @@ export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
   const _newNftKeyvaluesList = nftKeyvaluesList.map((nft, index) => ({
     ...nft,
     nftId: parseInt(nftIds[index]),
+    tokenUrl,
   }));
   const newNftKeyvaluesList = JSON.stringify(_newNftKeyvaluesList);
 
@@ -115,13 +116,22 @@ export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
 
 export const P_updateMetadataAirdrop = async (tempIpfs, collectionIpfs) => {
   const res = await getTargetNftToIpfsData(tempIpfs);
+  const _keyvalues = res.metadata.keyvalues;
+  const _nftKeyvaluesList = JSON.parse(_keyvalues.nftKeyvaluesList);
+  const newNftKeyvaluesList = _nftKeyvaluesList.map((nft) => ({
+    ...nft,
+    tokenUrl: collectionIpfs,
+    isReveal: true,
+  }));
 
   const name = res.metadata.name;
   const jsonKeyvalues = JSON.stringify({
     ipfsPinHash: collectionIpfs,
     name,
     keyvalues: {
-      ...res.metadata.keyvalues,
+      ..._keyvalues,
+      nftKeyvaluesList: JSON.stringify(newNftKeyvaluesList),
+      isHide: String(false),
     },
   });
 
@@ -247,7 +257,7 @@ export const pinJsonToIPFS = async (imageIpfsHash, metaData, jsonData) => {
       Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
       "Content-Type": "application/json",
     },
-    body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`,
+    body: `{"pinataMetadata":${metaData}, "pinataContent":${jsonContent}}`,
   };
 
   const res = await fetch(

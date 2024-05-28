@@ -25,14 +25,15 @@ function C_step2() {
   }
 
   const submissionController = async () => {
-    const result = await handleWithLoading(handleSubmisstion, 'Collection을 생성하는 중입니다');
+    const result = await handleWithLoading(() => handleSubmisstion(), 'Collection을 생성하는 중입니다');
     if (result) {
       resetFormData();
       const result = window.confirm(`Collection 발행 성공 \nMyPage로 확인하러 가기`);
       if (result) {
-        navigate(`/mypage/${account}`)
+        navigate(`/mypage/${account}`);
+        window.location.reload();
       } else {
-        navigate('/create-collection/step-1');
+        window.location.reload();
       }
     }
   }
@@ -58,7 +59,7 @@ function C_step2() {
           isOnsale: String(true),
           nftPrice: collection.perPrice,
           numberOfSales: 0,
-          tokenUrl: imageIpfsHash,
+          // tokenUrl: imageIpfsHash,
           priceHistory: JSON.stringify([]),
           tags: collection.tags.join('')
         };
@@ -77,11 +78,11 @@ function C_step2() {
           isHide: String(true)
         }
       });
-      const jsonData = JSON.stringify({
+      const jsonData = {
         name: collection.name,
         description: collection.preReleaseJsonData.description,
         image: imageIpfsHash,
-      });
+      };
       const tempIpfsHash = await pinJsonToIPFS(imageIpfsHash, metaData, jsonData);
       if (!tempIpfsHash) return;
 
@@ -97,25 +98,29 @@ function C_step2() {
 
       const isHide = true;
       // const startAt = new Date(startAtRef.current).getTime() - Date.now();
-      const startAt = 120;
+      const startAt = 300;
       const mintResult = await MintContract.methods.userMintCollection(account, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
       if (!mintResult.status) return;
       const getCollectionResult = await MintContract.methods.getCollectionData(account, tempIpfsHash).call();
-      console.log('result: ', getCollectionResult);
+      console.log('getCollectionResult: ', getCollectionResult);
 
       const updateMetadataResult = await P_AddNftIdOnCollection(tempIpfsHash, getCollectionResult.ids);
       if (!updateMetadataResult.ok) return;
 
-      getCollectionResult.ids.forEach(async (nftId) => {
+      const promises = getCollectionResult.ids.map(async (nftId) => {
         const parsedId = parseInt(nftId);
         const approveResult = await MintContract.methods.approve(SaleNftAddress, parsedId).send({ from: account });
-        console.log('result: ', approveResult);
-        if (!approveResult.status) return;
+        console.log('approveResult: ', approveResult);
+        if (!approveResult.status) return null;
 
         const onsaleResult = await C_setOnsaleNft(parsedId, collection.perPrice, account);
         console.log('onsaleResult: ', onsaleResult);
-        if (!onsaleResult.status) return;
+        if (!onsaleResult.status) return null;
       });
+
+      const results = await Promise.all(promises);
+      const isSuccessedAll = results.filter(result => result !== null);
+      if (isSuccessedAll.length !== results.length) return;
       return true;
 
     } catch (err) {
@@ -197,8 +202,8 @@ function C_step2() {
       <div style={{ marginBottom: '20px', }}>NFT 총 수량 {files?.length}개</div>
       <InputLabel>Collection Name</InputLabel>
       <InputText type="text" onChange={onchangeNameData} />
-      <InputLabel>NFT당 가격 * (일괄 적용됩니다)</InputLabel>
-      <InputText type="number" onChange={onChangePerPrice} />
+      <InputLabel>NFT당 가격 (단위: ETH *일괄 적용됩니다)</InputLabel>
+      <InputText type="number" onChange={onChangePerPrice} placeholder="ex) 0.1" />
       <InputLabel>Air drop 시작 날짜 및 시간</InputLabel>
       <InputText type="date" onChange={onChangeStartAtData} />
       <div>

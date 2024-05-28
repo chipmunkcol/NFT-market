@@ -23,6 +23,7 @@ import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
 import Spinner from "../components/Spinner";
 import { dummyNfts } from "../components/dummyNfts";
 import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
+import { pinStart } from "../hooks/variables.";
 
 
 const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
@@ -73,7 +74,7 @@ function Home() {
   }
 
   const getTopRanking = async () => {
-    const url = 'https://api.pinata.cloud/data/pinList?pinStart=20240515&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}';
+    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}`;
     const ipfsList = await getNftListToIpfs(url);
     const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
 
@@ -86,7 +87,7 @@ function Home() {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      // await getTopRanking();
+      await getTopRanking();
       setIsLoading(false);
     }
     fetchData();
@@ -193,7 +194,7 @@ function Home() {
                       <i />✨
                     </div>
                     <p>
-                      10초 후 업데이트
+                      다른 NFT 보기
                     </p>
                   </ButtonBox>
                 </ButtonArea>
@@ -218,7 +219,7 @@ function Home() {
                       <i />✨
                     </div>
                     <p>
-                      10초 후 업데이트
+                      다른 NFT 보기
                     </p>
                   </ButtonBox>
                 </ButtonArea>

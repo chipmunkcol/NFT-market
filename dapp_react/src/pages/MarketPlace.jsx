@@ -8,15 +8,17 @@ import { ReactComponent as iconFind } from '../assets/images/icon-find.svg';
 import iconGrid4 from '../assets/images/icon-grid4.png';
 import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 // import { useNavigate, useHref, useMatch, useParams, useSearchParams } from 'react-router-dom'
 // import { useInView } from 'react-intersection-observer';
 
 // const dummyData = [{ name: '111', price: 3, isOnsale: true }, { name: '222', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }];
 const MarketPlace = () => {
-  const { onsaleNftList } = useContext(GlobalContext);
+  // const { onsaleNftListLength } = useContext(GlobalContext);
   const navigate = useNavigate();
   const searchRef = useRef('');
+  const location = useLocation();
+  const isNftPath = location.pathname.includes('nft');
 
   const onChangeSearch = e => {
     searchRef.current = e.target.value;
@@ -54,32 +56,46 @@ const MarketPlace = () => {
     navigate(`/market-place/nft?query=${searchRef.current}`);
   };
 
-  const categoryHandler = (e) => {
-    if (e.target.nodeName !== 'LI') return;
-
-    const category = e.target.innerText;
-    navigate(`/market-place/nft?category=${category}`);
-  }
-
   const onKeydownHandler = e => {
     e.key === 'Enter' && searchNfts();
-  }
+  };
+
+  const categoryHandler = (e) => {
+    if (e.target.nodeName !== 'BUTTON') return;
+
+    const category = e.target.innerText;
+    // navigate(`/market-place/nft?category=${category}`);
+    navigate(`?category=${category}`);
+  };
+
+  const collectionCategoryHandler = (e) => {
+    if (e.target.nodeName !== 'BUTTON') return;
+
+    const category = e.target.innerText;
+    // const category = e.target.innerText.split(' ').join('');
+    navigate(`/market-place/collection?query=${category}`);
+  };
 
   return (
     <Background>
       <Container>
         <FixArea>
-          <h1 style={{ padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>MarketPlace
-            <Link to={'nft'}>
-              <span style={{ fontSize: '14px', marginLeft: '10px' }}>NFT</span>
-            </Link>
-            <Link to={'collection'} >
-              <span style={{ fontSize: '14px', marginLeft: '10px' }}>COLLECTION</span>
-            </Link>
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'end', gap: '50px', padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>
+            <h1>MarketPlace</h1>
+            <div>
+              <Link to={'nft'}>
+                <NavMain style={{ color: isNftPath ? '#007bff' : 'black' }}>NFT</NavMain>
+              </Link>
+            </div>
+            <div>
+              <Link to={'collection'} >
+                <NavMain style={{ color: !isNftPath ? '#007bff' : 'black' }}>COLLECTION</NavMain>
+              </Link>
+            </div>
+          </div>
           <div style={{ padding: '10px 0' }}>
             <FlexWrap>
-              <div>결과 {onsaleNftList?.length}개</div>
+              <div style={{ width: '77px', visibility: 'hidden' }}></div>
               <div style={{ position: 'relative', width: '400px', height: '48px' }}>
                 <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
                 <IconWrap onClick={searchNfts}>
@@ -114,25 +130,53 @@ const MarketPlace = () => {
                 <div>
                   <ul onClick={categoryHandler}>
                     <h3>카테고리</h3>
-                    <li>예술</li>
-                    <li>유명인</li>
-                    <li>게임</li>
-                    <li>스포츠</li>
-                    <li>음악</li>
-                    <li>가상자산</li>
-                    <li>프로필 사진</li>
+                    <li>
+                      <NavButton>
+                        예술
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        유명인
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        게임
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        스포츠
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        음악
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        가상자산
+                      </NavButton>
+                    </li>
+                    <li>
+                      <NavButton>
+                        플로필 사진
+                      </NavButton>
+                    </li>
                   </ul>
                 </div>
                 <div>
-                  <ul onClick={categoryHandler}>
+                  <ul onClick={collectionCategoryHandler}>
                     <h3>컬렉션</h3>
-                    <li>사용자 1</li>
-                    <li>사용자 2</li>
-                    <li>사용자 3</li>
-                    <li>사용자 4</li>
-                    <li>사용자 5</li>
-                    <li>사용자 6</li>
-                    <li>사용자 7</li>
+                    {
+                      ['pudge penguin', 'fake punks', '컬렉션 3', '컬렉션 4'].map(collection => (
+                        <NavButton key={`collection-category-${collection}`}>
+                          {collection}
+                        </NavButton>
+                      ))
+                    }
                   </ul>
                 </div>
               </CategoryBox>
@@ -146,6 +190,32 @@ const MarketPlace = () => {
     </Background>
   );
 }
+
+const NavButton = styled.button`
+  padding: 12px 24px;
+  display: inline-block;
+  border-radius: 0.75rem;
+  min-width: 180px;
+  font-weight: 700;
+
+  &:hover {
+    background-color: rgba(18, 18, 18, 0.04);
+    /* border: 1px solid #f6f6f6; */
+  }
+`;
+
+const NavMain = styled.span`
+  /* margin-left: 50px; */
+  /* padding: 12px 24px; */
+  display: inline-block;
+  /* min-width: 180px; */
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover {
+    color: #2081e2cc;
+  }
+`;
 
 const CategoryBox = styled.div`
   display: flex;

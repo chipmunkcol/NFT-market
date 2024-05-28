@@ -4,6 +4,8 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useOutletContext, useSearchParams } from "react-router-dom";
 import { getNftListAndCountToIpfs } from "../../hooks/common";
+import Spinner from "../../components/Spinner";
+import { pinStart } from "../../hooks/variables.";
 // import {tempNftArray} from "../../../../testJson/nftArray";
 
 const Nft = () => {
@@ -27,17 +29,13 @@ const Nft = () => {
     query
   );
 
-  const encodedUpdateDate = encodeURIComponent(
-    '20240523'
-  );
-
   const encodedCategory = encodeURIComponent(
     `%${category}%`
   );
 
-  const url = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-  const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-  const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${encodedUpdateDate}&pageOffset=${encodedOffset}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+  const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${encodedOffset}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+  const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinstart}&pageOffset=${encodedOffset}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+  const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinstart}&pageOffset=${encodedOffset}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
   
   // ipfsNftsList[0].metadata.keyvalues
   const getPreviousPrice = priceHistory => {
@@ -64,6 +62,7 @@ const Nft = () => {
     if (query !== null) {
       // setOffset({ page: 0 });
       offsetRef.current = 0;
+      
       setOnsaleNftList([]);
     } else {
       // urlRef.current = url;
@@ -75,6 +74,7 @@ const Nft = () => {
       // urlRef.current = categoryUrl;
       // setOffset({ page: 0 });
       offsetRef.current = 0;
+      
       setOnsaleNftList([]);
     }
   }, [category]);
@@ -124,8 +124,9 @@ const Nft = () => {
 
   return (
     <>
+    <Count>결과 {onsaleNftList.length}개</Count>
       {
-        onsaleNftList.length < 1 ? (<div>판매중인 NFT가 없습니다.</div>) : (
+        onsaleNftList.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
           <MarketWrap $gridCss={gridCss}>
             {
               onsaleNftList.map(onsaleNft => (
@@ -135,12 +136,28 @@ const Nft = () => {
           </MarketWrap>
         )
       }
-      <div id="observer-target" style={{ width: '100%', height: '100px', backgroundColor: 'red' }}></div>
+      <div id="observer-target" style={{ width: '100%', height: '1px', backgroundColor: 'transparent' }}></div>
+      {
+        isLoading && <Spinner _custom={{
+          color: '#3498db',
+          size: '20px',
+          height: '100px'
+        }} />
+      }
     </>
   )
 }
 
 export default Nft;
+
+
+const Count = styled.div`
+    position: fixed;
+    z-index: 10;
+    top: 29%;
+    left: 32px;
+    font-size: 14px;
+`;
 
 const MarketWrap = styled.div`
   display: grid;
