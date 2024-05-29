@@ -16,7 +16,7 @@ import premiumCrown from '../assets/images/premium-crown.png';
 
 import Slider from "../components/Slider";
 import { S_Button } from "../styles/styledComponent";
-import { getImageUrl, getIpfsTokenData, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
+import { getImageUrl, getIpfsTokenData, getNewOnsaleNfts, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
 import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
@@ -49,10 +49,44 @@ function Home() {
   // }
   // numberOfSales
   const [isLoading, setIsLoading] = useState(false);
-  const [maxPriceNftData, setMaxPriceNftData] = useState();
+  const [nftsSoldExpensively, setNftsSoldExpensively] = useState([]);
+  const [nftsSoldExpensivelyIndex, setNftsSoldExpensivelyIndex] = useState(0);
 
   const [top10Nfts, setTop10Nfts] = useState([]);
-  const findMaxPriceSoldNft = nftList => {
+  const findNftsSoldExpensively = nftList => {
+    const expensiveNfts = [];
+    for (let i = 0; i < nftList.length; i++) {
+      const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
+      const latestSoldPrice = targetNftPriceHistory[0].price;
+      if (latestSoldPrice > 0.19) { // priceHistory
+        expensiveNfts.push(nftList[i]);
+      }
+    }
+    return expensiveNfts;
+  };
+
+  const findTop10NumberOfSales = nftList => {
+    nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
+    return nftList.slice(0, 10);
+  }
+
+  const getNftData = async () => {
+    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}`;
+    const ipfsList = await getNftListToIpfs(url);
+    const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
+
+    const _nftsSoldExpensively = findNftsSoldExpensively(mintNftList);
+    const top10NftList = findTop10NumberOfSales(mintNftList);
+    setNftsSoldExpensively(_nftsSoldExpensively);
+    setTop10Nfts(top10NftList);
+  }
+
+
+  const [topCollectorNfts, setTopCollectorNfts] = useState([]);
+  const [topCollectorNftsIndex, setTopCollectorNftsIndex] = useState(0);
+
+  const [isLoadingTopCollectorNfts, setIsLoadingTopCollectorNfts] = useState(false);
+  const findTopCollectorNfts = nftList => {
     const priceHistory = JSON.parse(nftList[0].priceHistory);
     let soldPrice = priceHistory[0]?.price;
     let maxPriceSoldNft = nftList[0];
@@ -64,45 +98,44 @@ function Home() {
         maxPriceSoldNft = nftList[i];
       }
     }
-    const newMaxPriceSoldNft = { ...maxPriceSoldNft, soldPrice };
-    return newMaxPriceSoldNft;
+    const MaxPriceSoldCollectorNfts = nftList.filter(nft => nft.tokenUrl === maxPriceSoldNft.tokenUrl);
+    return MaxPriceSoldCollectorNfts;
   };
 
-  const findTop10NumberOfSales = nftList => {
-    nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
-    return nftList.slice(0, 10);
-  }
-
-  const getTopRanking = async () => {
-    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}`;
-    const ipfsList = await getNftListToIpfs(url);
-    const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
-
-    const maxPriceSoldNft = findMaxPriceSoldNft(mintNftList);
-    const top10NftList = findTop10NumberOfSales(mintNftList);
-    setMaxPriceNftData(maxPriceSoldNft);
-    setTop10Nfts(top10NftList);
+  const getCollectionData = async () => {
+    const url = `https://api.pinata.cloud/data/pinList?pageLimit=10&pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"true","op":"eq"},"isHide":{"value":"false","op":"eq"}}`;
+    const ipfsDatas = await getNftListToIpfs(url);
+    const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
+    console.log('newOnsaleNfts: ', newOnsaleNfts);
+    const topCollectorNfts = findTopCollectorNfts(newOnsaleNfts);
+    setTopCollectorNfts(topCollectorNfts);
   }
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      await getTopRanking();
+      await getNftData();
       setIsLoading(false);
     }
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchImageUrl() {
-  //     const result = await getIpfsTokenData(maxPriceNftData.tokenUrl);
-  //     const imageUrl = result.image;
-  //     setMaxPriceNftImageUrl(imageUrl);
-  //   }
-  //   if (maxPriceNftData.tokenUrl) {
-  //     fetchImageUrl();
-  //   }
-  // }, [maxPriceNftData]);
+  useEffect(() => {
+    async function fetchCollectorData() {
+      setIsLoadingTopCollectorNfts(true);
+      await getCollectionData();
+      setIsLoadingTopCollectorNfts(false);
+    }
+    fetchCollectorData();
+  }, []);
+
+  const refreshTopCollectorNfts = () => {
+    setTopCollectorNftsIndex(prev => prev + 3);
+  }
+
+  const refreshNftsSoldExpensively = () => {
+    setNftsSoldExpensivelyIndex(prev => prev + 1);
+  }
 
   return (
     <Background>
@@ -114,7 +147,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.map(nft => (
-                    <MoveBgNftCard nft={nft} />
+                    <MoveBgNftCard key={`home-bg-left-1-${nft}`} nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -123,7 +156,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.reverse().map(nft => (
-                    <MoveBgNftCard nft={nft} direction={'up'} />
+                    <MoveBgNftCard key={`home-bg-left-2-${nft}`} nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>
@@ -152,7 +185,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.map(nft => (
-                    <MoveBgNftCard nft={nft} />
+                    <MoveBgNftCard key={`home-bg-right-1-${nft}`} nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -161,7 +194,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.reverse().map(nft => (
-                    <MoveBgNftCard nft={nft} direction={'up'} />
+                    <MoveBgNftCard key={`home-bg-right-2-${nft}`} nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>
@@ -181,15 +214,14 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoading ? <Spinner /> :
-                    top10Nfts.slice(0, 3).map(nft => (
+                  {isLoadingTopCollectorNfts ? <Spinner /> :
+                    topCollectorNfts.slice(topCollectorNftsIndex, topCollectorNftsIndex + 3).map(nft => (
                       <TopCollectorNftCard nft={nft} />
                     ))
                   }
-                  {/* <Spinner /> */}
                 </ul>
                 <ButtonArea>
-                  <ButtonBox>
+                  <ButtonBox onClick={refreshTopCollectorNfts}>
                     <div>
                       <i />✨
                     </div>
@@ -211,10 +243,12 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoading ? <Spinner /> : <TopCollectorNftCard nft={maxPriceNftData} />}
+                  {isLoading ? <Spinner /> : nftsSoldExpensively.slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => {
+                    <TopCollectorNftCard nft={nft} />
+                  })}
                 </ul>
                 <ButtonArea>
-                  <ButtonBox>
+                  <ButtonBox onClick={refreshNftsSoldExpensively}>
                     <div>
                       <i />✨
                     </div>

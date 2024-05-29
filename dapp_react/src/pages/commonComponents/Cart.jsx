@@ -3,11 +3,12 @@ import styled from "styled-components";
 import { S_Button } from "../../styles/styledComponent";
 import { useEffect } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData } from "../../hooks/common";
+import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData, toastSwal } from "../../hooks/common";
 import CartNftCard from "./CartNftCard";
 import { SaleNftContract, web3 } from "../../../contracts";
 import Spinner from "../../components/Spinner";
 import useAsyncTask from "../../hooks/useAsyncTask";
+import Swal from "sweetalert2";
 
 function Cart({ cartModalClose }) {
   const { account } = useContext(GlobalContext);
@@ -124,7 +125,7 @@ function Cart({ cartModalClose }) {
     const promises = checkedList.map(nft => purchaseNftHandler(nft));
 
     Promise.all(promises).then(() => {
-      alert('NFT 구매가 완료되었습니다.');
+      toastSwal('NFT 구매가 완료되었습니다.');
     });
   }
 

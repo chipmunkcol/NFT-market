@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 // import bgMain from './assets/images/bg-main.png';
@@ -12,7 +12,9 @@ import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
 import Cart from "./pages/commonComponents/Cart";
 import MainSpinner from "./components/MainSpinner";
-import { getTruncatedAccount } from "./hooks/common";
+import { getTruncatedAccount, toastSwal } from "./hooks/common";
+import Footer from "./components/Footer";
+import Swal from "sweetalert2";
 // import Slider from "./components/Slider";
 // import { useRef } from "react";
 
@@ -30,28 +32,44 @@ function App() {
   //   })
   //   updateWallet(accounts)
   // }
-  // const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  // const handleScroll = e => {
-  //   const scrollPosition = e.currentTarget.scrollY;
-  //   const $header = document.getElementById('header');
-  //   if (scrollPosition > 100 && scrollPosition > lastScrollTop && $header.style.opacity !== 0) {
-  //     $header.style.opacity = '0';
-  //     $header.style.visibility = 'hidden';
-  //   } else if (scrollPosition < lastScrollTop && $header.style.opacity !== '1') {
-  //     $header.style.opacity = '1';
-  //     $header.style.visibility = 'visible';
-  //     $header.style.transition = 'opacity 1s ease-in-out, visibility 1s ease-in-out';
-  //   }
-  //   setLastScrollTop(scrollPosition);
-  // };
+  const location = useLocation();
+  // console.log('location: ', location);
 
-  // useEffect(() => {
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => {
-  //     window.removeEventListener('scroll', handleScroll);
-  //   };
-  // }, [lastScrollTop]);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+  const handleScroll = e => {
+    const scrollPosition = e.currentTarget.scrollY;
+    const $header = document.getElementById('header');
+    if (scrollPosition === 0) {
+      $header.style.color = '#f0f0f1';
+      $header.style.backgroundColor = '#161618';
+    } else if (scrollPosition !== 0 && $header.style.backgroundColor === 'rgb(22, 22, 24)') {
+      $header.style.color = 'black';
+      $header.style.backgroundColor = 'white';
+      $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
+    }
+    setLastScrollTop(scrollPosition);
+  };
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      window.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollTop, location.pathname]);
+
+  useEffect(() => {
+    const $header = document.getElementById('header');
+    if (location.pathname === '/') {
+      $header.style.color = '#f0f0f1';
+      $header.style.backgroundColor = '#161618';
+    } else {
+      $header.style.color = 'black';
+      $header.style.backgroundColor = 'white';
+    }
+  }, [location.pathname]);
 
   /**
    * connectMetamask
@@ -76,7 +94,7 @@ function App() {
       //show the first connected account in the react page
       setAccount(accounts[0]);
     } else {
-      alert("Please download metamask");
+      Swal.fire("Please download metamask");
     }
   }
 
@@ -173,9 +191,7 @@ function App() {
           <Outlet />
           {/* </Background> */}
         </ContainerHome>
-        <Footer>
-          Footer 영역입니다
-        </Footer>
+        <Footer />
       </Container>
     </>
   );
@@ -254,11 +270,6 @@ const Nav = styled.div`
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     font-size: 13px;
   }
-`;
-
-const Footer = styled.div`
-  height: 100px;
-  background-color: ${({ theme }) => theme.color.bg.mainColor};
 `;
 
 export default App;

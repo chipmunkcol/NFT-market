@@ -6,10 +6,11 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, toastSwal } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
+import Swal from "sweetalert2";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -30,7 +31,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const purchaseController = async () => {
     const res = await handleWithLoading(async () => await purchaseNftHandler(nftId), 'NFT 구매 중입니다');
     if (res) {
-      // alert('NFT 구매에 성공했습니다.');
+      // toastSwal('NFT 구매에 성공했습니다.');
       const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
       if (result) {
         navigate(`/mypage/${account}`)
@@ -70,7 +71,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
 
       if (updateMetadataResult.ok) {
-        alert('장바구니에 담겼습니다.');
+        toastSwal('장바구니에 담겼습니다.');
       }
     }
   };

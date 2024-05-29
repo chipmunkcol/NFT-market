@@ -11,16 +11,25 @@
 
 ## 2-1. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
 
+=> (5/29) SC가 맞을듯 IPFS에서 불러오더라도 SC와 체킹하는 과정이 필요할듯
+정교하게 코딩해도 sc 와 ipfs api 둘중 하나의 call이 실패하는 경우를 막을 수가 없음
+물론 쿼리할 때 추가 state를 컨트롤 해야돼서 가스비가 증가하겠지만 별수 없는듯하다
+
 - IPFS 장단점
 
 1. 메타데이터 수정 가능 (name, desc 등 변경 가능)
-2. SC보다 속도가 빠름
-3. 보안 문제? (잘 모르겠음 확인 필)
+   => (5/29)기본적으로 nft data는 opensea의 json 형태이고(name, description, image, attributes)
+   메타데이터의 사용은 marketplace 라는 dapp 상에서 사용하므로 합의해서 사용
+   (ex. ipfs 메타데이터에 판매된 기록을 남겨 이전 price를 사용자에게 나타내줌 )
+2. 보안 문제? (잘 모르겠음 확인 필)
    => pinata docs 중 발췌 [Pinata에 업로드된 파일에 대한 이 메타데이터는 IPFS가 아니라 Pinata가 있는 개인 데이터베이스에 있으므로 NFT 메타데이터와 혼동하지 마십시오.]
-4. 보안을 강조하는 블록체인이 지향하는 방향과는 맞지는 않지만 핵심은 ipfs URI 이고 부가 내용들은 (name, desc 정도 price는 아닌듯) pinata 의 데이터베이스를 사용해도 괜찮을 듯
-   UX 관점에서 NFT의 name, desc 등의 내용 수정에 적지 않은 편의가 있다고 생각한다. 예)open sea 에서 사용자 프로필 & 프로필 배경 바꾸는 기능 느낌 (메타데이터를 블록체인에 기록하지 않으니 SC에서 gas fee 절약은 덤)
+3. 보안을 강조하는 블록체인이 지향하는 방향과는 맞지는 않지만 핵심은 tokenURI 이고 부가 내용들은 pinata 의 데이터베이스를 사용해도 괜찮을 듯
+   UX 관점에서 NFT의 내용 수정에 적지 않은 편의가 있다고 생각한다. 예)open sea 에서 사용자 프로필 & 프로필 배경 바꾸는 기능 느낌 (메타데이터를 블록체인에 기록하지 않으니 SC에서 gas fee 절약은 덤)
 
 ## 2-2. 페이지네이션 or 검색 기능을 구현하려는데 해당 기능을 pinata api query를 이용할지 sc를 구현해서 해결할지 여부
+
+=> (5/29) SC가 맞다..! 근데 쿼리 & 페이지네이션은 pinata api가 (pageOffset) 꽤 편리해서 sc와 체킹하면 ipfs 가져와도 좋을듯, 다만 체킹과 페이지네이션 조합이 안좋아서 (실력이슈..) 실제 구현시에 체킹은 포기했음ㅠ
+정렬 같은 경우엔 pinata 에 적당한 api가 없어서 이건 sc가 맞을듯함.
 
 - IPFS 장단점
 
@@ -29,18 +38,42 @@
 
 ## 0. 그냥 이것저것
 
-- URI 사용시 주의할점
+0. alert
 
-1. Pinata 에서 제공하는 api query 사용하다보니까 생각보다 관련 지식이 필요함
-   우선 전날하는 URL 는 string 형태여야 되는데 변수형태로 전달하려면 encodeURIComponent 함수로 변경해서 전달
-   특히 pinata 에서 제공하는 쿼리 중 "tags":{"value":"${encodedCategory}","op":"like"} 부분에서 좀 막혔었는데
+   - 비동기 함수 실행될 동안 로딩스피너가 돌아가는 커스텀훅 만들었는데 비동기 함수가 끝나면 실행되는 alert 시점이 예상과 다르다
+   - 디버깅 찍어도 분명 비동기 함수가 실행이 되고 result 받아서 그 후에 alert 가 떠야되는데 alert가 먼저 뜨는 버그 발생
+     => 비동기 함수는 자바스크립트의 이벤트 루프와 프로미스를 사용해 비동기적으로 실행된다.
+     alert call은 자바스크립트 실행을 일시 중지하고 사용자의 alert 를 닫을때까지 기다린다. 둘을 혼용하면 실행되는 시점을 예측하기 어려울 수 있다. 등의 구글링 정보를 얻어서 이것저것 해보다가 sweatalert 사용하니까 해결은됐는데
+     어떻게 실행되는지는 잘 모르겠음;
+     ux적으론 alert 보다 toast 가 좋아서 우선 toast로 변경.
+
+1. addEventListener
+   - useEffect에서 addEventListener 사용시 콜백 함수 내에서 변수가 초기값만 참조하게 되어서 업데이트 시킬 변수를 의존성 배열에 넣어야된다
+     react에서 addEventListener 사용할 일이 많이 없어서(나만없나..?) 할때마다 헷갈리네
+
+```
+  useEffect(() => {
+    if (location.pathname === '/') {
+      window.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollTop, location.pathname]);
+```
+
+0. URI 사용시 주의할점
+
+- Pinata 에서 제공하는 api query 사용하다보니까 생각보다 관련 지식이 필요함
+  우선 전날하는 URL 는 string 형태여야 되는데 변수형태로 전달하려면 encodeURIComponent 함수로 변경해서 전달
+  특히 pinata 에서 제공하는 쿼리 중 "tags":{"value":"${encodedCategory}","op":"like"} 부분에서 좀 막혔었는데
     docs 에서 아래처럼 사용하라길래 "value":"%${encodedCategory}%", "value":${encodedCategory} (encodedCategory 에 %% 같이 인코딩)
-   등등 이것저것 넣어봤는데 fetching 이 계속 안돼서 이것저것 찾아보면서 넣어봤는데 docs 에서 말한 % 도 인코딩을 해서 넣어야되고, "" 을 감싸줘야 되는.. 별거 아닌데 url 특징을 잘 모르면 헤매기 좋은 것 같다. 아래는 알고 넘어가자
-   - encodeURIComponent는 url 일부 분만 인코딩 하는 것 권장 프로토콜, 호스트, 포트 등은 잘못 인코딩 될 수 있음
-   - 인코딩 된 url을 서버에서 사용할 때는 decodeURIComponent로 디코딩
-   - 공백 -> %20, / -> %2F, ' -> %27 등등 특수문자 같은거 인코딩해야 됨
-   - 액티브 파라미터: 지정한 파라미터 값에 따라 화면 내용이 바뀌는 경우
-   - 패시브 파라미터: 서버 프로그램이 내부적으로 사용하는 url 파라미터, 파라미터 값에 따라 콘텐츠가 바뀌지 않음. 웹로그 분석 툴에서 추적 유저ID별로 데이터를 분류하고 처리하는 과정에서 활용
+  등등 이것저것 넣어봤는데 fetching 이 계속 안돼서 이것저것 찾아보면서 넣어봤는데 docs 에서 말한 % 도 인코딩을 해서 넣어야되고, "" 을 감싸줘야 되는.. 별거 아닌데 url 특징을 잘 모르면 헤매기 좋은 것 같다. 아래는 알고 넘어가자
+  - encodeURIComponent는 url 일부 분만 인코딩 하는 것 권장 프로토콜, 호스트, 포트 등은 잘못 인코딩 될 수 있음
+  - 인코딩 된 url을 서버에서 사용할 때는 decodeURIComponent로 디코딩
+  - 공백 -> %20, / -> %2F, ' -> %27 등등 특수문자 같은거 인코딩해야 됨
+  - 액티브 파라미터: 지정한 파라미터 값에 따라 화면 내용이 바뀌는 경우
+  - 패시브 파라미터: 서버 프로그램이 내부적으로 사용하는 url 파라미터, 파라미터 값에 따라 콘텐츠가 바뀌지 않음. 웹로그 분석 툴에서 추적 유저ID별로 데이터를 분류하고 처리하는 과정에서 활용
 
 ```
     ?metadata[keyvalues]={"exampleKey":{"value":"testValue%","op":"like"}}

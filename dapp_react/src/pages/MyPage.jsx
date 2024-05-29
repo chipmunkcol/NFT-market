@@ -312,16 +312,16 @@ export default MyPage;
   
 
   // const alertAleadyApproved = () => {
-  //   alert('이미 승인되었습니다');
+  //   toastSwal('이미 승인되었습니다');
   // }
 
   // const approvedNftHandler = async () => {
   //   if (!account) {
-  //     alert('Please connect your wallet first!');
+  //     toastSwal('Please connect your wallet first!');
   //     return;
   //   }
   //   if (myNfts.length < 1) {
-  //     alert('You have no NFTs to approve');
+  //     toastSwal('You have no NFTs to approve');
   //     return;
   //   }
 

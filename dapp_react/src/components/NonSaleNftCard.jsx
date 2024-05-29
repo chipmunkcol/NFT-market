@@ -5,10 +5,11 @@ import { MintContract, SaleNftAddress } from "../../contracts/index";
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions, toastSwal } from "../hooks/common";
 import useAsyncTask from "../hooks/useAsyncTask";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 
 // nftId, nftName, tokenUrl, nftPrice 
@@ -42,14 +43,14 @@ const NonSaleNftCard = ({ nft }) => {
     if (res) {
       updateMyNfts();
       priceRef.current.value = '';
-      // alert("판매 등록이 완료되었습니다.");
+      toastSwal("판매 등록이 완료되었습니다.");
     }
   }
 
 
   const validatePrice = () => {
     if (!priceRef.current?.value) {
-      alert('가격을 입력해주세요');
+      Swal.fire('가격을 입력해주세요');
       return false;
     }
     return true;
@@ -195,7 +196,7 @@ export default NonSaleNftCard;
 //   await fetch("https://api.pinata.cloud/pinning/hashMetadata", ipfsPutOptions(jsonKeyvalues))
 //     .then((res) => {
 //       if (res.ok) {
-//         alert("판매 등록이 완료되었습니다.");
+//         toastSwal("판매 등록이 완료되었습니다.");
 //         setOnsaleTrigger(prev => !prev);
 //       }
 //     })

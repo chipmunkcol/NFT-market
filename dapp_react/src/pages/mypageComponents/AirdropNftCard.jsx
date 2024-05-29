@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import styled from "styled-components";
 import { MintContract } from "../../../contracts";
-import { P_removeMetadataAirdrop, P_updateMetadataAirdrop } from "../../hooks/common";
+import { P_removeMetadataAirdrop, P_updateMetadataAirdrop, toastSwal } from "../../hooks/common";
 import useAsyncTask from "../../hooks/useAsyncTask";
+import Swal from "sweetalert2";
 
 export default function AirdropNftCard({ collection, account }) {
   const { startAt, tempTokenUrl, ids } = collection;
@@ -39,7 +40,7 @@ export default function AirdropNftCard({ collection, account }) {
   const airdropController = async () => {
     const result = await handleWithLoading(airdropHandler, '에어드랍 중입니다');
     if (result) {
-      alert('에어드랍 성공');
+      toastSwal('에어드랍 성공');
       window.location.reload();
     }
   }

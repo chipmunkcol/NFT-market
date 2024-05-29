@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { web3, SaleNftContract } from "../../contracts/index";
 
 export const getImageUrl = (imageIpfsHash) => {
@@ -293,31 +294,31 @@ export const pinFileToIPFS = async (files, metaData) => {
 
 export const validateCollectionData = (account, collection) => {
   if (!account) {
-    alert("지갑을 연결해주세요");
+    toastSwal("지갑을 연결해주세요");
     return false;
   }
   if (collection.nfts?.length < 1) {
-    alert("NFT Collection으로 발행할 json 파일을 업로드해주세요");
+    toastSwal("NFT Collection으로 발행할 json 파일을 업로드해주세요");
     return false;
   }
   if (!collection.name) {
-    alert("이름을 입력해주세요");
+    toastSwal("이름을 입력해주세요");
     return false;
   }
   if (!collection.perPrice) {
-    alert("판매 가격을 입력해주세요");
+    toastSwal("판매 가격을 입력해주세요");
     return false;
   }
   if (!collection.startAt) {
-    alert("Air drop 예정 시간을 입력해주세요");
+    toastSwal("Air drop 예정 시간을 입력해주세요");
     return false;
   }
   if (!collection.preReleaseJsonData.file) {
-    alert("사전 공개 이미지를 업로드해주세요");
+    toastSwal("사전 공개 이미지를 업로드해주세요");
     return false;
   }
   if (!collection.preReleaseJsonData.description) {
-    alert("사전 공개 설명을 입력해주세요");
+    toastSwal("사전 공개 설명을 입력해주세요");
     return false;
   }
   return true;
@@ -325,19 +326,19 @@ export const validateCollectionData = (account, collection) => {
 
 export const validateFormData = (account, jsonData, file) => {
   if (!account) {
-    alert("지갑을 연결해주세요");
+    toastSwal("지갑을 연결해주세요");
     return false;
   }
   if (!jsonData.name) {
-    alert("이름을 입력해주세요");
+    toastSwal("이름을 입력해주세요");
     return false;
   }
   if (!jsonData.description) {
-    alert("설명을 입력해주세요");
+    toastSwal("설명을 입력해주세요");
     return false;
   }
   if (!file) {
-    alert("파일을 선택해주세요");
+    toastSwal("파일을 선택해주세요");
     return false;
   }
   return true;
@@ -500,4 +501,41 @@ export const getTruncatedAccount = (account) => {
   return account
     ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
     : null;
+};
+
+export const getNewOnsaleNfts = (ipfsNftsList) => {
+  let newOnsaleNfts = [];
+  ipfsNftsList.forEach((data) => {
+    const collectionIpfs = data.ipfs_pin_hash;
+    const parsedCollectionNftList = JSON.parse(
+      data.metadata.keyvalues.nftKeyvaluesList
+    );
+
+    const newCollectionNftList = parsedCollectionNftList.map((v) => ({
+      ...v,
+      nftName: v.name,
+      collectionIpfs,
+    }));
+    newOnsaleNfts = [...newOnsaleNfts, ...newCollectionNftList];
+  });
+  return newOnsaleNfts;
+};
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener("mouseenter", Swal.stopTimer);
+    toast.addEventListener("mouseleave", Swal.resumeTimer);
+  },
+});
+
+export const toastSwal = (title, icon = "success") => {
+  Toast.fire({
+    icon,
+    title,
+  });
 };

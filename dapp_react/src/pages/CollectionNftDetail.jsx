@@ -2,12 +2,13 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler, toastSwal } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
 import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
+import Swal from "sweetalert2";
 
 function CollectionNftDetail() {
   const params = useParams();
@@ -87,7 +88,7 @@ function CollectionNftDetail() {
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
     const result = await purchaseNftHandler(nftId, tokenUrl, nftPrice, account);
     if (result) {
-      alert('NFT 구매에 성공했습니다.');
+      toastSwal('NFT 구매에 성공했습니다.');
     }
   }
 
