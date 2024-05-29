@@ -8,6 +8,7 @@ import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
 import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 import AirdropNftCard from "./mypageComponents/AirdropNftCard";
+import { toastSwal } from "../hooks/common";
 
 const MyPage = () => {
   const { account, setMyNfts } = useContext(GlobalContext);
@@ -71,6 +72,12 @@ const MyPage = () => {
     setTruncatedAccount(`${account?.substring(0, 6)}...${account?.substring(account?.length - 4)}`);
   }, [account]);
 
+  
+  const copyHandler = async () => {
+    await navigator.clipboard.writeText(account);
+    toastSwal("Copied to clipboard");
+  }
+
 
   return (
     <Background>
@@ -86,7 +93,7 @@ const MyPage = () => {
               <P_IconWrap>
                 <IconEther />
               </P_IconWrap>
-              <p>{truncatedAccount}</p>
+              <p onClick={copyHandler} style={{ cursor:'pointer' }}>{truncatedAccount}</p>
             </FlexWrap>
           </P_Info>
         </ProfileContainer>

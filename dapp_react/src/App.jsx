@@ -15,6 +15,13 @@ import MainSpinner from "./components/MainSpinner";
 import { getTruncatedAccount, toastSwal } from "./hooks/common";
 import Footer from "./components/Footer";
 import Swal from "sweetalert2";
+
+import iconProfile from "./assets/images/icon-profile-bk.png";
+import iconCart from "./assets/images/icon-cart.png";
+import iconProfileWh from "./assets/images/icon-profile-wh.png";
+import iconCartWh from "./assets/images/icon-cart-wh.png";
+// import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
+
 // import Slider from "./components/Slider";
 // import { useRef } from "react";
 
@@ -40,13 +47,19 @@ function App() {
   const handleScroll = e => {
     const scrollPosition = e.currentTarget.scrollY;
     const $header = document.getElementById('header');
+    const $profile = document.getElementById('profile');
+    const $cart = document.getElementById('cart');
     if (scrollPosition === 0) {
       $header.style.color = '#f0f0f1';
       $header.style.backgroundColor = '#161618';
+      $profile.src = iconProfileWh;
+      $cart.src = iconCartWh;
     } else if (scrollPosition !== 0 && $header.style.backgroundColor === 'rgb(22, 22, 24)') {
       $header.style.color = 'black';
       $header.style.backgroundColor = 'white';
       $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
+      $profile.src = iconProfile;
+      $cart.src = iconCart;
     }
     setLastScrollTop(scrollPosition);
   };
@@ -62,12 +75,18 @@ function App() {
 
   useEffect(() => {
     const $header = document.getElementById('header');
+    const $profile = document.getElementById('profile');
+    const $cart = document.getElementById('cart');
     if (location.pathname === '/') {
       $header.style.color = '#f0f0f1';
       $header.style.backgroundColor = '#161618';
+      $profile.src = iconProfileWh;
+      $cart.src = iconCartWh;
     } else {
       $header.style.color = 'black';
       $header.style.backgroundColor = 'white';
+      $profile.src = iconProfile;
+      $cart.src = iconCart;
     }
   }, [location.pathname]);
 
@@ -148,6 +167,11 @@ function App() {
     setCartModal(false);
   }
 
+  const copyHandler = async () => {
+    await navigator.clipboard.writeText(account);
+    toastSwal("Copied to clipboard");
+  }
+
   return (
     <>
       <MainSpinner />
@@ -155,7 +179,11 @@ function App() {
         <Header id="header">
           <Navbar>
             <Link to={'/'}>
-              <img src="vite.svg" alt="logo" />
+              {/* <OpenseaSvg /> */}
+              <MainIconWrap>
+                <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
+
+              </MainIconWrap>
             </Link>
             <Link to={'/market-place/nft'}>
               <Nav>Marketplace</Nav>
@@ -168,13 +196,18 @@ function App() {
             <ButtonWrap>
               <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
             </ButtonWrap>) : (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
-              <div style={{ fontSize: '11px' }}>{getTruncatedAccount(account)}</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+              <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
               <Link to={`/mypage/${account}`}>
-                <Nav>MyPage</Nav>
+                <IconWrap>
+                  <img id="profile" src={iconProfile} />
+                </IconWrap>
               </Link>
-              <div>|</div>
-              <CartWrap onClick={cartModalOpen}>Cart</CartWrap>
+              <CartWrap onClick={cartModalOpen}>
+                <IconWrap>
+                  <img id="cart" src={iconCart} />
+                </IconWrap>
+              </CartWrap>
             </div>
           )
           }
@@ -197,8 +230,37 @@ function App() {
   );
 }
 
+const MainIconWrap = styled.div`
+    width: 40px;
+  height: 40px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+// const OpenseaSvg = styled(opensea)`
+//   width: 40px;
+//   height: 40px;
+// `;
+
 const CartWrap = styled.div`
   cursor: pointer;
+`;
+
+const IconWrap = styled.div`
+  border-radius: 12px;
+    padding: 0px 12px;
+    position: relative;
+    height: 48px;
+    min-width: 48px;
+    border-color: transparent;
+    background-color: rgba(18, 18, 18, 0.04);
+    ${props => props.theme.variables.flex};
+  img {
+    width: 25px;
+    height: 25px;
+  }
 `;
 
 const ContainerHome = styled.div`
@@ -218,6 +280,11 @@ const ContainerHome = styled.div`
 const Container = styled.div`
   /* position: relative; */
   /* width: 100vw; */
+`;
+
+const MyAccount = styled.div`
+  font-size: 11px;
+  cursor: pointer;
 `;
 
 const Header = styled.div`
