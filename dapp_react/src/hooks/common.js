@@ -64,6 +64,7 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
       },
     });
   } else {
+    const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
     const checkNumberOfSales = numberOfSales
       ? { numberOfSales: numberOfSales }
       : { numberOfSales: 0 };

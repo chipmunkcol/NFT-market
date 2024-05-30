@@ -86,29 +86,20 @@ function Home() {
   const [topCollectorNftsIndex, setTopCollectorNftsIndex] = useState(0);
 
   const [isLoadingTopCollectorNfts, setIsLoadingTopCollectorNfts] = useState(false);
-  const findTopCollectorNfts = nftList => {
-    if (nftList.length === 0) return [];
-    const priceHistory = JSON.parse(nftList[0].priceHistory);
-    let soldPrice = priceHistory[0]?.price;
-    let maxPriceSoldNft = nftList[0];
-    for (let i = 0; i < nftList.length; i++) {
-      const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
-      const latestSoldPrice = targetNftPriceHistory[0].price;
-      if (latestSoldPrice > soldPrice) { // priceHistory
-        soldPrice = latestSoldPrice;
-        maxPriceSoldNft = nftList[i];
-      }
-    }
-    const MaxPriceSoldCollectorNfts = nftList.filter(nft => nft.tokenUrl === maxPriceSoldNft.tokenUrl);
-    return MaxPriceSoldCollectorNfts;
-  };
+
+
+  const findTopCollectorNfts = ipfsDatas => {
+
+    const collections = ipfsDatas.map(ipfsData => ipfsData.metadata.keyvalues);
+    collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
+    const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
+    return topCollectorNfts;
+  }
 
   const getCollectionData = async () => {
-    const url = `https://api.pinata.cloud/data/pinList?pageLimit=10&pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"true","op":"eq"},"isHide":{"value":"false","op":"eq"}}`;
+    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"true","op":"eq"},"isHide":{"value":"false","op":"eq"}}`;
     const ipfsDatas = await getNftListToIpfs(url);
-    const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-    console.log('newOnsaleNfts: ', newOnsaleNfts);
-    const topCollectorNfts = findTopCollectorNfts(newOnsaleNfts);
+    const topCollectorNfts = findTopCollectorNfts(ipfsDatas);
     setTopCollectorNfts(topCollectorNfts);
   }
 
@@ -520,3 +511,20 @@ export default Home;
 // });
 
 // const nftList = [...mintNftList, ...collectionNftList];
+
+// const findTopCollectorNfts = nftList => {
+//   if (nftList.length === 0) return [];
+//   const priceHistory = JSON.parse(nftList[0].priceHistory);
+//   let soldPrice = priceHistory[0]?.price;
+//   let maxPriceSoldNft = nftList[0];
+//   for (let i = 0; i < nftList.length; i++) {
+//     const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
+//     const latestSoldPrice = targetNftPriceHistory[0].price;
+//     if (latestSoldPrice > soldPrice) { // priceHistory
+//       soldPrice = latestSoldPrice;
+//       maxPriceSoldNft = nftList[i];
+//     }
+//   }
+//   const MaxPriceSoldCollectorNfts = nftList.filter(nft => nft.tokenUrl === maxPriceSoldNft.tokenUrl);
+//   return MaxPriceSoldCollectorNfts;
+// };

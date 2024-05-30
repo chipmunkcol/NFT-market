@@ -1,17 +1,31 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
+import { useNavigate } from "react-router-dom";
 
 const TopCollectorNftCard = ({ nft }) => {
-  if (!nft) return null;
-  const { name, image } = useGetTokenData(nft.tokenUrl);
+
+  const navigate = useNavigate();
+  const tokenUrl = nft?.isCollection ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+  // const tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
+  const tokenData = useGetTokenData(tokenUrl);
   const { nftPrice, nftId } = nft;
 
   const soldPrice = nft.soldPrice;
+
+
+  const navigateDetailPage = () => {
+    if (nft?.isCollection) {
+      navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
+    } else {
+      navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
+    }
+  }
+
   return (
     <>{
       <TopItemBox key={`top3-${nftId}`}>
-        <TopImgWrap>
-          <img src={image} />
+        <TopImgWrap onClick={navigateDetailPage}>
+          <img src={tokenData?.image} />
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}
@@ -37,7 +51,7 @@ const TopImgWrap = styled.div`
     object-fit: cover;
     border-radius: 5px;
   }
-
+  cursor: pointer;
 `;
 const TopContent = styled.div`
   ${props => props.theme.variables.flexColumn};

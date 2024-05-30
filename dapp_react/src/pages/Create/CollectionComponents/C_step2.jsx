@@ -69,9 +69,9 @@ function C_step2() {
           fileName,
           owner: account,
           isOnsale: String(true),
+          isCollection: String(true),
           nftPrice: collection.perPrice,
           numberOfSales: 0,
-          // tokenUrl: imageIpfsHash,
           priceHistory: JSON.stringify([]),
           tags: collection.tags.join('')
         };

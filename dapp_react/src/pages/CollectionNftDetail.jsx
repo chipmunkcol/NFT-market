@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
 import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
 import Swal from "sweetalert2";
-import { toastSwal } from "../hooks/swal";
+import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 
 function CollectionNftDetail() {
@@ -19,6 +19,7 @@ function CollectionNftDetail() {
 
   // const tokenData = useGetTokenData(ipfsHash);
   const { handleWithLoading } = useAsyncTask();
+  const navigate = useNavigate();
   const [tokenData, setTokenData] = useState({});
   // const { name, description, image, attributes } = tokenData;
   const { account } = useContext(GlobalContext);
@@ -100,7 +101,12 @@ function CollectionNftDetail() {
     const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, account), 'NFT 구매중입니다');
     if (!result) return;
 
-    toastSwal('NFT 구매에 성공했습니다.');
+    const confirmResult = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
+    if (confirmResult.isConfirmed) {
+      navigate(`/mypage/${account}`)
+    } else {
+      window.location.reload();
+    }
   }
 
   const addCartController = async (metadata, account) => {
