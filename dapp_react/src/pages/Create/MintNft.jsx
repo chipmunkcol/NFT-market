@@ -10,6 +10,7 @@ import { getImageIpfsHash, validateFormData } from "../../hooks/common";
 import { useDropzone } from "react-dropzone";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import { useNavigate } from "react-router-dom";
+import { Confirm } from "../../hooks/swal";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
@@ -108,29 +109,29 @@ function MintNft() {
 
 
 
-  const pinFileToIPFS = async (metaData) => {
-    const formData = new FormData();
-    const options = JSON.stringify({
-      cidVersion: 0,
-    });
+  // const pinFileToIPFS = async (metaData) => {
+  //   const formData = new FormData();
+  //   const options = JSON.stringify({
+  //     cidVersion: 0,
+  //   });
 
-    formData.append("file", file);
-    formData.append("pinataMetadata", metaData);
-    formData.append("pinataOptions", options);
+  //   formData.append("file", file);
+  //   formData.append("pinataMetadata", metaData);
+  //   formData.append("pinataOptions", options);
 
-    const res = await fetch(
-      "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-        },
-        body: formData,
-      }
-    );
-    const result = await res.json();
-    return result.IpfsHash;
-  }
+  //   const res = await fetch(
+  //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+  //       },
+  //       body: formData,
+  //     }
+  //   );
+  //   const result = await res.json();
+  //   return result.IpfsHash;
+  // }
 
   const pinJsonToIPFS = async (imageIpfsHash, metaData) => {
     const jsonContent = JSON.stringify({
@@ -153,13 +154,14 @@ function MintNft() {
 
   // 판매등록 함수
   const mintNftController = async () => {
-    const res = await handleWithLoading(handleSubmission, 'NFT 발행 중입니다');
+    const res = await handleWithLoading(() => handleSubmission(), 'NFT 발행 중입니다');
     if (res) {
       resetFormData();
-      const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);
-      if (result) {
+      const result = await Confirm('NFT 발행 성공✨', 'MyPage로 확인하러 가기');
+      if (result.isConfirmed) {
         navigate(`/mypage/${account}`)
       }
+      // const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);
     }
   }
   const handleSubmission = async () => {
@@ -182,14 +184,7 @@ function MintNft() {
         },
       });
 
-
-      let tokenUrl;
-      if (file.type === "application/json") {
-        tokenUrl = await pinFileToIPFS(metaData);
-      } else {
-        tokenUrl = await pinJsonToIPFS(imageIpfsHash, metaData);
-      }
-
+      const tokenUrl = await pinJsonToIPFS(imageIpfsHash, metaData);
       if (tokenUrl) {
         const mintResult = await MintContract.methods
           .userMintNft(jsonData.name, tokenUrl)

@@ -6,11 +6,13 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, toastSwal } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart.png";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
+import iconCart from "../assets/images/icon-cart-wh.png";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
 import Swal from "sweetalert2";
+import { Confirm, toastSwal } from "../hooks/swal";
+import Spinner from "./Spinner";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -27,16 +29,18 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
   const { handleWithLoading } = useAsyncTask();
   const isMyNft = account === owner?.toLowerCase();
+  const [isLoading, setIsLoading] = useState(false);
 
   const purchaseController = async () => {
-    const res = await handleWithLoading(async () => await purchaseNftHandler(nftId), 'NFT 구매 중입니다');
+    const res = await handleWithLoading(() => purchaseNftHandler(nftId), 'NFT 구매 중입니다');
     if (res) {
       // toastSwal('NFT 구매에 성공했습니다.');
-      const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
-      if (result) {
+      // const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
+      const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
+      if (result.isConfirmed) {
         navigate(`/mypage/${account}`)
       } else {
-        window.reload();
+        window.location.reload();
       }
     }
   };
@@ -62,17 +66,22 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
   // 장바구니에 담기
   const addCartHandler = async nft => {
-    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
-    if (!cartIpfsHash) {
-      cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
-      cartIpfsHash && localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
-    } else {
-      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
+    setIsLoading(true);
 
-      if (updateMetadataResult.ok) {
+    try {
+      let cartIpfsHash = localStorage.getItem(`cart-${account}`);
+      if (!cartIpfsHash) {
+        cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
+        cartIpfsHash && localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
+      } else {
+        const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+        const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
+
+        if (!updateMetadataResult.ok) return;
         toastSwal('장바구니에 담겼습니다.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -143,7 +152,12 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
             <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
             <CartBtn onClick={() => addCartHandler(nft)} >
               <CartImg>
-                <img src={iconCart} alt="장바구니" />
+                {isLoading ? <Spinner _custom={{
+                  color: '#3498db',
+                  size: '16px',
+                  height: '100%'
+                }} /> :
+                  <img src={iconCart} alt="장바구니" />}
               </CartImg>
             </CartBtn>
           </ButtonWrap>) : (

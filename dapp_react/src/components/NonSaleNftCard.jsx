@@ -5,16 +5,17 @@ import { MintContract, SaleNftAddress } from "../../contracts/index";
 import NftCard, * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions, toastSwal } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 import useAsyncTask from "../hooks/useAsyncTask";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { toastSwal } from "../hooks/swal";
 
 
 // nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
-  const { nftId, nftName, tokenUrl } = nft;
+  const { nftId, nftName, tokenUrl, collectionIpfs } = nft;
   // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
   const { setMyNfts, account, myNfts } = useContext(GlobalContext);
   const tokenData = useGetTokenData(tokenUrl);
@@ -39,7 +40,7 @@ const NonSaleNftCard = ({ nft }) => {
   }
 
   const setOnsaleController = async () => {
-    const res = await handleWithLoading(async () => await registerSetOnsale(), '판매 등록 중입니다');
+    const res = await handleWithLoading(() => registerSetOnsale(), '판매 등록 중입니다');
     if (res) {
       updateMyNfts();
       priceRef.current.value = '';
@@ -83,7 +84,12 @@ const NonSaleNftCard = ({ nft }) => {
 
   const navigate = useNavigate();
   const navigateDetailPage = () => {
-    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    if (collectionIpfs) {
+      navigate(`/nft-detail/collection/${tokenUrl}/${nftId}`);
+    }
+    else {
+      navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    }
   }
 
   const truncatedDes = description?.length > 15 ? description?.slice(0, 15) + '...' : description;

@@ -8,7 +8,7 @@ import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
 import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 import AirdropNftCard from "./mypageComponents/AirdropNftCard";
-import { toastSwal } from "../hooks/common";
+import { toastSwal } from "../hooks/swal";
 
 const MyPage = () => {
   const { account, setMyNfts } = useContext(GlobalContext);

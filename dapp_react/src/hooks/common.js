@@ -34,26 +34,56 @@ export const ipfsPutOptions = (jsonKeyvalues) => {
 };
 
 export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
-  const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
-  const checkNumberOfSales = numberOfSales
-    ? { numberOfSales: numberOfSales }
-    : { numberOfSales: 0 };
-  const checkPriceHistory = priceHistory
-    ? { priceHistory: priceHistory }
-    : { priceHistory: JSON.stringify([]) };
+  // const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
+  const { isCollection } = ipfsData.metadata.keyvalues;
+  let jsonKeyvalues, numberOfSales, priceHistory;
+  if (isCollection === "true") {
+    const collectionNftList = JSON.parse(
+      ipfsData.metadata.keyvalues.nftKeyvaluesList
+    );
+    const targetNft = collectionNftList.find((nft) => nft.nftId === nftId);
+    ({ numberOfSales } = targetNft);
 
-  const jsonKeyvalues = JSON.stringify({
-    ipfsPinHash: ipfsData.ipfs_pin_hash,
-    name: ipfsData.metadata.name,
-    keyvalues: {
-      ...ipfsData.metadata.keyvalues,
-      nftId,
-      isOnsale: String(true),
-      nftPrice: price,
-      ...checkNumberOfSales,
-      ...checkPriceHistory,
-    },
-  });
+    const newCollectionNftList = collectionNftList.map((nft) =>
+      nft.nftId === nftId
+        ? {
+            ...nft,
+            isOnsale: String(true),
+            nftPrice: price,
+            numberOfSales: numberOfSales + 1,
+          }
+        : nft
+    );
+    jsonKeyvalues = JSON.stringify({
+      ipfsPinHash: ipfsData.ipfs_pin_hash,
+      name: ipfsData.metadata.name,
+      keyvalues: {
+        ...ipfsData.metadata.keyvalues,
+        numberOfSales: numberOfSales + 1,
+        nftKeyvaluesList: JSON.stringify(newCollectionNftList),
+      },
+    });
+  } else {
+    const checkNumberOfSales = numberOfSales
+      ? { numberOfSales: numberOfSales }
+      : { numberOfSales: 0 };
+    const checkPriceHistory = priceHistory
+      ? { priceHistory: priceHistory }
+      : { priceHistory: JSON.stringify([]) };
+
+    jsonKeyvalues = JSON.stringify({
+      ipfsPinHash: ipfsData.ipfs_pin_hash,
+      name: ipfsData.metadata.name,
+      keyvalues: {
+        ...ipfsData.metadata.keyvalues,
+        nftId,
+        isOnsale: String(true),
+        nftPrice: price,
+        ...checkNumberOfSales,
+        ...checkPriceHistory,
+      },
+    });
+  }
 
   const result = await fetch(
     "https://api.pinata.cloud/pinning/hashMetadata",
@@ -193,23 +223,63 @@ export const getAddedPriceHistory = (priceHistory, owner, price) => {
 };
 
 export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
-  const { numberOfSales, priceHistory, owner, nftPrice } =
-    ipfsData.metadata.keyvalues;
+  const { isCollection } = ipfsData.metadata.keyvalues;
+
+  let numberOfSales, priceHistory, owner, nftPrice;
+  if (isCollection === "true") {
+    const collectionNftList = JSON.parse(
+      ipfsData.metadata.keyvalues.nftKeyvaluesList
+    );
+    const targetNft = collectionNftList.find((nft) => nft.nftId === nftId);
+    ({ numberOfSales, priceHistory, owner, nftPrice } = targetNft);
+  } else {
+    ({ numberOfSales, priceHistory, owner, nftPrice } =
+      ipfsData.metadata.keyvalues);
+  }
 
   const newPriceHistory = getAddedPriceHistory(priceHistory, owner, nftPrice);
 
-  const jsonKeyvalues = JSON.stringify({
-    ipfsPinHash: ipfsData.ipfs_pin_hash,
-    name: ipfsData.metadata.name,
-    keyvalues: {
-      ...ipfsData.metadata.keyvalues,
-      nftId,
-      isOnsale: String(false),
-      nftPrice: 0,
-      numberOfSales: numberOfSales + 1,
-      priceHistory: newPriceHistory,
-    },
-  });
+  let jsonKeyvalues;
+  if (isCollection === "true") {
+    const collectionNftList = JSON.parse(
+      ipfsData.metadata.keyvalues.nftKeyvaluesList
+    );
+    const newCollectionNftList = collectionNftList.map((nft) =>
+      nft.nftId === nftId
+        ? {
+            ...nft,
+            owner: account,
+            isOnsale: String(false),
+            nftPrice: 0,
+            numberOfSales: numberOfSales + 1,
+            priceHistory: newPriceHistory,
+          }
+        : nft
+    );
+    jsonKeyvalues = JSON.stringify({
+      ipfsPinHash: ipfsData.ipfs_pin_hash,
+      name: ipfsData.metadata.name,
+      keyvalues: {
+        ...ipfsData.metadata.keyvalues,
+        numberOfSales: numberOfSales + 1,
+        nftKeyvaluesList: JSON.stringify(newCollectionNftList),
+      },
+    });
+  } else {
+    jsonKeyvalues = JSON.stringify({
+      ipfsPinHash: ipfsData.ipfs_pin_hash,
+      name: ipfsData.metadata.name,
+      keyvalues: {
+        ...ipfsData.metadata.keyvalues,
+        nftId,
+        owner: account,
+        isOnsale: String(false),
+        nftPrice: 0,
+        numberOfSales: numberOfSales + 1,
+        priceHistory: newPriceHistory,
+      },
+    });
+  }
 
   const result = await fetch(
     "https://api.pinata.cloud/pinning/hashMetadata",
@@ -294,31 +364,31 @@ export const pinFileToIPFS = async (files, metaData) => {
 
 export const validateCollectionData = (account, collection) => {
   if (!account) {
-    toastSwal("지갑을 연결해주세요");
+    Swal.fire("지갑을 연결해주세요");
     return false;
   }
   if (collection.nfts?.length < 1) {
-    toastSwal("NFT Collection으로 발행할 json 파일을 업로드해주세요");
+    Swal.fire("NFT Collection으로 발행할 json 파일을 업로드해주세요");
     return false;
   }
   if (!collection.name) {
-    toastSwal("이름을 입력해주세요");
+    Swal.fire("이름을 입력해주세요");
     return false;
   }
   if (!collection.perPrice) {
-    toastSwal("판매 가격을 입력해주세요");
+    Swal.fire("판매 가격을 입력해주세요");
     return false;
   }
   if (!collection.startAt) {
-    toastSwal("Air drop 예정 시간을 입력해주세요");
+    Swal.fire("Air drop 예정 시간을 입력해주세요");
     return false;
   }
   if (!collection.preReleaseJsonData.file) {
-    toastSwal("사전 공개 이미지를 업로드해주세요");
+    Swal.fire("사전 공개 이미지를 업로드해주세요");
     return false;
   }
   if (!collection.preReleaseJsonData.description) {
-    toastSwal("사전 공개 설명을 입력해주세요");
+    Swal.fire("사전 공개 설명을 입력해주세요");
     return false;
   }
   return true;
@@ -326,19 +396,19 @@ export const validateCollectionData = (account, collection) => {
 
 export const validateFormData = (account, jsonData, file) => {
   if (!account) {
-    toastSwal("지갑을 연결해주세요");
+    Swal.fire("지갑을 연결해주세요");
     return false;
   }
   if (!jsonData.name) {
-    toastSwal("이름을 입력해주세요");
+    Swal.fire("이름을 입력해주세요");
     return false;
   }
   if (!jsonData.description) {
-    toastSwal("설명을 입력해주세요");
+    Swal.fire("설명을 입력해주세요");
     return false;
   }
   if (!file) {
-    toastSwal("파일을 선택해주세요");
+    Swal.fire("파일을 선택해주세요");
     return false;
   }
   return true;
@@ -519,23 +589,4 @@ export const getNewOnsaleNfts = (ipfsNftsList) => {
     newOnsaleNfts = [...newOnsaleNfts, ...newCollectionNftList];
   });
   return newOnsaleNfts;
-};
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: "top",
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener("mouseenter", Swal.stopTimer);
-    toast.addEventListener("mouseleave", Swal.resumeTimer);
-  },
-});
-
-export const toastSwal = (title, icon = "success") => {
-  Toast.fire({
-    icon,
-    title,
-  });
 };

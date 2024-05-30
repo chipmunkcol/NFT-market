@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.25+commit.b61c2a91"
 	},
 	"language": "Solidity",
 	"output": {
@@ -176,7 +176,7 @@
 		"compilationTarget": {
 			"contracts/SaleNft.sol": "SaleNft"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "cancun",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -293,11 +293,11 @@
 			]
 		},
 		"contracts/Mint.sol": {
-			"keccak256": "0x1f9675b5e6734c6bf84e3defe6de7d3015b2e43b33d5bd047d362897c8565f5a",
+			"keccak256": "0x7267ea3a0772585ef59e260a3a8102084b53143aef0a5d69899cd54175b8857f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b04482e27cd588a78eda606b85324604256843a943fe937a8bd69a76a18eea25",
-				"dweb:/ipfs/QmXxMRye5oFMaCyfw1Gwhw4Fpf2n1v7Dq3nBHeWJJEPqVK"
+				"bzz-raw://c680d95d069ec1badaf5be574644befe64db0e49d58790c395282f48a525ce98",
+				"dweb:/ipfs/QmXvgphNLJignFFh2GRyZuSmyG1Gd2bNBGKbsGDRXweqn4"
 			]
 		},
 		"contracts/SaleNft.sol": {

@@ -17,7 +17,7 @@ function useAsyncTask() {
       isLoading: true, message: message
     }));
     try {
-      const result = await promise;
+      const result = await promise();
       return result;
     } finally {
       setLoadingState(prev => ({

@@ -12,6 +12,7 @@ contract MyNft is ERC721Enumerable {
 
   struct TokenUrl {
     string tokenName;
+    string fileName;
     string tokenUrl;
     bool isHide;
     string tempTokenUrl;
@@ -21,6 +22,7 @@ contract MyNft is ERC721Enumerable {
   struct NftData {
     uint nftId;
     string nftName;
+    string fileName;
     string tokenUrl;
     uint nftPrice;
     string tempTokenUrl;
@@ -55,11 +57,12 @@ contract MyNft is ERC721Enumerable {
     return collectionDatas[_address][_tempTokenUrl]; 
   }
 
-  function userMintCollection(address _address, string[] memory _fileNameList, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
+  function userMintCollection(address _address, string[] memory _nftNameList, string[] memory _fileNameList, string memory _ipfsHash, bool _isHide, string memory _tempTokenUrl, uint _startAt) public {
     uint timeStamp = block.timestamp;
     for (uint i = 0; i < _fileNameList.length; i ++) {
       uint id = totalSupply() + 1;
-      tokenUrls[id].tokenName = _fileNameList[i];
+      tokenUrls[id].tokenName = _nftNameList[i];
+      tokenUrls[id].fileName = _fileNameList[i];
       // tokenUrls[id].tokenUrl = string(abi.encodePacked(_ipfsHash, '/', _fileNameList[i]));
       tokenUrls[id].tokenUrl = _ipfsHash;
       tokenUrls[id].isHide = _isHide;
@@ -122,10 +125,11 @@ contract MyNft is ERC721Enumerable {
       uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
       string memory nftName = tokenUrls[nftId].tokenName;
       string memory nftTokenUrl = getTokenUrl(nftId);
+      string memory fileName = tokenUrls[nftId].tokenUrl;
       uint nftPrice = saleNftContract.getNftPrice(nftId);
       string memory collectionIpfs = tokenUrls[nftId].tempTokenUrl;
 
-      nftData[i] = NftData(nftId, nftName, nftTokenUrl, nftPrice, collectionIpfs);
+      nftData[i] = NftData(nftId, nftName, fileName, nftTokenUrl, nftPrice, collectionIpfs);
     }
     return nftData;
   }

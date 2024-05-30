@@ -9,6 +9,8 @@ import { GlobalContext } from "../../../context/GlobalContext";
 import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
 import { ReactComponent as openseaSymbol } from "../../../assets/images/opensea-symbol.svg"
 import useAsyncTask from "../../../hooks/useAsyncTask";
+import { Confirm, toastSwal } from "../../../hooks/swal";
+import Swal from "sweetalert2";
 
 function C_step2() {
 
@@ -24,16 +26,26 @@ function C_step2() {
     setFiles(null);
   }
 
+  const getRemainedTimestamp = (inputDate) => {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    if (inputDate === todayStr) {
+      return 600;
+    } else {
+      const dateKST = new Date(`${inputDate}T23:59:59+09:00`);
+      const remainedTimestamp = dateKST.getTime() - Date.now();
+      return remainedTimestamp;
+    }
+  }
+
   const submissionController = async () => {
     const result = await handleWithLoading(() => handleSubmisstion(), 'Collection을 생성하는 중입니다');
     if (result) {
       resetFormData();
-      const result = window.confirm(`Collection 발행 성공 \nMyPage로 확인하러 가기`);
-      if (result) {
+      const confirmResult = await Confirm('Collection 발행 성공', 'MyPage로 확인하러 가기');
+      if (confirmResult.isConfirmed) {
         navigate(`/mypage/${account}`);
-        window.location.reload();
-      } else {
-        window.location.reload();
+        // window.location.reload();
       }
     }
   }
@@ -43,10 +55,10 @@ function C_step2() {
       const validatedResult = validateCollectionData(account, collection);
       if (!validatedResult) return;
 
-
       const imageIpfsHash = await getImageIpfsHash(collection.preReleaseJsonData.file);
 
       let fileNameList = [];
+      let nftNameList = collection.nfts.map(nft => nft.name);
       let nftKeyvaluesList = [];
       Array.from(files).forEach(async (file, index) => {
         // formData.append("file", file);
@@ -98,8 +110,8 @@ function C_step2() {
 
       const isHide = true;
       // const startAt = new Date(startAtRef.current).getTime() - Date.now();
-      const startAt = 300;
-      const mintResult = await MintContract.methods.userMintCollection(account, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, startAt).send({ from: account });
+      const remainedSeconds = getRemainedTimestamp(collection.startAt);
+      const mintResult = await MintContract.methods.userMintCollection(account, nftNameList, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, remainedSeconds).send({ from: account });
       if (!mintResult.status) return;
       const getCollectionResult = await MintContract.methods.getCollectionData(account, tempIpfsHash).call();
       console.log('getCollectionResult: ', getCollectionResult);
@@ -144,12 +156,20 @@ function C_step2() {
   }
 
   const onChangeStartAtData = (e) => {
-    // console.log('e.target.value: ', e.target.value);
-    // startAtRef.current = e.target.value;
+    // 오늘 날자를 선택하면 10분 뒤로 설정된다는 알람 띄워준다
+    const inputDate = e.target.value;
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 변환
+    if (inputDate === todayStr) {
+      Swal.fire('Air drop', 'Collection 발행 뒤 10분 후 부터 에어드랍이 가능합니다');
+    } else {
+      Swal.fire('Air drop', `${inputDate} AM 00:00 부터 에어드랍이 가능합니다`)
+    }
     setCollection((prev) => ({
       ...prev,
-      startAt: e.target.value
+      startAt: inputDate
     }));
+
   };
 
   const onchangePreReleaseDesc = (e) => {

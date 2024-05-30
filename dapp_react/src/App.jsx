@@ -12,7 +12,7 @@ import { Web3 } from "web3";
 import { S_Button } from "./styles/styledComponent";
 import Cart from "./pages/commonComponents/Cart";
 import MainSpinner from "./components/MainSpinner";
-import { getTruncatedAccount, toastSwal } from "./hooks/common";
+import { getTruncatedAccount } from "./hooks/common";
 import Footer from "./components/Footer";
 import Swal from "sweetalert2";
 
@@ -20,6 +20,7 @@ import iconProfile from "./assets/images/icon-profile-bk.png";
 import iconCart from "./assets/images/icon-cart.png";
 import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
+import { toastSwal } from "./hooks/swal";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
 
 // import Slider from "./components/Slider";
@@ -29,37 +30,50 @@ import iconCartWh from "./assets/images/icon-cart-wh.png";
 
 function App() {
 
-  // const updateWallet = async (accounts: any) => {
-  //   setWallet({ accounts })
-  // }
-
-  // const handleConnect = async () => {
-  //   let accounts = await window.ethereum.request({
-  //     method: "eth_requestAccounts",
-  //   })
-  //   updateWallet(accounts)
-  // }
-
+  const { account, setAccount } = useContext(GlobalContext);
   const location = useLocation();
   // console.log('location: ', location);
 
   const [lastScrollTop, setLastScrollTop] = useState(0);
-  const handleScroll = e => {
-    const scrollPosition = e.currentTarget.scrollY;
+
+  const $header = document.getElementById('header');
+  const changeheaderCss = (color, bgColor) => {
     const $header = document.getElementById('header');
+    if (!$header) return;
+
+    $header.style.color = color;
+    $header.style.backgroundColor = bgColor;
+    $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
+  }
+
+  const changePathOfProfileAndCart = (profileSrc, cartSrc) => {
+    if (!account) return;
     const $profile = document.getElementById('profile');
     const $cart = document.getElementById('cart');
+    if (!$profile || !$cart) return;
+
+    $profile.src = profileSrc;
+    $cart.src = cartSrc;
+  }
+
+  const handleScroll = e => {
+    const scrollPosition = e.currentTarget.scrollY;
+
     if (scrollPosition === 0) {
-      $header.style.color = '#f0f0f1';
-      $header.style.backgroundColor = '#161618';
-      $profile.src = iconProfileWh;
-      $cart.src = iconCartWh;
-    } else if (scrollPosition !== 0 && $header.style.backgroundColor === 'rgb(22, 22, 24)') {
-      $header.style.color = 'black';
-      $header.style.backgroundColor = 'white';
-      $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
-      $profile.src = iconProfile;
-      $cart.src = iconCart;
+      changeheaderCss('#f0f0f1', '#161618');
+      changePathOfProfileAndCart(iconProfileWh, iconCartWh);
+      // $header.style.color = '#f0f0f1';
+      // $header.style.backgroundColor = '#161618';
+      // $profile.src = iconProfileWh;
+      // $cart.src = iconCartWh;
+    } else if (scrollPosition !== 0 && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
+      changeheaderCss('black', 'white');
+      changePathOfProfileAndCart(iconProfile, iconCart);
+      // $header.style.color = 'black';
+      // $header.style.backgroundColor = 'white';
+      // $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
+      // $profile.src = iconProfile;
+      // $cart.src = iconCart;
     }
     setLastScrollTop(scrollPosition);
   };
@@ -74,30 +88,29 @@ function App() {
   }, [lastScrollTop, location.pathname]);
 
   useEffect(() => {
-    const $header = document.getElementById('header');
-    const $profile = document.getElementById('profile');
-    const $cart = document.getElementById('cart');
     if (location.pathname === '/') {
-      $header.style.color = '#f0f0f1';
-      $header.style.backgroundColor = '#161618';
-      $profile.src = iconProfileWh;
-      $cart.src = iconCartWh;
+      changeheaderCss('#f0f0f1', '#161618');
+      changePathOfProfileAndCart(iconProfileWh, iconCartWh)
+      // $header.style.color = '#f0f0f1';
+      // $header.style.backgroundColor = '#161618';
+      // $profile.src = iconProfileWh;
+      // $cart.src = iconCartWh;
     } else {
-      $header.style.color = 'black';
-      $header.style.backgroundColor = 'white';
-      $profile.src = iconProfile;
-      $cart.src = iconCart;
+      changeheaderCss('black', 'white');
+      changePathOfProfileAndCart(iconProfile, iconCart);
+      // $header.style.color = 'black';
+      // $header.style.backgroundColor = 'white';
+      // $profile.src = iconProfile;
+      // $cart.src = iconCart;
     }
-  }, [location.pathname]);
+  }, [location.pathname, account]);
+
+
 
   /**
    * connectMetamask
    */
-  const { account, setAccount } = useContext(GlobalContext);
 
-  /**
-   * onClick 지갑 연결
-   */
   async function connectMetamask() {
     //check metamask is installed
     if (window.ethereum) {
@@ -179,11 +192,15 @@ function App() {
         <Header id="header">
           <Navbar>
             <Link to={'/'}>
-              {/* <OpenseaSvg /> */}
-              <MainIconWrap>
-                <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
-
-              </MainIconWrap>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <MainIconWrap>
+                  <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
+                </MainIconWrap>
+                <div style={{ fontSize: '21px', fontWeight: '900' }}>
+                  NFT Sea
+                </div>
+                <div style={{ height: '30px', borderRight: '1.4px solid #12121214', paddingLeft: '10px' }} />
+              </div>
             </Link>
             <Link to={'/market-place/nft'}>
               <Nav>Marketplace</Nav>
@@ -330,7 +347,7 @@ const Navbar = styled.div`
 `;
 
 const Nav = styled.div`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 

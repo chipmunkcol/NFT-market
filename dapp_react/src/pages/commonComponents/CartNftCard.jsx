@@ -46,7 +46,7 @@ const CartNftCard = ({ nft, propsFunction }) => {
           </ImgWrap>
           <ContentWrap>
             <div>상품명: {nftName}</div>
-            <div>가격: {nftPrice}</div>
+            <div>가격: {nftPrice} ETH</div>
           </ContentWrap>
           <span onClick={() => removeCartHandler(nft)}>삭제</span>
         </Item>

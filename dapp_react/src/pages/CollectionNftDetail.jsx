@@ -2,13 +2,15 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler, toastSwal } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart.png";
+import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
 import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
 import Swal from "sweetalert2";
+import { toastSwal } from "../hooks/swal";
+import useAsyncTask from "../hooks/useAsyncTask";
 
 function CollectionNftDetail() {
   const params = useParams();
@@ -16,6 +18,7 @@ function CollectionNftDetail() {
   const nftIdByParam = Number(nftId);
 
   // const tokenData = useGetTokenData(ipfsHash);
+  const { handleWithLoading } = useAsyncTask();
   const [tokenData, setTokenData] = useState({});
   // const { name, description, image, attributes } = tokenData;
   const { account } = useContext(GlobalContext);
@@ -72,23 +75,42 @@ function CollectionNftDetail() {
           const revealedTokenUrl = `${ipfsHash}/${metadata.fileName}`;
           tokenData = await getIpfsTokenData(revealedTokenUrl);
         } else {
-
-          const revealedTokenUrl = `${ipfsHash}/${metadata.fileName}`;
-          tokenData = await getIpfsTokenData(revealedTokenUrl);
-          // tokenData = await getIpfsTokenData(ipfsHash);
+          tokenData = await getIpfsTokenData(ipfsHash);
         }
         setTokenData(tokenData);
       } catch (error) {
         console.error('Error fetching IPFS data:', error);
       }
     }
-    metadata.nftPrice && fetchIpfsData();
+
+    fetchIpfsData();
   }, [metadata]);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
-    const result = await purchaseNftHandler(nftId, tokenUrl, nftPrice, account);
+    if (metadata.owner === account) {
+      toastSwal('자신의 NFT는 구매할 수 없습니다.', 'warning');
+      return;
+    }
+
+    if (metadata.nftPrice === 0) {
+      toastSwal('판매등록 되지 않은 NFT입니다', 'warning');
+      return;
+    }
+
+    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, account), 'NFT 구매중입니다');
+    if (!result) return;
+
+    toastSwal('NFT 구매에 성공했습니다.');
+  }
+
+  const addCartController = async (metadata, account) => {
+    if (metadata.owner === account) {
+      toastSwal('자신의 NFT는 장바구니에 담을 수 없습니다.', 'warning');
+      return;
+    }
+    const result = await handleWithLoading(() => addCartHandler(metadata, account), '장바구니에 추가중입니다');
     if (result) {
-      toastSwal('NFT 구매에 성공했습니다.');
+      toastSwal('장바구니에 추가되었습니다.');
     }
   }
 
@@ -166,7 +188,7 @@ function CollectionNftDetail() {
                   <div>
                     <ButtonWrap>
                       <PurchaseBtn onClick={() => purchaseController(nftIdByParam, ipfsHash, metadata.nftPrice, account)}>지금 구매하기</PurchaseBtn>
-                      <CartBtn onClick={() => addCartHandler(metadata, account)} >
+                      <CartBtn onClick={() => addCartController(metadata, account)} >
                         <CartImg>
                           <img src={iconCart} alt="장바구니" />
                         </CartImg>

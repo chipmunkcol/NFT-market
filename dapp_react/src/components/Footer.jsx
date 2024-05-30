@@ -244,5 +244,5 @@ const Container = styled.div`
     background-color: rgb(24, 104, 183);
     position: absolute;
     /* bottom: 0; */
-    z-index: 999;
+    z-index: 998;
 `;

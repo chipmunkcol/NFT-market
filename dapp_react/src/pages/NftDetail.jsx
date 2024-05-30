@@ -2,16 +2,20 @@ import { useParams, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { P_updateMetadataPurchase, addCartHandler, getCurrentYMD, getTargetNftToIpfsData, purchaseNftHandler, toastSwal } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart.png";
+import { P_updateMetadataPurchase, addCartHandler, getCurrentYMD, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
 import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
 import Swal from "sweetalert2";
+import { toastSwal } from "../hooks/swal";
+import useAsyncTask from "../hooks/useAsyncTask";
+import { SaleNftContract, web3 } from "../../contracts";
 
 function NftDetail() {
   const params = useParams();
+  const { handleWithLoading } = useAsyncTask();
   const { ipfsHash, nftId } = params;
   const tokenData = useGetTokenData(ipfsHash);
   const { name, description, image, attributes } = tokenData;
@@ -35,7 +39,6 @@ function NftDetail() {
       }
     });
     return newPriceHistory;
-
   }
 
   useEffect(() => {
@@ -55,9 +58,48 @@ function NftDetail() {
   }, []);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
-    const result = await purchaseNftHandler(nftId, tokenUrl, nftPrice, account);
+    if (metadata.owner === account) {
+      toastSwal('자신의 NFT는 구매할 수 없습니다.', 'warning');
+      return;
+    }
+
+    if (nftPrice === 0) {
+      toastSwal('판매등록 되지 않은 NFT입니다', 'warning');
+      return;
+    }
+
+    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, account), 'NFT 구매중입니다');
+    if (!result) return;
+
+    toastSwal('NFT 구매에 성공했습니다.');
+  }
+
+  async function purchaseNftHandler(nftId, tokenUrl, nftPrice, account) {
+    try {
+      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
+      if (!updateResult.ok) return;
+
+      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
+      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      // console.log('res: ', res);
+      if (res.status) {
+        return true;
+      }
+    } catch (err) {
+      console.log('err: ', err);
+      return false;
+    }
+  }
+
+  const addCartController = async (metadata, account) => {
+    if (metadata.owner === account) {
+      toastSwal('자신의 NFT는 장바구니에 담을 수 없습니다.', 'warning');
+      return;
+    }
+    const result = await handleWithLoading(() => addCartHandler(metadata, account), '장바구니에 추가중입니다');
     if (result) {
-      toastSwal('NFT 구매에 성공했습니다.');
+      toastSwal('장바구니에 추가되었습니다.');
     }
   }
 
@@ -135,7 +177,7 @@ function NftDetail() {
                   <div>
                     <ButtonWrap>
                       <PurchaseBtn onClick={() => purchaseController(nftId, ipfsHash, metadata.nftPrice, account)}>지금 구매하기</PurchaseBtn>
-                      <CartBtn onClick={() => addCartHandler(metadata, account)} >
+                      <CartBtn onClick={() => addCartController(metadata, account)} >
                         <CartImg>
                           <img src={iconCart} alt="장바구니" />
                         </CartImg>
@@ -170,7 +212,7 @@ function NftDetail() {
                   Description
                 </h3>
                 <p style={{ height: '100px', overflow: 'auto' }}>
-                  <div style={{ color: '#8a939b' }}>By <span>{name}Deployer</span></div>
+                  <div style={{ color: '#8a939b' }}>By <span>{name} Deployer</span></div>
                   <div>{description}</div>
                 </p>
               </DescriptionBox>

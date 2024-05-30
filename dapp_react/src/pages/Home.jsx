@@ -87,6 +87,7 @@ function Home() {
 
   const [isLoadingTopCollectorNfts, setIsLoadingTopCollectorNfts] = useState(false);
   const findTopCollectorNfts = nftList => {
+    if (nftList.length === 0) return [];
     const priceHistory = JSON.parse(nftList[0].priceHistory);
     let soldPrice = priceHistory[0]?.price;
     let maxPriceSoldNft = nftList[0];
@@ -147,7 +148,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.map(nft => (
-                    <MoveBgNftCard key={`home-bg-left-1-${nft}`} nft={nft} />
+                    <MoveBgNftCard key={`home-bg-left-1-${nft.image}`} nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -156,7 +157,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.reverse().map(nft => (
-                    <MoveBgNftCard key={`home-bg-left-2-${nft}`} nft={nft} direction={'up'} />
+                    <MoveBgNftCard key={`home-bg-left-2-${nft.image}`} nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>
@@ -185,7 +186,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.map(nft => (
-                    <MoveBgNftCard key={`home-bg-right-1-${nft}`} nft={nft} />
+                    <MoveBgNftCard key={`home-bg-right-1-${nft.image}`} nft={nft} />
                   ))
                 }
               </TestMovingBg>
@@ -194,7 +195,7 @@ function Home() {
               <TestMovingBg>
                 {
                   dummyNfts.reverse().map(nft => (
-                    <MoveBgNftCard key={`home-bg-right-2-${nft}`} nft={nft} direction={'up'} />
+                    <MoveBgNftCard key={`home-bg-right-2-${nft.image}`} nft={nft} direction={'up'} />
                   ))
                 }
               </TestMovingBg>

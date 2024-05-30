@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import Slider from "./CollectionComponents/Slider";
 import { Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
-import { toastSwal } from "../../hooks/common";
 
 function Collection() {
   const { account, collection, setCollection, resetCollection } = useContext(GlobalContext);
@@ -19,7 +18,8 @@ function Collection() {
   const onchangeHandler = (e) => {
     const fileList = Object.values(e.target.files)
     if (fileList.length !== 10) {
-      Swal.fire('현재 버전에서는 파일 업로드 시 정확히 10개의 파일만 업로드 가능합니다. 감사합니다👩‍💻');
+      Swal.fire('업로드 에러', '현재 버전에서는 파일 업로드 시 정확히 10개의 파일만 업로드 가능합니다. 감사합니다👩‍💻');
+      setFiles(null);
       return;
     }
     setFiles(fileList);

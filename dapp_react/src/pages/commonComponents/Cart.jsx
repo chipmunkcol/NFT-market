@@ -3,12 +3,13 @@ import styled from "styled-components";
 import { S_Button } from "../../styles/styledComponent";
 import { useEffect } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData, toastSwal } from "../../hooks/common";
+import { P_updateMetadataPurchase, P_updateMetadataRemoveAllCart, P_updateMetadataRemoveCart, getRemovedNftListByPurchase, getTargetNftToIpfsData } from "../../hooks/common";
 import CartNftCard from "./CartNftCard";
 import { SaleNftContract, web3 } from "../../../contracts";
 import Spinner from "../../components/Spinner";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Swal from "sweetalert2";
+import { toastSwal } from "../../hooks/swal";
 
 function Cart({ cartModalClose }) {
   const { account } = useContext(GlobalContext);
@@ -95,7 +96,7 @@ function Cart({ cartModalClose }) {
 
     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
 
-    const updateMetadataResult = await handleWithLoading(P_updateMetadataRemoveAllCart(paredCartIpfsHash), '장바구니에서 삭제 중입니다');
+    const updateMetadataResult = await handleWithLoading(() => P_updateMetadataRemoveAllCart(paredCartIpfsHash), '장바구니에서 삭제 중입니다');
     if (updateMetadataResult.ok) {
       R_removeAllCartHandler();
     }

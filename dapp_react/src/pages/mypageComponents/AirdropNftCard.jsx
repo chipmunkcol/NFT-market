@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import styled from "styled-components";
 import { MintContract } from "../../../contracts";
-import { P_removeMetadataAirdrop, P_updateMetadataAirdrop, toastSwal } from "../../hooks/common";
+import { P_removeMetadataAirdrop, P_updateMetadataAirdrop } from "../../hooks/common";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Swal from "sweetalert2";
+import { toastSwal } from "../../hooks/swal";
 
 export default function AirdropNftCard({ collection, account }) {
   const { startAt, tempTokenUrl, ids } = collection;
@@ -20,7 +21,7 @@ export default function AirdropNftCard({ collection, account }) {
     const timer = setInterval(() => {
       const currentTime = Math.floor(Date.now() / 1000);
       const _remainedTimeSec = parseInt(startAt) - currentTime;
-      setRemainedTimeSec(setRemainedTimeSec);
+      setRemainedTimeSec(_remainedTimeSec);
 
       // 남은 시간을 일, 시, 분, 초로 변환
       const days = Math.floor(_remainedTimeSec / (3600 * 24));
@@ -38,7 +39,7 @@ export default function AirdropNftCard({ collection, account }) {
 
   // air drop Controller
   const airdropController = async () => {
-    const result = await handleWithLoading(airdropHandler, '에어드랍 중입니다');
+    const result = await handleWithLoading(() => airdropHandler(), '에어드랍 중입니다');
     if (result) {
       toastSwal('에어드랍 성공');
       window.location.reload();
@@ -78,10 +79,10 @@ export default function AirdropNftCard({ collection, account }) {
         <img src={image} alt="collection" style={{ width: '100px', height: '100px', objectFit: 'cover' }} />
       </div>
       <div>
-        <h3 style={{ marginBottom: '5px' }}>collection name {name}</h3>
-        <p style={{ marginBottom: '15px' }}>collection description {description}</p>
+        <h3 style={{ marginBottom: '5px' }}>{name}</h3>
+        <p style={{ marginBottom: '15px' }}>{description}</p>
         {remainedTimeSec > 1 ?
-          <div>남은시간: {remainedTimeStr}</div> :
+          <RemainedTime>Air drop: {remainedTimeStr}</RemainedTime> :
           <AirdropBtn onClick={airdropController}>
             <button>Air drop</button>
           </AirdropBtn>
@@ -90,6 +91,10 @@ export default function AirdropNftCard({ collection, account }) {
     </li>
   )
 }
+
+const RemainedTime = styled.div`
+  color: #2081e2;
+`;
 
 const AirdropBtn = styled.div`
   button {
