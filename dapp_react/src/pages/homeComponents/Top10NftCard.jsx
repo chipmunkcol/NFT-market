@@ -1,9 +1,17 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
+import { useNavigate } from "react-router-dom";
 
 const Top10NftCard = ({ nft, index }) => {
-  const { name, image } = useGetTokenData(nft.tokenUrl);
+  const { nftId, tokenUrl } = nft;
+  const { name, image } = useGetTokenData(tokenUrl);
   const { nftPrice } = nft;
+  const navigate = useNavigate();
+
+  const navigateDetailPage = () => {
+    navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+  }
+
 
   return (
     <>{
@@ -15,7 +23,7 @@ const Top10NftCard = ({ nft, index }) => {
             <ItemPrice>{nftPrice} ETH ~</ItemPrice>
           </ItemInfo>
         </ItemContent>
-        <ItemImg>
+        <ItemImg onClick={navigateDetailPage}>
           <img src={image} alt="test" />
         </ItemImg>
       </Item>
@@ -48,6 +56,7 @@ const ItemImg = styled.div`
     object-fit: cover;
     border-radius: 5px;
   }
+  cursor: pointer;
 `;
 const ItemInfo = styled.div`
   display: flex;

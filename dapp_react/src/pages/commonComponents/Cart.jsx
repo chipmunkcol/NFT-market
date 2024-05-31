@@ -117,8 +117,9 @@ function Cart({ cartModalClose }) {
       const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
-        // 로딩 스피너 걸어주자
         return true;
+      } else {
+        return false;
       }
     } catch (err) {
       console.log('err: ', err);
@@ -126,13 +127,20 @@ function Cart({ cartModalClose }) {
     }
   }
 
-  const purchaseNftController = () => {
-    const promises = checkedList.map(nft => purchaseNftHandler(nft));
-
-    Promise.all(promises).then(() => {
-      toastSwal('NFT 구매가 완료되었습니다.');
-      R_removeAllCartHandler();
-    });
+  const purchaseNftController = async () => {
+    try {
+      const promises = checkedList.map(nft => purchaseNftHandler(nft));
+      const results = await Promise.all(promises);
+      if (results.every(result => result)) {
+        toastSwal('NFT 구매가 완료되었습니다.');
+        R_removeAllCartHandler();
+      } else {
+        toastSwal('일부 NFT 구매에 실패했습니다. 다시 시도해 주세요.');
+      }
+    } catch (error) {
+      console.log('Error in purchaseNftController:', error);
+      toastSwal('NFT 구매 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    }
   }
 
   return (
@@ -177,8 +185,8 @@ function Cart({ cartModalClose }) {
             !isLoading && nftsInCart.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
-        <CartBottom>
-          <BtnWrap onClick={purchaseNftController}>
+        <CartBottom onClick={purchaseNftController}>
+          <BtnWrap>
             <button>구매하기</button>
           </BtnWrap>
         </CartBottom>

@@ -91,23 +91,27 @@ const Nft = () => {
     };
 
     fetchData();
-  }, [offset, search]);
+  }, [search]);
+  // }, [offset, search]);
   // }, [onsaleNftsInContract, query, offset, onsaleTrigger, purchaseTrigger]);
 
   // 무한스크롤 구현
   const [isLoading, setIsLoading] = useState(false);
   const observerRef = useRef(null);
 
-  const infiniteScrollHandler = () => {
+  const infiniteScrollHandler = async () => {
     setIsLoading(true);
-    setOffset({ page: offsetRef.current + 1 });
+    // setOffset({ page: offsetRef.current + 1 });
     offsetRef.current = offsetRef.current + 1;
+    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+    await fetchNftList(url);
+    
     setIsLoading(false);
   }
 
   useEffect(() => {
     const observer = new IntersectionObserver((entryies) => {
-      if (entryies[0].isIntersecting && !isLoading && allNftCount.current - 10 > offsetRef.current * 10 && allNftCount.current > 0) {
+      if (entryies[0].isIntersecting && !isLoading && allNftCount.current - 10 > offsetRef.current * 10) {
         infiniteScrollHandler();
       }
     }, { threshold: 1 });

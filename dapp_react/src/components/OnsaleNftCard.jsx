@@ -29,7 +29,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
   const { handleWithLoading } = useAsyncTask();
   const isMyNft = account === owner?.toLowerCase();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCart, setIsLoadingCart] = useState(false);
 
   const purchaseController = async () => {
     const res = await handleWithLoading(() => purchaseNftHandler(nftId), 'NFT 구매 중입니다');
@@ -66,7 +66,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
   // 장바구니에 담기
   const addCartHandler = async nft => {
-    setIsLoading(true);
+    setIsLoadingCart(true);
 
     try {
       let cartIpfsHash = localStorage.getItem(`cart-${account}`);
@@ -81,7 +81,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
         toastSwal('장바구니에 담겼습니다.');
       }
     } finally {
-      setIsLoading(false);
+      setIsLoadingCart(false);
     }
   };
 
@@ -152,7 +152,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
             <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
             <CartBtn onClick={() => addCartHandler(nft)} >
               <CartImg>
-                {isLoading ? <Spinner _custom={{
+                {isLoadingCart ? <Spinner _custom={{
                   color: '#3498db',
                   size: '16px',
                   height: '100%'

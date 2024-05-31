@@ -115,8 +115,11 @@ function Home() {
   useEffect(() => {
     async function fetchCollectorData() {
       setIsLoadingTopCollectorNfts(true);
-      await getCollectionData();
-      setIsLoadingTopCollectorNfts(false);
+      try {
+        await getCollectionData();
+      } finally {
+        setIsLoadingTopCollectorNfts(false);
+      }
     }
     fetchCollectorData();
   }, []);
@@ -166,10 +169,11 @@ function Home() {
                 </FilterWrap>
                 <ItemWrap>
                   {/* <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> */}
-
-                  {isLoading ? <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> : top10Nfts.map((nft, index) => (
-                    <Top10NftCard nft={nft} index={index} />
-                  ))}
+                  {isLoading && <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} />}
+                  {!isLoading &&
+                    top10Nfts.map((nft, index) => (
+                      <Top10NftCard key={`top10Nfts-${nft.nftId}`} nft={nft} index={index} />
+                    ))}
                 </ItemWrap>
               </RankingBox>
             </RankingArea>
@@ -206,7 +210,8 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoadingTopCollectorNfts ? <Spinner /> :
+                  {isLoadingTopCollectorNfts && <Spinner />}
+                  {!isLoadingTopCollectorNfts &&
                     topCollectorNfts.slice(topCollectorNftsIndex, topCollectorNftsIndex + 3).map(nft => (
                       <TopCollectorNftCard nft={nft} />
                     ))

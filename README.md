@@ -52,6 +52,19 @@
      react에서 addEventListener 사용할 일이 많이 없어서(나만없나..?) 할때마다 헷갈리네
 
 ```
+  const handleScroll = e => {
+    const scrollPosition = e.currentTarget.scrollY;
+
+    if (scrollPosition === 0) {
+      changeheaderCss('#f0f0f1', '#161618');
+      changePathOfProfileAndCart(iconProfileWh, iconCartWh);
+    } else if (scrollPosition !== 0 && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
+      changeheaderCss('black', 'white');
+      changePathOfProfileAndCart(iconProfile, iconCart);
+    }
+    setLastScrollTop(scrollPosition);
+  };
+
   useEffect(() => {
     if (location.pathname === '/') {
       window.addEventListener('scroll', handleScroll);
@@ -61,6 +74,33 @@
     };
   }, [lastScrollTop, location.pathname]);
 ```
+
+2. ScrollRestoration
+   - page에 따라 유저가 맨 위의 영역을 보게하고 싶어서 평소처럼 router 공식문서에서 쓰라는 컴포넌트 만들어서 Root 컴포넌트 위에 살포시 갔다놨다.
+     전에는 잘 됐었는데 뭔가 컴포넌트가 꼬여서 그런지 특정 이벤트가 발생할때마다 실행돼서 시도떄도 없이 스크롤이
+     꼭대기로 가버리는 현상이 발생..
+
+```
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (pathname === '/') return;
+    window.scrollTo(0, 0);
+  }), [pathname];
+
+
+  return null;
+}
+
+export default ScrollToTop;
+```
+
+router 버전 바뀌면서 이거 사용하란다 <ScrollRestoration />
+
+특정 path에만 작동하게 할 수 있고 아주 편리함
+(언제 나왔지.....? 세상이 너무 빨리 변한다!)
+📙공식문서 읽기[https://reactrouter.com/en/main/components/scroll-restoration]
 
 0. URI 사용시 주의할점
 
