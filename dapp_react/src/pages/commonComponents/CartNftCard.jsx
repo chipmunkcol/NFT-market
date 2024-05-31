@@ -1,16 +1,20 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { P_updateMetadataRemoveCart } from "../../hooks/common";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import useAsyncTask from "../../hooks/useAsyncTask";
+import Spinner from "../../components/Spinner";
 
 const CartNftCard = ({ nft, propsFunction }) => {
   const { account } = useContext(GlobalContext);
-  const { nftId, nftName, tokenUrl, nftPrice, owner } = nft;
+  const { nftId, nftName, nftPrice, owner } = nft;
+  const tokenUrl = nft?.isCollection ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+
   const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);
-  const { handleWithLoading } = useAsyncTask();
+  // const { handleWithLoading } = useAsyncTask();
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const checkToggleHandler = (e) => {
@@ -26,11 +30,15 @@ const CartNftCard = ({ nft, propsFunction }) => {
     let cartIpfsHash = localStorage.getItem(`cart-${account}`);
     if (!cartIpfsHash) return;
 
-    const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-    const updateMetadataResult = await handleWithLoading(() => P_updateMetadataRemoveCart(paredCartIpfsHash, nft.nftId), '장바구니에서 삭제 중입니다');
-
-    if (updateMetadataResult.ok) {
-      R_removeCartHandler(nft);
+    setIsLoading(true);
+    try {
+      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+      const updateMetadataResult = await P_updateMetadataRemoveCart(paredCartIpfsHash, nftId);
+      if (updateMetadataResult.ok) {
+        R_removeCartHandler(nft);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -48,7 +56,16 @@ const CartNftCard = ({ nft, propsFunction }) => {
             <div>상품명: {nftName}</div>
             <div>가격: {nftPrice} ETH</div>
           </ContentWrap>
-          <span onClick={() => removeCartHandler(nft)}>삭제</span>
+          <div>
+            {
+              isLoading ? <Spinner _custom={{
+                color: '#3498db',
+                size: '16px',
+                height: '100%'
+              }} /> :
+                <span onClick={() => removeCartHandler(nft)}>삭제</span>
+            }
+          </div>
         </Item>
       }
     </>

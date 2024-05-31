@@ -53,7 +53,13 @@ const MarketPlace = () => {
   }, [grid]);
 
   const searchNfts = async () => {
-    navigate(`/market-place/nft?query=${searchRef.current}`);
+    if (searchRef.current === '' && isNftPath) {
+      navigate('/market-place/nft');
+    } else if (searchRef.current === '' && !isNftPath) {
+      navigate('/market-place/collection');
+    } else {
+      navigate(`/market-place/nft?query=${searchRef.current}`);
+    }
   };
 
   const onKeydownHandler = e => {
@@ -64,7 +70,6 @@ const MarketPlace = () => {
     if (e.target.nodeName !== 'BUTTON') return;
 
     const category = e.target.innerText;
-    // navigate(`/market-place/nft?category=${category}`);
     navigate(`?category=${category}`);
   };
 
@@ -72,7 +77,6 @@ const MarketPlace = () => {
     if (e.target.nodeName !== 'BUTTON') return;
 
     const category = e.target.innerText;
-    // const category = e.target.innerText.split(' ').join('');
     navigate(`/market-place/collection?query=${category}`);
   };
 
@@ -130,41 +134,13 @@ const MarketPlace = () => {
                 <div>
                   <ul onClick={categoryHandler}>
                     <h3>카테고리</h3>
-                    <li>
-                      <NavButton>
-                        예술
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        유명인
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        게임
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        스포츠
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        음악
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        가상자산
-                      </NavButton>
-                    </li>
-                    <li>
-                      <NavButton>
-                        플로필 사진
-                      </NavButton>
-                    </li>
+                    {['예술', '유명인', '게임', '음악', '가상자산', '프로필 사진'].map(category => (
+                      <li key={`category-${category}`}>
+                        <NavButton>
+                          {category}
+                        </NavButton>
+                      </li>
+                    ))}
                   </ul>
                 </div>
                 <div>

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 // import bgMain from './assets/images/bg-main.png';
@@ -21,6 +21,7 @@ import iconCart from "./assets/images/icon-cart.png";
 import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { toastSwal } from "./hooks/swal";
+import ScrollToTop from "./components/ScrollToTop";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
 
 // import Slider from "./components/Slider";
@@ -62,18 +63,9 @@ function App() {
     if (scrollPosition === 0) {
       changeheaderCss('#f0f0f1', '#161618');
       changePathOfProfileAndCart(iconProfileWh, iconCartWh);
-      // $header.style.color = '#f0f0f1';
-      // $header.style.backgroundColor = '#161618';
-      // $profile.src = iconProfileWh;
-      // $cart.src = iconCartWh;
     } else if (scrollPosition !== 0 && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
       changeheaderCss('black', 'white');
       changePathOfProfileAndCart(iconProfile, iconCart);
-      // $header.style.color = 'black';
-      // $header.style.backgroundColor = 'white';
-      // $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
-      // $profile.src = iconProfile;
-      // $cart.src = iconCart;
     }
     setLastScrollTop(scrollPosition);
   };
@@ -85,25 +77,23 @@ function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollTop, location.pathname]);
+  }, [lastScrollTop, location.pathname, account]);
 
   useEffect(() => {
     if (location.pathname === '/') {
       changeheaderCss('#f0f0f1', '#161618');
       changePathOfProfileAndCart(iconProfileWh, iconCartWh)
-      // $header.style.color = '#f0f0f1';
-      // $header.style.backgroundColor = '#161618';
-      // $profile.src = iconProfileWh;
-      // $cart.src = iconCartWh;
-    } else {
+    } else if (location.pathname !== '/' && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
       changeheaderCss('black', 'white');
       changePathOfProfileAndCart(iconProfile, iconCart);
-      // $header.style.color = 'black';
-      // $header.style.backgroundColor = 'white';
-      // $profile.src = iconProfile;
-      // $cart.src = iconCart;
     }
   }, [location.pathname, account]);
+
+  useEffect(() => {
+    if (location.pathname === '/') {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname])
 
 
 
@@ -187,6 +177,8 @@ function App() {
 
   return (
     <>
+      {/* <ScrollToTop /> */}
+      <ScrollRestoration />
       <MainSpinner />
       <Container>
         <Header id="header">

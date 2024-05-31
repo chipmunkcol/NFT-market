@@ -94,11 +94,15 @@ function Cart({ cartModalClose }) {
     let cartIpfsHash = localStorage.getItem(`cart-${account}`);
     if (!cartIpfsHash) return;
 
-    const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-
-    const updateMetadataResult = await handleWithLoading(() => P_updateMetadataRemoveAllCart(paredCartIpfsHash), '장바구니에서 삭제 중입니다');
-    if (updateMetadataResult.ok) {
-      R_removeAllCartHandler();
+    setIsLoading(true);
+    try {
+      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+      const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
+      if (updateMetadataResult.ok) {
+        R_removeAllCartHandler();
+      }
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -114,8 +118,8 @@ function Cart({ cartModalClose }) {
       // console.log('res: ', res);
       if (res.status) {
         // 로딩 스피너 걸어주자
+        return true;
       }
-      return true;
     } catch (err) {
       console.log('err: ', err);
       return false;
@@ -127,6 +131,7 @@ function Cart({ cartModalClose }) {
 
     Promise.all(promises).then(() => {
       toastSwal('NFT 구매가 완료되었습니다.');
+      R_removeAllCartHandler();
     });
   }
 
@@ -267,6 +272,7 @@ const Container = styled.div`
     border-radius: 10px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
     background-color: white;
+    color: #121212;
     justify-content: center;
     overflow: hidden;
 `;

@@ -138,7 +138,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       <Content>
         <Styled.Name>{nftName}</Styled.Name>
         <OnsalePriceWrap>
-          Price : {nftPrice} ETH ($
+          {nftPrice} ETH ($
           {(Number(nftPrice) * 2928).toFixed(2)}
           )
         </OnsalePriceWrap>

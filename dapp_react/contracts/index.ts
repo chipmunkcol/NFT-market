@@ -435,6 +435,11 @@ const MintABI = [
           },
           {
             internalType: "string",
+            name: "fileName",
+            type: "string",
+          },
+          {
+            internalType: "string",
             name: "tokenUrl",
             type: "string",
           },
@@ -761,6 +766,11 @@ const MintABI = [
       },
       {
         internalType: "string",
+        name: "fileName",
+        type: "string",
+      },
+      {
+        internalType: "string",
         name: "tokenUrl",
         type: "string",
       },
@@ -844,6 +854,11 @@ const MintABI = [
         internalType: "address",
         name: "_address",
         type: "address",
+      },
+      {
+        internalType: "string[]",
+        name: "_nftNameList",
+        type: "string[]",
       },
       {
         internalType: "string[]",
