@@ -9,7 +9,7 @@ import Spinner from "../../components/Spinner";
 const CartNftCard = ({ nft, propsFunction }) => {
   const { account } = useContext(GlobalContext);
   const { nftId, nftName, nftPrice, owner } = nft;
-  const tokenUrl = nft?.isCollection ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+  const tokenUrl = nft?.isCollection === 'true' ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
 
   const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);

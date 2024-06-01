@@ -221,11 +221,11 @@ function C_step2() {
     <RightPart>
       <div style={{ marginBottom: '20px', }}>NFT 총 수량 {files?.length}개</div>
       <InputLabel>Collection Name</InputLabel>
-      <InputText type="text" onChange={onchangeNameData} />
+      <InputText type="text" onChange={onchangeNameData} value={collection.name} />
       <InputLabel>NFT당 가격 (단위: ETH *일괄 적용됩니다)</InputLabel>
-      <InputText type="number" onChange={onChangePerPrice} placeholder="ex) 0.1" />
+      <InputText type="number" onChange={onChangePerPrice} placeholder="ex) 0.1" value={collection.perPrice} />
       <InputLabel>Air drop 시작 날짜 및 시간</InputLabel>
-      <InputText type="date" onChange={onChangeStartAtData} />
+      <InputText type="date" onChange={onChangeStartAtData} value={collection.startAt} />
       <div>
         <h2 style={{ marginBottom: '10px' }}>사전 공개</h2>
         <div style={{ display: 'flex' }}>
@@ -239,6 +239,7 @@ function C_step2() {
               style={{ width: '80%', height: '100px' }}
               placeholder="Bycl monkey is Comming soon!"
               onChange={onchangePreReleaseDesc}
+              value={collection.preReleaseJsonData.description}
             />
 
           </div>

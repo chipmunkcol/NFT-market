@@ -57,8 +57,10 @@ const MarketPlace = () => {
       navigate('/market-place/nft');
     } else if (searchRef.current === '' && !isNftPath) {
       navigate('/market-place/collection');
-    } else {
+    } else if (isNftPath) {
       navigate(`/market-place/nft?query=${searchRef.current}`);
+    } else {
+      navigate(`/market-place/collection?query=${searchRef.current}`);
     }
   };
 

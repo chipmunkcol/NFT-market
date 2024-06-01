@@ -125,7 +125,7 @@ contract MyNft is ERC721Enumerable {
       uint nftId = tokenOfOwnerByIndex(_nftOwner, i);
       string memory nftName = tokenUrls[nftId].tokenName;
       string memory nftTokenUrl = getTokenUrl(nftId);
-      string memory fileName = tokenUrls[nftId].tokenUrl;
+      string memory fileName = tokenUrls[nftId].fileName;
       uint nftPrice = saleNftContract.getNftPrice(nftId);
       string memory collectionIpfs = tokenUrls[nftId].tempTokenUrl;
 

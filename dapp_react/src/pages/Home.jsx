@@ -56,6 +56,7 @@ function Home() {
   const findNftsSoldExpensively = nftList => {
     const expensiveNfts = [];
     for (let i = 0; i < nftList.length; i++) {
+      if (!nftList[i].priceHistory) continue;
       const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
       const latestSoldPrice = targetNftPriceHistory[0].price;
       if (latestSoldPrice > 0.19) { // priceHistory
@@ -89,7 +90,7 @@ function Home() {
 
 
   const findTopCollectorNfts = ipfsDatas => {
-
+    if (ipfsDatas.length === 0) return [];
     const collections = ipfsDatas.map(ipfsData => ipfsData.metadata.keyvalues);
     collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
     const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
@@ -125,11 +126,19 @@ function Home() {
   }, []);
 
   const refreshTopCollectorNfts = () => {
-    setTopCollectorNftsIndex(prev => prev + 3);
+    if ((topCollectorNftsIndex + 1) * 3 < topCollectorNfts.length - 1) {
+      setTopCollectorNftsIndex(prev => prev + 3);
+    } else {
+      setTopCollectorNftsIndex(0);
+    }
   }
 
   const refreshNftsSoldExpensively = () => {
-    setNftsSoldExpensivelyIndex(prev => prev + 1);
+    if (nftsSoldExpensivelyIndex < nftsSoldExpensively.length - 1) {
+      setNftsSoldExpensivelyIndex(prev => prev + 1);
+    } else {
+      setNftsSoldExpensivelyIndex(0);
+    }
   }
 
   return (
@@ -240,9 +249,12 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoading ? <Spinner /> : nftsSoldExpensively.slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => {
-                    <TopCollectorNftCard nft={nft} />
-                  })}
+                  {isLoading && <Spinner />}
+                  {!isLoading && nftsSoldExpensively.length > 0 &&
+                    nftsSoldExpensively.slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => (
+                      <TopCollectorNftCard nft={nft} />
+                    ))
+                  }
                 </ul>
                 <ButtonArea>
                   <ButtonBox onClick={refreshNftsSoldExpensively}>

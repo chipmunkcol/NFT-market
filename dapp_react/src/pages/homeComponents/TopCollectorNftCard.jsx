@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const TopCollectorNftCard = ({ nft }) => {
 
   const navigate = useNavigate();
-  const tokenUrl = nft?.isCollection ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+  const tokenUrl = nft?.isCollection === 'true' ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
   // const tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
   const tokenData = useGetTokenData(tokenUrl);
   const { nftPrice, nftId } = nft;
@@ -14,7 +14,7 @@ const TopCollectorNftCard = ({ nft }) => {
 
 
   const navigateDetailPage = () => {
-    if (nft?.isCollection) {
+    if (nft?.isCollection === 'true') {
       navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
     } else {
       navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
@@ -22,7 +22,7 @@ const TopCollectorNftCard = ({ nft }) => {
   }
 
   return (
-    <>{
+    <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
           <img src={tokenData?.image} />
@@ -32,7 +32,7 @@ const TopCollectorNftCard = ({ nft }) => {
           <p>{soldPrice ? soldPrice : nftPrice} ETH</p>
         </TopContent>
       </TopItemBox>
-    }</>
+    </>
   )
 }
 

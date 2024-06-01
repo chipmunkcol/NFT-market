@@ -21,10 +21,6 @@ const Nft = () => {
   const offsetRef = useRef(0);
   console.log('offset: ', offsetRef.current);
 
-  // const encodedOffset = encodeURIComponent(
-  //   offsetRef.current * 10
-  // );
-
   const encodedSearchQuery = encodeURIComponent(
     query
   );
@@ -85,9 +81,12 @@ const Nft = () => {
       const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
       
       const currentUrl = query ? queryUrl : category ? categoryUrl : url;
-      await fetchNftList(currentUrl);
+      try {
+        await fetchNftList(currentUrl);
+      } finally {
+        setIsLoadingApi(false);
+      }
 
-      setIsLoadingApi(false);
     };
 
     fetchData();
@@ -104,9 +103,11 @@ const Nft = () => {
     // setOffset({ page: offsetRef.current + 1 });
     offsetRef.current = offsetRef.current + 1;
     const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-    await fetchNftList(url);
-    
-    setIsLoading(false);
+    try {
+      await fetchNftList(url);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
