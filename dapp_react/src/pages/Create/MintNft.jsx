@@ -1,4 +1,4 @@
-import { MintContract } from "../../../contracts/index";
+import { MintABI, MintAddress, MintContract, deafultAccount, web3 } from "../../../contracts/index";
 import styled from "styled-components";
 import { useCallback, useEffect, useRef } from "react";
 import { S_Button } from "../../styles/styledComponent";
@@ -11,6 +11,7 @@ import { useDropzone } from "react-dropzone";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import { useNavigate } from "react-router-dom";
 import { Confirm } from "../../hooks/swal";
+import { ethers } from "ethers";
 
 function MintNft() {
   const { account } = useContext(GlobalContext);
@@ -186,13 +187,66 @@ function MintNft() {
 
       const tokenUrl = await pinJsonToIPFS(imageIpfsHash, metaData);
       if (tokenUrl) {
-        const mintResult = await MintContract.methods
-          .userMintNft(jsonData.name, tokenUrl)
-          .send({ from: account });
-        if (mintResult.status) {
-          return true;
-        }
+        // const gasPrice = await web3.eth.getGasPrice();
+        const mintResult = await MintContract.methods.userMintNft(jsonData.name, tokenUrl).send({ from: account });
+        console.log('mintResult: ', mintResult);
+        // const tx = {
+        //   from: account,
+        //   to: MintAddress,
+        //   data: MintContract.methods.userMintNft(jsonData.name, tokenUrl).encodeABI(),
+        //   gas: 3000000000,
+        //   gasPrice,
+        // }
+        // const signPromise = await web3.eth.accounts.signTransaction(tx, deafultAccount[0].privateKey);
+        // console.log('signMintResult: ', signPromise);
+        // await web3.eth.sendSignedTransaction(signPromise.rawTransaction)
+        //   .on('receipt', (receipt) => {
+        //     console.log('receipt: ', receipt);
+        //   })
+        //   .on('error', (error) => {
+        //     console.log('error: ', error);
+        //   });
+        // signPromise.then((signedTx) => {
+        // });
+        // const mintResult = await MintContract.methods
+        //   .userMintNft(jsonData.name, tokenUrl)
+        //   .send({ from: deafultAccount[0].address })
+        //   .on("transactionHash", (hash) => {
+        //     console.log("transactionHash", hash);
+        //   })
+        //   .on('confirmation', (confirmationNumber, receipt) => {
+        //     console.log('confirmation', confirmationNumber, receipt);
+        //   });
+
+
+        // if (mintResult.status) {
+        //   return true;
+        // }
       }
+
+      // .on("transactionHash", (hash) => {
+      //   console.log("transactionHash", hash);
+      // })
+      // .on('confirmation', (confirmationNumber, receipt) => {
+      //   console.log('confirmation', confirmationNumber, receipt);
+      // }).on('error', (error, receipt) => {
+      //   console.log('error', error, receipt);
+      // });
+
+      //   await web3.eth.sendTransaction({
+      //     from: deafultAccount[0].address,
+      //     to: MintAddress,
+      //     data: MintContract.methods.userMintNft(jsonData.name, tokenUrl).encodeABI(),
+      //   }).on('transactionHash', function (hash) {
+      //     console.log('transactionHash', hash);
+      //   }).on('receipt', function (receipt) {
+      //     console.log('receipt', receipt);
+      //   }).on('confirmation', function (confirmationNumber, receipt) {
+      //     console.log('confirmation', confirmationNumber, receipt);
+      //   }).on('error', function (error, receipt) {
+      //     console.log('error', error, receipt);
+      //   });
+      // }
     } catch (error) {
       console.log(error);
       return false;

@@ -168,7 +168,7 @@ function Home() {
             <RankingArea>
               <RankingTitle>
                 <h2>NFT 랭킹</h2>
-                <h4>2024.04.23 13:15 기준</h4>
+                <h4>2024.05.31 12:00 기준</h4>
               </RankingTitle>
               <RankingBox>
                 <FilterWrap>
@@ -214,7 +214,7 @@ function Home() {
                 <TopPickImgWrap>
                   <img src={goodHand} alt="good-hand" />
                 </TopPickImgWrap>
-                <h2>TOP 컬렉터가 구매했어요</h2>
+                <h2>TOP 컬렉터의 NFT</h2>
                 <p>NFT에 진심인 그들의 선택은?</p>
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
@@ -252,7 +252,7 @@ function Home() {
                   {isLoading && <Spinner />}
                   {!isLoading && nftsSoldExpensively.length > 0 &&
                     nftsSoldExpensively.slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => (
-                      <TopCollectorNftCard nft={nft} />
+                      <TopCollectorNftCard key={`expensive-nft-${nft.nftId}`} nft={nft} />
                     ))
                   }
                 </ul>

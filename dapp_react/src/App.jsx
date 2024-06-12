@@ -22,6 +22,7 @@ import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { toastSwal } from "./hooks/swal";
 import ScrollToTop from "./components/ScrollToTop";
+import { MintAddress, MintContract } from "../contracts";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
 
 // import Slider from "./components/Slider";
@@ -32,6 +33,7 @@ import ScrollToTop from "./components/ScrollToTop";
 function App() {
 
   const { account, setAccount } = useContext(GlobalContext);
+  const [balance, setBalance] = useState(0);
   const location = useLocation();
   // console.log('location: ', location);
 
@@ -95,8 +97,6 @@ function App() {
     }
   }, [location.pathname])
 
-
-
   /**
    * connectMetamask
    */
@@ -112,9 +112,10 @@ function App() {
 
       //get the connected accounts
       const accounts = await web3.eth.getAccounts();
-
       //show the first connected account in the react page
       setAccount(accounts[0]);
+      const balance = await web3.eth.getBalance(accounts[0]);
+      setBalance(balance);
     } else {
       Swal.fire("Please download metamask");
     }
@@ -149,6 +150,21 @@ function App() {
     return () => {
       window.ethereum?.removeListener("accountsChanged", refreshAccount);
     };
+  }, [account]);
+
+  useEffect(() => {
+    async function fetchBalance() {
+      if (!account) return;
+      const web3 = new Web3(window.ethereum);
+      const balance = await web3.eth.getBalance(account);
+      const ethBalance = web3.utils.fromWei(balance, "ether");
+      setBalance(Number(ethBalance).toFixed(2));
+      const receipt = await MintContract.methods.balanceOf(account).call();
+      console.log('receipt: ', receipt);
+    }
+
+    fetchBalance();
+
   }, [account]);
 
 
@@ -205,8 +221,11 @@ function App() {
             <ButtonWrap>
               <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
             </ButtonWrap>) : (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-              <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', fontSize: '13px' }}>
+                <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
+                <div>ETH {balance}</div>
+              </div>
               <Link to={`/mypage/${account}`}>
                 <IconWrap>
                   <img id="profile" src={iconProfile} />
@@ -292,7 +311,7 @@ const Container = styled.div`
 `;
 
 const MyAccount = styled.div`
-  font-size: 11px;
+  /* font-size: 11px; */
   cursor: pointer;
 `;
 
