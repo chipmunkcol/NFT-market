@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import styled from "styled-components";
 import { MintContract } from "../../../contracts";
@@ -6,9 +6,12 @@ import { P_removeMetadataAirdrop, P_updateMetadataAirdrop } from "../../hooks/co
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Swal from "sweetalert2";
 import { toastSwal } from "../../hooks/swal";
+import { transactWithAirdrop } from "../../../contracts/interface";
+import { GlobalContext } from "../../context/GlobalContext";
 
 export default function AirdropNftCard({ collection, account }) {
   const { startAt, tempTokenUrl, ids } = collection;
+  const { signer } = useContext(GlobalContext);
   const tokenData = useGetTokenData(tempTokenUrl);
   const { handleWithLoading } = useAsyncTask();
   const { name, description, image } = tokenData;
@@ -47,7 +50,8 @@ export default function AirdropNftCard({ collection, account }) {
   }
   const airdropHandler = async () => {
     try {
-      const airdropResult = await MintContract.methods.airdrop(account, tempTokenUrl).send({ from: account });
+      // const airdropResult = await MintContract.methods.airdrop(account, tempTokenUrl).send({ from: account });
+      const airdropResult = await transactWithAirdrop(signer, tempTokenUrl);
       console.log('airdropResult: ', airdropResult);
       const collectionIpfs = await MintContract.methods.getTokenUrl(parseInt(ids[0])).call();
       const updateMetadataResult = await P_updateMetadataAirdrop(tempTokenUrl, collectionIpfs);

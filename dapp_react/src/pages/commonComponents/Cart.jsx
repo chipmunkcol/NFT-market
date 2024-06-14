@@ -10,9 +10,10 @@ import Spinner from "../../components/Spinner";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Swal from "sweetalert2";
 import { toastSwal } from "../../hooks/swal";
+import { transactWithPurchaseNft } from "../../../contracts/interface";
 
 function Cart({ cartModalClose }) {
-  const { account } = useContext(GlobalContext);
+  const { account, signer } = useContext(GlobalContext);
   const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -114,7 +115,8 @@ function Cart({ cartModalClose }) {
       if (!updateResult.ok) return;
 
       const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
       // console.log('res: ', res);
       if (res.status) {
         return true;

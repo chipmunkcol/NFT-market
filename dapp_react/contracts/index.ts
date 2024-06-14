@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { eth } from "web3";
-import { Web3 } from "web3";
+import { Contract, Web3 } from "web3";
 
 // import { ethers, parseEther } from "ethers";
 // import Contract from "web3-eth-contract";
 
 // export const web3 = new Web3("http://localhost:8545");
-export const web3 = new Web3(
-  "https://sepolia.infura.io/v3/19bc20e4234040378478e9fe60239cf1"
-);
+const infuraUrl =
+  "https://sepolia.infura.io/v3/19bc20e4234040378478e9fe60239cf1";
+// export const web3 = new Web3(infuraUrl);
+export const web3 = new Web3(new Web3.providers.HttpProvider(infuraUrl));
+
+// export const defaultAccount = web3.eth.accounts.wallet.add(
+//   `0x${import.meta.env.VITE_DEFAULT_ACCOUNT}`
+// );
 
 export const MintABI = [
   {
@@ -1071,27 +1076,17 @@ const SaleNftABI = [
 export const MintAddress = "0xdffc97476b07a9B51F576c3DEdb79483f718cbE8";
 export const SaleNftAddress = "0xf54c4c1C387f61D6f2C18EA4BcA2f4F2C1014546";
 
-export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
-export const SaleNftContract = new web3.eth.Contract(
-  SaleNftABI,
-  SaleNftAddress
-);
-
-// const provider = new ethers.JsonRpcProvider(
-//   "https://sepolia.infura.io/v3/19bc20e4234040378478e9fe60239cf1"
+// export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
+// export const SaleNftContract = new web3.eth.Contract(
+//   SaleNftABI,
+//   SaleNftAddress
 // );
-// const signer = await provider.getSigner();
-// console.log("signer: ", signer);
 
-// const tx = await signer.sendTransaction({
-//   to: "ethers.eth",
-//   value: parseEther("1.0"),
-// });
-// console.log("tx: ", tx);
-
-// // Often you may wish to wait until the transaction is mined
-// const receipt = await tx.wait();
-// console.log("receipt: ", receipt);
-
-// const contract = new Contract(MintABI, MintAddress, provider)
-// console.log('contract: ', contract);
+export const MintContract = new Contract(MintABI, MintAddress, {
+  from: "0x02d8681c0AAC372Df7790d7112510f6839c3A186",
+  provider: infuraUrl,
+});
+export const SaleNftContract = new Contract(SaleNftABI, SaleNftAddress, {
+  from: "0x02d8681c0AAC372Df7790d7112510f6839c3A186",
+  provider: infuraUrl,
+});

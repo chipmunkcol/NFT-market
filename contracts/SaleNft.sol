@@ -42,6 +42,16 @@ contract SaleNft {
     onsaleNftIds.push(_nftId);
   }
 
+  function setOnsaleNfts(uint[] memory _nftIds, uint _price) public {
+    require(_price > 0, "Price must be greater than 0");
+
+    for (uint i = 0; i < _nftIds.length; i++) {
+      uint nftId = _nftIds[i];
+      nftPrices[nftId] = _price;
+      onsaleNftIds.push(nftId);
+    }
+  }
+
   // function getApproved(uint256 tokenId) public view virtual returns (address) {
   //       _requireOwned(tokenId);
 
@@ -52,7 +62,7 @@ contract SaleNft {
     uint nftPrice = nftPrices[_nftId];
     address approvedNftAddress = mintContract.getApproved(_nftId);
 
-    require(nftOwner != msg.sender, "Caller is nft owner"); 
+    require(nftOwner != msg.sender, "Caller is nft owner");
     require(nftPrice <= msg.value, "Caller sent lower than price");
     require(approvedNftAddress == address(this), "This is an NFT that is not approved for sale.");
   

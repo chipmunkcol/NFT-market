@@ -13,6 +13,7 @@ import useAsyncTask from "../hooks/useAsyncTask";
 import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import Spinner from "./Spinner";
+import { transactWithPurchaseNft } from "../../contracts/interface";
 // interface props {
 //   nft: {
 //     nftId: number;
@@ -28,6 +29,7 @@ import Spinner from "./Spinner";
 const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
   const { handleWithLoading } = useAsyncTask();
+  const { signer } = useContext(GlobalContext);
   const isMyNft = account === owner?.toLowerCase();
   const [isLoadingCart, setIsLoadingCart] = useState(false);
 
@@ -53,7 +55,8 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       if (!updateResult.ok) return;
 
       const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
       // console.log('res: ', res);
       if (res.status) {
         return true;

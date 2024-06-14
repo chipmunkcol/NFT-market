@@ -6,17 +6,18 @@ import { Link, json, useNavigate, useOutletContext } from "react-router-dom";
 import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
-import { C_setOnsaleNft, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
+import { C_setOnsaleNft, C_setOnsaleNfts, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
 import { ReactComponent as openseaSymbol } from "../../../assets/images/opensea-symbol.svg"
 import useAsyncTask from "../../../hooks/useAsyncTask";
 import { Confirm, toastSwal } from "../../../hooks/swal";
 import Swal from "sweetalert2";
+import { transactWithApprove, transactWithApproveCollection, transactWithMintCollection } from "../../../../contracts/interface";
 
 function C_step2() {
 
   const navigate = useNavigate();
   const { handleWithLoading } = useAsyncTask();
-  const { collection, setCollection, resetCollection, account } = useContext(GlobalContext);
+  const { collection, setCollection, resetCollection, account, signer } = useContext(GlobalContext);
   const { files, setFiles } = useOutletContext();
   const [progress, setProgress] = useState(0);
 
@@ -108,10 +109,9 @@ function C_step2() {
       const collectionIpfsHash = await pinFileToIPFS(files, collectionMetadata);
       if (!collectionIpfsHash) return;
 
-      const isHide = true;
-      // const startAt = new Date(startAtRef.current).getTime() - Date.now();
       const remainedSeconds = getRemainedTimestamp(collection.startAt);
-      const mintResult = await MintContract.methods.userMintCollection(account, nftNameList, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, remainedSeconds).send({ from: account });
+      // const mintResult = await MintContract.methods.userMintCollection(account, nftNameList, fileNameList, collectionIpfsHash, isHide, tempIpfsHash, remainedSeconds).send({ from: account });
+      const mintResult = await transactWithMintCollection(signer, nftNameList, fileNameList, collectionIpfsHash, tempIpfsHash, remainedSeconds);
       if (!mintResult.status) return;
       const getCollectionResult = await MintContract.methods.getCollectionData(account, tempIpfsHash).call();
       console.log('getCollectionResult: ', getCollectionResult);
@@ -119,20 +119,17 @@ function C_step2() {
       const updateMetadataResult = await P_AddNftIdOnCollection(tempIpfsHash, getCollectionResult.ids);
       if (!updateMetadataResult.ok) return;
 
-      const promises = getCollectionResult.ids.map(async (nftId) => {
-        const parsedId = parseInt(nftId);
-        const approveResult = await MintContract.methods.approve(SaleNftAddress, parsedId).send({ from: account });
-        console.log('approveResult: ', approveResult);
-        if (!approveResult.status) return null;
+      const collectionIds = getCollectionResult.ids.map(id => parseInt(id));
+      // await 
+      // const promises = getCollectionResult.ids.map(async (nftId) => {
+      //   const parsedId = parseInt(nftId);
+      //   // const approveResult = await MintContract.methods.approve(SaleNftAddress, parsedId).send({ from: account });
+      const approveResult = await transactWithApproveCollection(signer, collectionIds);
+      if (!approveResult.status) return null;
 
-        const onsaleResult = await C_setOnsaleNft(parsedId, collection.perPrice, account);
-        console.log('onsaleResult: ', onsaleResult);
-        if (!onsaleResult.status) return null;
-      });
+      const onsaleResult = await C_setOnsaleNfts(signer, collectionIds, collection.perPrice);
+      if (!onsaleResult.status) return null;
 
-      const results = await Promise.all(promises);
-      const isSuccessedAll = results.filter(result => result !== null);
-      if (isSuccessedAll.length !== results.length) return;
       return true;
 
     } catch (err) {

@@ -11,13 +11,14 @@ import useGetTokenData from "../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toastSwal } from "../hooks/swal";
+import { transactWithApprove } from "../../contracts/interface";
 
 
 // nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
   const { nftId, nftName, tokenUrl, collectionIpfs } = nft;
   // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
-  const { setMyNfts, account, myNfts } = useContext(GlobalContext);
+  const { setMyNfts, account, myNfts, signer } = useContext(GlobalContext);
   const tokenData = useGetTokenData(tokenUrl);
   const { description, image, attributes } = tokenData;
   const { handleWithLoading } = useAsyncTask();
@@ -68,11 +69,12 @@ const NonSaleNftCard = ({ nft }) => {
       const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
       if (!updateResult.ok) return;
 
-      const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+      // const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
+      const approveResult = await transactWithApprove(signer, nftId);
       // console.log('result: ', approveResult);
       if (!approveResult.status) return;
 
-      const setOnsaleResult = await C_setOnsaleNft(nftId, price, account);
+      const setOnsaleResult = await C_setOnsaleNft(signer, nftId, price);
       if (setOnsaleResult.status) {
         return true;
       }

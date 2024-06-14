@@ -22,7 +22,7 @@ function CollectionNftDetail() {
   const navigate = useNavigate();
   const [tokenData, setTokenData] = useState({});
   // const { name, description, image, attributes } = tokenData;
-  const { account } = useContext(GlobalContext);
+  const { account, signer } = useContext(GlobalContext);
   console.log('tokenData: ', tokenData);
   const [metadata, setMetadata] = useState({
     nftPrice: 0,
@@ -98,7 +98,7 @@ function CollectionNftDetail() {
       return;
     }
 
-    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, account), 'NFT 구매중입니다');
+    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer), 'NFT 구매중입니다');
     if (!result) return;
 
     const confirmResult = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');

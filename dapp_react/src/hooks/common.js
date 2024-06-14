@@ -1,5 +1,10 @@
 import Swal from "sweetalert2";
 import { web3, SaleNftContract } from "../../contracts/index";
+import {
+  transactWithPurchaseNft,
+  transactWithSetOnsaleNft,
+  transactWithSetOnsaleNfts,
+} from "../../contracts/interface";
 
 export const getImageUrl = (imageIpfsHash) => {
   return `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${imageIpfsHash}`;
@@ -7,9 +12,10 @@ export const getImageUrl = (imageIpfsHash) => {
 
 export const getIpfsTokenData = async (tokenUrl) => {
   const res = await fetch(
-    `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${
-      import.meta.env.VITE_GATEWAY_TOKEN
-    }`
+    // `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${
+    //   import.meta.env.VITE_GATEWAY_TOKEN
+    // }`
+    `https://ipfs.io/ipfs/${tokenUrl}`
   );
   const resJson = await res.json();
   return resJson;
@@ -289,13 +295,15 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
   return result;
 };
 
-export const C_setOnsaleNft = async (nftId, price, account) => {
+export const C_setOnsaleNft = async (signer, nftId, price) => {
   const weiPrice = web3.utils.toWei(price, "ether");
-  const result = await SaleNftContract.methods
-    .setOnsaleNft(nftId, weiPrice)
-    .send({
-      from: account,
-    });
+  const result = await transactWithSetOnsaleNft(signer, nftId, weiPrice);
+  return result;
+};
+
+export const C_setOnsaleNfts = async (signer, nftIds, price) => {
+  const weiPrice = web3.utils.toWei(price, "ether");
+  const result = await transactWithSetOnsaleNfts(signer, nftIds, weiPrice);
   return result;
 };
 
@@ -517,20 +525,21 @@ export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
   return result;
 };
 
-export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, account) {
+export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
   try {
     const ipfsData = await getTargetNftToIpfsData(tokenUrl);
     const updateResult = await P_updateMetadataPurchase(
       nftId,
       ipfsData,
-      account
+      signer.address
     );
     if (!updateResult.ok) return;
 
     const weiPrice = web3.utils.toWei(nftPrice, "ether");
-    const res = await SaleNftContract.methods
-      .purchaseNft(nftId)
-      .send({ from: account, value: weiPrice });
+    // const res = await SaleNftContract.methods
+    //   .purchaseNft(nftId)
+    //   .send({ from: account, value: weiPrice });
+    const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
     // console.log('res: ', res);
     if (res.status) {
       return true;

@@ -9,6 +9,7 @@ import { useContext } from "react";
 // import { MintContract } from "../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
+import { ethers } from 'ethers';
 import { S_Button } from "./styles/styledComponent";
 import Cart from "./pages/commonComponents/Cart";
 import MainSpinner from "./components/MainSpinner";
@@ -22,7 +23,7 @@ import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { toastSwal } from "./hooks/swal";
 import ScrollToTop from "./components/ScrollToTop";
-import { MintAddress, MintContract } from "../contracts";
+import { MintAddress, MintContract, web3 } from "../contracts";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
 
 // import Slider from "./components/Slider";
@@ -32,7 +33,7 @@ import { MintAddress, MintContract } from "../contracts";
 
 function App() {
 
-  const { account, setAccount } = useContext(GlobalContext);
+  const { account, setAccount, setSigner } = useContext(GlobalContext);
   const [balance, setBalance] = useState(0);
   const location = useLocation();
   // console.log('location: ', location);
@@ -97,6 +98,16 @@ function App() {
     }
   }, [location.pathname])
 
+
+  /**
+   * singer injection
+   */
+  const setterSinger = async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    setSigner(signer);
+  }
+
   /**
    * connectMetamask
    */
@@ -116,6 +127,9 @@ function App() {
       setAccount(accounts[0]);
       const balance = await web3.eth.getBalance(accounts[0]);
       setBalance(balance);
+
+      // signer
+      await setterSinger();
     } else {
       Swal.fire("Please download metamask");
     }
@@ -142,6 +156,9 @@ function App() {
           method: "eth_accounts",
         });
         refreshAccount(accounts);
+
+        //signer
+        await setterSinger();
         window.ethereum.on("accountsChanged", refreshAccount);
       }
     };
@@ -159,23 +176,12 @@ function App() {
       const balance = await web3.eth.getBalance(account);
       const ethBalance = web3.utils.fromWei(balance, "ether");
       setBalance(Number(ethBalance).toFixed(2));
-      const receipt = await MintContract.methods.balanceOf(account).call();
-      console.log('receipt: ', receipt);
     }
 
     fetchBalance();
 
   }, [account]);
 
-
-  // async function connectSaleNftOnMintContract() {
-  //   await MintContract.methods.setSaleNft(SaleAddress).send({ from: account });
-  // }
-
-  // useEffect(() => {
-  //   if (!account) return;
-  //   connectSaleNftOnMintContract();
-  // }, [account])
 
   // Cart 컴포넌트
   const [cartModal, setCartModal] = useState(false);

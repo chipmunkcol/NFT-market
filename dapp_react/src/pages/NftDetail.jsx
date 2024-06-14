@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 import { SaleNftContract, web3 } from "../../contracts";
+import { transactWithPurchaseNft } from "../../contracts/interface";
 
 function NftDetail() {
   const params = useParams();
@@ -20,7 +21,7 @@ function NftDetail() {
   const { ipfsHash, nftId } = params;
   const tokenData = useGetTokenData(ipfsHash);
   const { name, description, image, attributes } = tokenData;
-  const { account } = useContext(GlobalContext);
+  const { account, signer } = useContext(GlobalContext);
   console.log('tokenData: ', tokenData);
   const [metadata, setMetadata] = useState({
     nftPrice: 0,
@@ -69,7 +70,7 @@ function NftDetail() {
       return;
     }
 
-    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, account), 'NFT 구매중입니다');
+    const result = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer), 'NFT 구매중입니다');
     if (!result) return;
 
     const confirmResult = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
@@ -80,14 +81,15 @@ function NftDetail() {
     }
   }
 
-  async function purchaseNftHandler(nftId, tokenUrl, nftPrice, account) {
+  async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
     try {
       const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
+      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, signer.address);
       if (!updateResult.ok) return;
 
       const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
+      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: signer, value: weiPrice });
       // console.log('res: ', res);
       if (res.status) {
         return true;

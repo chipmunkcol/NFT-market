@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 // import { getTruncatedAccount } from "../../hooks/common";
 
 export default function OnsaleNftCard({ nft, account }) {
-  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs } = nft;
-  const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${nftName}` : tokenUrl;
+  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName } = nft;
+  const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${fileName}` : tokenUrl;
   const tokenData = useGetTokenData(toeknUrlRevealedCheck);
   const { description, image, attributes } = tokenData;
 

@@ -76,6 +76,12 @@ contract MyNft is ERC721Enumerable {
     userCollectionsKeys[_address].push(_tempTokenUrl);
   }
 
+  function approveCollection(address _saleNftAddress, uint[] memory _nftIds) public {
+    for (uint i = 0; i < _nftIds.length; i ++) {
+      approve(_saleNftAddress, _nftIds[i]);
+    }
+  }
+
   function airdrop(address _address, string memory _tempTokenUrl) public {
     Collection memory collectionData = getCollectionData(_address, _tempTokenUrl);
     require(collectionData.startAt < block.timestamp, "No!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!, Airdrop not started yet");
