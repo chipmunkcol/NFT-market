@@ -1,19 +1,4 @@
-import { FC } from "react";
 import styled from "styled-components";
-
-interface props {
-  name: string;
-}
-
-const NftCard: FC<props> = ({ name }) => {
-  return (
-    <Container>
-      <NftInfo>
-        {name ? <Name>{name}</Name> : <Name>NFT {"#"}277</Name>}
-      </NftInfo>
-    </Container>
-  );
-};
 
 export const NftInfo = styled.div`
   height: 64px;
@@ -39,5 +24,3 @@ export const Container = styled.div`
   font-size: 14px;
   text-align: center;
 `;
-
-export default NftCard;
