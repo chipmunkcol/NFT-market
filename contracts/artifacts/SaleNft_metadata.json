@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.24+commit.e11b9ed9"
+		"version": "0.8.20+commit.a1b79de6"
 	},
 	"language": "Solidity",
 	"output": {
@@ -145,6 +145,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256[]",
+						"name": "_nftIds",
+						"type": "uint256[]"
+					}
+				],
+				"name": "purchaseNftList",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "_nftId",
 						"type": "uint256"
@@ -156,6 +169,24 @@
 					}
 				],
 				"name": "setOnsaleNft",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "_nftIds",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_price",
+						"type": "uint256"
+					}
+				],
+				"name": "setOnsaleNfts",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -293,19 +324,19 @@
 			]
 		},
 		"contracts/Mint.sol": {
-			"keccak256": "0xfd881834dfa6b804069df0c4a3292addf9198811d900b6d94aa6e572a8763c1c",
+			"keccak256": "0x46ce32614a88decccf418f3e31b88107cb3dbe57ce9fcf98f629798926171d7f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3a91aced3e558d8ec37facb1d24476e672b515dd56a132e63ebfe1eced10d1d7",
-				"dweb:/ipfs/QmcqLRyTmH8Bakj4xKk4Beaf74qR3JJDHum7oWLX7F6wwa"
+				"bzz-raw://c3b135b14415773a01fd5b1a0c79799b66bc00cfc10674aa260de312e617d95f",
+				"dweb:/ipfs/QmZ8CHUbkkEuBLKq1od5qTUvPF9ke5Y9dJZS6LdbARR3BW"
 			]
 		},
 		"contracts/SaleNft.sol": {
-			"keccak256": "0x7c9f8dbcff4f8b9ac6c525a35f44abf79e18788380336e8725df57c5abfff6c0",
+			"keccak256": "0xb8a337ace4d5b4ddb3e2ccef7342ddcea6550abdfe2d0866058bb7a7c4c01094",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1b7ddd2b09a11a3f75555f454f6af2ae63004cc684b66ab102440497c3f05288",
-				"dweb:/ipfs/QmZ6hPH5g4JgHwoSyRQCDGMhRAXMjNXMqWHLdkQvbDPU3f"
+				"bzz-raw://4da626b3c46e62c344ae298b7ffc1aac13a0a1537a09ee691bec2098641edf44",
+				"dweb:/ipfs/QmY76ZZxNREZLh8wkA4HjPFVzxEBBWTm1xtCKAS4ZKg29j"
 			]
 		}
 	},

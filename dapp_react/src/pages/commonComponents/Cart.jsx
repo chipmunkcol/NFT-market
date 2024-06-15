@@ -9,13 +9,15 @@ import { SaleNftContract, web3 } from "../../../contracts";
 import Spinner from "../../components/Spinner";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Swal from "sweetalert2";
-import { toastSwal } from "../../hooks/swal";
-import { transactWithPurchaseNft } from "../../../contracts/interface";
+import { Confirm, toastSwal } from "../../hooks/swal";
+import { transactWithPurchaseNft, transactWithPurchaseNftList } from "../../../contracts/interface";
+import { useNavigate } from "react-router-dom";
 
 function Cart({ cartModalClose }) {
   const { account, signer } = useContext(GlobalContext);
   const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { handleWithLoading } = useAsyncTask();
   const onclick = e => {
@@ -107,43 +109,49 @@ function Cart({ cartModalClose }) {
     }
   }
 
-  const purchaseNftHandler = async (nft) => {
-    const { nftId, nftPrice, tokenUrl } = nft;
+  const purchaseNftListHandler = async (nftList) => {
     try {
-      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
-      if (!updateResult.ok) return;
+      let totalWeiPrice = 0;
+      const nftIds = nftList.map(nft => nft.nftId);
+      for (const nft of nftList) {
+        const { nftId, nftPrice, tokenUrl } = nft;
 
-      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
-      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
-      // console.log('res: ', res);
+        const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+        const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
+        if (!updateResult.ok) return;
+
+        totalWeiPrice += Number(web3.utils.toWei(nftPrice, 'ether'));
+      }
+
+      const res = await transactWithPurchaseNftList(signer, nftIds, String(totalWeiPrice));
       if (res.status) {
         return true;
       } else {
         return false;
       }
+      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
     } catch (err) {
       console.log('err: ', err);
       return false;
     }
   }
 
-  const purchaseNftController = async () => {
-    try {
-      const promises = checkedList.map(nft => purchaseNftHandler(nft));
-      const results = await Promise.all(promises);
-      if (results.every(result => result)) {
-        toastSwal('NFT 구매가 완료되었습니다.');
+  const purchaseController = async () => {
+    const res = await handleWithLoading(() => purchaseNftListHandler(checkedList), 'NFT 구매 중입니다');
+    if (res) {
+      // toastSwal('NFT 구매에 성공했습니다.');
+      // const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
+      const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
+      if (result.isConfirmed) {
+        cartModalClose();
         R_removeAllCartHandler();
+        removeAllCartHandler();
+        navigate(`/mypage/${account}`);
       } else {
-        toastSwal('일부 NFT 구매에 실패했습니다. 다시 시도해 주세요.');
+        window.location.reload();
       }
-    } catch (error) {
-      console.log('Error in purchaseNftController:', error);
-      toastSwal('NFT 구매 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
-  }
+  };
 
   return (
     <Overlay onClick={cartModalClose}>
@@ -187,7 +195,7 @@ function Cart({ cartModalClose }) {
             !isLoading && nftsInCart.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
-        <CartBottom onClick={purchaseNftController}>
+        <CartBottom onClick={purchaseController}>
           <BtnWrap>
             <button>구매하기</button>
           </BtnWrap>
@@ -276,8 +284,8 @@ const Container = styled.div`
     z-index: 150;
     /* position: absolute; */
     position: relative;
-    top: 45%;
-    left: 84%;
+    top: 38%;
+    left: 86%;
     transform: translate(-50%, -50%);
     border-radius: 10px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);

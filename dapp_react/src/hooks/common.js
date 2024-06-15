@@ -7,15 +7,13 @@ import {
 } from "../../contracts/interface";
 
 export const getImageUrl = (imageIpfsHash) => {
-  return `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${imageIpfsHash}`;
+  return `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${imageIpfsHash}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
 };
 
 export const getIpfsTokenData = async (tokenUrl) => {
   const res = await fetch(
-    // `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${
-    //   import.meta.env.VITE_GATEWAY_TOKEN
-    // }`
-    `https://ipfs.io/ipfs/${tokenUrl}`
+    `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`
+    // `https://ipfs.io/ipfs/${tokenUrl}`
   );
   const resJson = await res.json();
   return resJson;

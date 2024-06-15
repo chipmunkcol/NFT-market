@@ -32,8 +32,14 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const { signer } = useContext(GlobalContext);
   const isMyNft = account === owner?.toLowerCase();
   const [isLoadingCart, setIsLoadingCart] = useState(false);
+  const navigate = useNavigate();
 
   const purchaseController = async () => {
+    if (nftPrice === 0) {
+      toastSwal('판매 등록되지 않은 nft입니다');
+      return;
+    }
+
     const res = await handleWithLoading(() => purchaseNftHandler(nftId), 'NFT 구매 중입니다');
     if (res) {
       // toastSwal('NFT 구매에 성공했습니다.');
@@ -49,6 +55,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
 
   async function purchaseNftHandler(nftId) {
+
     try {
       const ipfsData = await getTargetNftToIpfsData(tokenUrl);
       const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
@@ -60,6 +67,8 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       // console.log('res: ', res);
       if (res.status) {
         return true;
+      } else {
+        return false;
       }
     } catch (err) {
       console.log('err: ', err);
@@ -122,7 +131,6 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   }, [tokenUrl]);
 
   // Detail page
-  const navigate = useNavigate();
   const navigateDetailPage = () => {
     if (collectionIpfs) {
       navigate(`/nft-detail/collection/${tokenUrl}/${nftId}`);
@@ -225,7 +233,8 @@ const CartBtn = styled(PurchaseBtn)`
 `;
 
 const ImgWrap = styled.div`
-  width: ${props => props.$gridCss?.cardWidth ? props.$gridCss.cardWidth : '193px'};
+  /* width: ${props => props.$gridCss?.cardWidth ? props.$gridCss.cardWidth : '193px'}; */
+  width: 100%;
   height: ${props => props.$gridCss?.cardWidth ? props.$gridCss.cardWidth : '193px'};
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
