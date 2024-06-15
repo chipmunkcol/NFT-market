@@ -10,11 +10,11 @@ export default defineConfig({
     svgr(),
     // nodePolyfills()
   ],
-  build: {
-    rollupOptions: {
-      external: ["styled-components"],
-    },
-  },
+  // build: {
+  //   rollupOptions: {
+  //     external: ["styled-components"],
+  //   },
+  // },
 });
 
 // import { defineConfig } from "vite";
