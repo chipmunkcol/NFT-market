@@ -2,20 +2,12 @@ import { FC } from "react";
 import styled from "styled-components";
 
 interface props {
-  nftHash: string;
   name: string;
 }
 
 const NftCard: FC<props> = ({ name }) => {
   return (
     <Container>
-      <ImgWrap>
-        {/* <Img
-          src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${nftHash}`}
-          alt="mint-image"
-        /> */}
-        {/* <BgImg $src={imageUrl} alt="NFT image" /> */}
-      </ImgWrap>
       <NftInfo>
         {name ? <Name>{name}</Name> : <Name>NFT {"#"}277</Name>}
       </NftInfo>
@@ -23,27 +15,6 @@ const NftCard: FC<props> = ({ name }) => {
   );
 };
 
-export const BgImg = styled.div`
-  width: 100%;
-  height: 100%;
-  border-top-right-radius: 0.75rem;
-  border-top-left-radius: 0.75rem;
-  /* object-fit: cover; */
-  background-image: url(${(props) => props.$src});
-  background-size: 100%;
-  background-position: center;
-  transition: all 0.3s ease-in-out;
-  &:hover {
-    background-size: 110%;
-  }
-`;
-
-export const ImgWrap = styled.div`
-  width: 193px;
-  height: 200px;
-  border-top-right-radius: 0.75rem;
-  border-top-left-radius: 0.75rem;
-`;
 export const NftInfo = styled.div`
   height: 64px;
   padding: 1rem;
