@@ -6,8 +6,9 @@ import { Contract, Web3 } from "web3";
 // import Contract from "web3-eth-contract";
 
 // export const web3 = new Web3("http://localhost:8545");
-const infuraUrl =
-  "https://sepolia.infura.io/v3/19bc20e4234040378478e9fe60239cf1";
+const infuraUrl = `https://sepolia.infura.io/v3/${
+  import.meta.env.VITE_INFURA_ID
+}`;
 // export const web3 = new Web3(infuraUrl);
 export const web3 = new Web3(new Web3.providers.HttpProvider(infuraUrl));
 
@@ -16,42 +17,6 @@ export const web3 = new Web3(new Web3.providers.HttpProvider(infuraUrl));
 // );
 
 export const MintABI = [
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_address",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "_tempTokenUrl",
-        type: "string",
-      },
-    ],
-    name: "airdrop",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "approve",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
   {
     inputs: [],
     stateMutability: "nonpayable",
@@ -232,111 +197,6 @@ export const MintABI = [
     type: "event",
   },
   {
-    inputs: [
-      {
-        internalType: "string",
-        name: "_tokenName",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_ipfsHash",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "_totalNum",
-        type: "uint256",
-      },
-    ],
-    name: "ownerMintNft",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "safeTransferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-    ],
-    name: "safeTransferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "operator",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "approved",
-        type: "bool",
-      },
-    ],
-    name: "setApprovalForAll",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_saleNftContractAddress",
-        type: "address",
-      },
-    ],
-    name: "setSaleNftContract",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     anonymous: false,
     inputs: [
       {
@@ -365,9 +225,22 @@ export const MintABI = [
     inputs: [
       {
         internalType: "address",
-        name: "from",
+        name: "_address",
         type: "address",
       },
+      {
+        internalType: "string",
+        name: "_tempTokenUrl",
+        type: "string",
+      },
+    ],
+    name: "airdrop",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       {
         internalType: "address",
         name: "to",
@@ -379,7 +252,7 @@ export const MintABI = [
         type: "uint256",
       },
     ],
-    name: "transferFrom",
+    name: "approve",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -388,59 +261,16 @@ export const MintABI = [
     inputs: [
       {
         internalType: "address",
-        name: "_address",
+        name: "_saleNftAddress",
         type: "address",
       },
       {
-        internalType: "string[]",
-        name: "_nftNameList",
-        type: "string[]",
-      },
-      {
-        internalType: "string[]",
-        name: "_fileNameList",
-        type: "string[]",
-      },
-      {
-        internalType: "string",
-        name: "_ipfsHash",
-        type: "string",
-      },
-      {
-        internalType: "bool",
-        name: "_isHide",
-        type: "bool",
-      },
-      {
-        internalType: "string",
-        name: "_tempTokenUrl",
-        type: "string",
-      },
-      {
-        internalType: "uint256",
-        name: "_startAt",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "_nftIds",
+        type: "uint256[]",
       },
     ],
-    name: "userMintCollection",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "_tokenName",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_ipfsHash",
-        type: "string",
-      },
-    ],
-    name: "userMintNft",
+    name: "approveCollection",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -714,6 +544,29 @@ export const MintABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "_tokenName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "_totalNum",
+        type: "uint256",
+      },
+    ],
+    name: "ownerMintNft",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "tokenId",
         type: "uint256",
@@ -731,6 +584,57 @@ export const MintABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "saleNftContract",
     outputs: [
@@ -741,6 +645,37 @@ export const MintABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "operator",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_saleNftContractAddress",
+        type: "address",
+      },
+    ],
+    name: "setSaleNftContract",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -893,6 +828,29 @@ export const MintABI = [
     inputs: [
       {
         internalType: "address",
+        name: "from",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },
@@ -911,6 +869,67 @@ export const MintABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+      {
+        internalType: "string[]",
+        name: "_nftNameList",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
+        name: "_fileNameList",
+        type: "string[]",
+      },
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+      {
+        internalType: "bool",
+        name: "_isHide",
+        type: "bool",
+      },
+      {
+        internalType: "string",
+        name: "_tempTokenUrl",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "_startAt",
+        type: "uint256",
+      },
+    ],
+    name: "userMintCollection",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_tokenName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_ipfsHash",
+        type: "string",
+      },
+    ],
+    name: "userMintNft",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
 ] as const;
@@ -1056,6 +1075,19 @@ const SaleNftABI = [
   {
     inputs: [
       {
+        internalType: "uint256[]",
+        name: "_nftIds",
+        type: "uint256[]",
+      },
+    ],
+    name: "purchaseNftList",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "_nftId",
         type: "uint256",
@@ -1071,10 +1103,28 @@ const SaleNftABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "uint256[]",
+        name: "_nftIds",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "_price",
+        type: "uint256",
+      },
+    ],
+    name: "setOnsaleNfts",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ] as const;
 
-export const MintAddress = "0xdffc97476b07a9B51F576c3DEdb79483f718cbE8";
-export const SaleNftAddress = "0xf54c4c1C387f61D6f2C18EA4BcA2f4F2C1014546";
+export const MintAddress = "0xbFE2d518d4F8184caA874918a7C3D03767F228C5";
+export const SaleNftAddress = "0x34eEDFE3425Fdce07367E4B17CABdE98BFd42f36";
 
 // export const MintContract = new web3.eth.Contract(MintABI, MintAddress);
 // export const SaleNftContract = new web3.eth.Contract(

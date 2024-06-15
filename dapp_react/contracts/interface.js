@@ -92,6 +92,21 @@ export async function transactWithPurchaseNft(signer, nftId, price) {
   return receipt;
 }
 
+export async function transactWithPurchaseNftList(signer, nftIds, price) {
+  const contractABI = SaleNftContract.methods
+    .purchaseNftList(nftIds)
+    .encodeABI();
+
+  const tx = await signer.sendTransaction({
+    to: SaleNftAddress,
+    data: contractABI,
+    value: price,
+  });
+  const receipt = await tx.wait();
+  consoleEtherscan(receipt.hash);
+  return receipt;
+}
+
 export async function transactWithMintCollection(
   signer,
   nftNameList,

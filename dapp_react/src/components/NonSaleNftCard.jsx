@@ -16,11 +16,12 @@ import { transactWithApprove } from "../../contracts/interface";
 
 // nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
-  const { nftId, nftName, tokenUrl, collectionIpfs } = nft;
-  // const { setTrigger } = useContext(GlobalContext) as { setTrigger: (value: boolean) => void };
-  const { setMyNfts, account, myNfts, signer } = useContext(GlobalContext);
-  const tokenData = useGetTokenData(tokenUrl);
+  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName } = nft;
+  const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${fileName}` : tokenUrl;
+  const tokenData = useGetTokenData(toeknUrlRevealedCheck);
+
   const { description, image, attributes } = tokenData;
+  const { setMyNfts, account, myNfts, signer } = useContext(GlobalContext);
   const { handleWithLoading } = useAsyncTask();
 
   // const [registerPrice, setRegisterPrice] = useState(0);

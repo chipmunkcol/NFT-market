@@ -216,7 +216,7 @@ function MintNft() {
   };
 
   const getIpfsToJsonData = ipfsUrl => {
-    const url = `https://gateway.pinata.cloud/ipfs/${ipfsUrl}`;
+    const url = `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${ipfsUrl}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
     return url;
   }
 

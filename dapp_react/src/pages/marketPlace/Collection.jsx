@@ -118,6 +118,7 @@ const Collection = () => {
         onsaleNftList.length < 1 ? (<div style={{ padding: '30px' }}>판매중인 NFT가 없습니다.</div>) : (
         <MarketWrap $gridCss={gridCss}>
           {
+            onsaleNftList.length > 0 &&
             onsaleNftList.map(onsaleNft => (
               <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} />
             ))

@@ -78,6 +78,39 @@ contract SaleNft {
     }
   }
 
+  function purchaseNftList(uint[] memory _nftIds) public payable {
+    uint totalPrice = 0;
+    for (uint i = 0; i < _nftIds.length; i++) {
+      uint nftId = _nftIds[i];
+      address nftOwner = mintContract.ownerOf(nftId);
+      uint nftPrice = nftPrices[nftId];
+      address approvedNftAddress = mintContract.getApproved(nftId);
+
+      require(nftOwner != msg.sender, "Caller is nft owner");
+      require(nftPrice <= msg.value, "Caller sent lower than price");
+      require(approvedNftAddress == address(this), "This is an NFT that is not approved for sale.");
+
+      totalPrice += nftPrice;
+    }
+
+    require(totalPrice <= msg.value, "Caller sent lower than total price");
+
+    for (uint i = 0; i < _nftIds.length; i++) {
+      uint nftId = _nftIds[i];
+      address nftOwner = mintContract.ownerOf(nftId);
+      payable(nftOwner).transfer(nftPrices[nftId]); // transfer(msg.value) 가 아닌데 contract 가 실행되는지 확인
+      nftPrices[nftId] = 0;
+      mintContract.safeTransferFrom(nftOwner, msg.sender, nftId);
+    }
+
+    for (uint i = 0; i < onsaleNftIds.length; i++ ) {
+      if (nftPrices[onsaleNftIds[i]] == 0) {
+        onsaleNftIds[i] = onsaleNftIds[onsaleNftIds.length - 1];
+        onsaleNftIds.pop();
+      }
+    }
+  }
+
   function getOnsaleNftIdsLength() view public returns (uint) {
     return onsaleNftIds.length;
   }

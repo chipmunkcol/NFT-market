@@ -5,17 +5,27 @@ import { useContext, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Spinner from "../../components/Spinner";
+import { useNavigate } from "react-router-dom";
 
 const CartNftCard = ({ nft, propsFunction }) => {
   const { account } = useContext(GlobalContext);
-  const { nftId, nftName, nftPrice, owner } = nft;
-  const tokenUrl = nft?.isCollection === 'true' ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+  const { nftId, nftName, nftPrice, owner, isReveal, isCollection } = nft;
+  const tokenUrl = nft?.isReveal ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
 
   const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);
   // const { handleWithLoading } = useAsyncTask();
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+  const navigateDetailPage = () => {
+    if (isCollection === 'true') {
+      navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
+    }
+    else {
+      navigate(`/nft-detail/${tokenUrl}/${nftId}`);
+    }
+  }
 
   const checkToggleHandler = (e) => {
     if (e.target.checked) {
@@ -49,7 +59,7 @@ const CartNftCard = ({ nft, propsFunction }) => {
           <SelectBox>
             <input type="checkbox" defaultChecked={true} onClick={checkToggleHandler} />
           </SelectBox>
-          <ImgWrap>
+          <ImgWrap onClick={navigateDetailPage}>
             <img src={tokenData.image} alt="nft" />
           </ImgWrap>
           <ContentWrap>
@@ -100,6 +110,7 @@ width: 50px;
     height: 100%;
     border-radius: 10px;
     }
+cursor: pointer;
 `;
 
 const Item = styled.li`
