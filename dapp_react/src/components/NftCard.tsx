@@ -6,7 +6,7 @@ interface props {
   name: string;
 }
 
-const NftCard: FC<props> = ({ nftHash, name }) => {
+const NftCard: FC<props> = ({ name }) => {
   return (
     <Container>
       <ImgWrap>
@@ -14,7 +14,7 @@ const NftCard: FC<props> = ({ nftHash, name }) => {
           src={`${import.meta.env.VITE_GATEWAY_URL}/ipfs/${nftHash}`}
           alt="mint-image"
         /> */}
-        <BgImg $src={imageUrl} alt="NFT image" />
+        {/* <BgImg $src={imageUrl} alt="NFT image" /> */}
       </ImgWrap>
       <NftInfo>
         {name ? <Name>{name}</Name> : <Name>NFT {"#"}277</Name>}

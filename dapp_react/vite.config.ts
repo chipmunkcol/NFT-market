@@ -1,10 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "@svgr/rollup";
+// import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr()],
+  plugins: [
+    react(),
+    svgr(),
+    // nodePolyfills()
+  ],
+  // build: {
+  //   rollupOptions: {
+  //     external: ["styled-components"],
+  //   },
+  // },
 });
 
 // import { defineConfig } from "vite";
