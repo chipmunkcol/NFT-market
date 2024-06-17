@@ -2,6 +2,7 @@ import styled from "styled-components";
 import * as Styled from '../../components/NftCard'
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
+import { formatPrice } from "../../hooks/common";
 // import { getTruncatedAccount } from "../../hooks/common";
 
 export default function OnsaleNftCard({ nft, account }) {
@@ -34,7 +35,7 @@ export default function OnsaleNftCard({ nft, account }) {
         <Styled.Name>{nftName}</Styled.Name>
         <OnsalePriceWrap>
           Price : {nftPrice} ETH ($
-          {(Number(nftPrice) * 2928).toFixed(2)}
+          {formatPrice(Number(nftPrice) * 2928)}
           )
         </OnsalePriceWrap>
       </Content>

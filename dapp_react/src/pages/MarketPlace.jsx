@@ -82,6 +82,9 @@ const MarketPlace = () => {
     navigate(`/market-place/collection?query=${category}`);
   };
 
+  // nft 갯수
+  const [count, setCount] = useState(0);
+
   return (
     <Background>
       <Container>
@@ -101,7 +104,7 @@ const MarketPlace = () => {
           </div>
           <div style={{ padding: '10px 0' }}>
             <FlexWrap>
-              <div style={{ width: '77px', visibility: 'hidden' }}></div>
+              <div style={{ width: '77px' }}>결과 {count}개</div>
               <div style={{ position: 'relative', width: '400px', height: '48px' }}>
                 <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
                 <IconWrap onClick={searchNfts}>
@@ -160,7 +163,7 @@ const MarketPlace = () => {
               </CategoryBox>
             </LeftPart>
             <RightPart>
-              <Outlet context={[gridCss]} />
+              <Outlet context={[gridCss, setCount]} />
             </RightPart>
           </FlexWrap>
         </div>

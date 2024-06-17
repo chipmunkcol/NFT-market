@@ -262,7 +262,7 @@ const ItemWrap = styled.ul`
 
 const ItemBox = styled.div`
   width: 100%;
-  padding: 1rem 1.3rem 1.3rem 1rem;
+  padding: 1rem 1.3rem 2.3rem 1rem;
   height: calc(100% - 105px);
   overflow: auto;
   /* display: flex; */

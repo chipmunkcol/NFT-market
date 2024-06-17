@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
-import { addCartHandler, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
+import { addCartHandler, formatPrice, getCurrentYMD, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, purchaseNftHandler } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
@@ -188,7 +188,7 @@ function CollectionNftDetail() {
                   <div>
                     <span style={{ fontSize: '30px', fontWeight: '700', color: '#121212', marginRight: '5px' }}>{metadata.nftPrice} ETH</span>
                     <span style={{ fontSize: '15px', color: '#545454' }}>($
-                      {(Number(metadata.nftPrice) * 2928).toFixed(2)}
+                      {formatPrice(Number(metadata.nftPrice) * 2928)}
                       )</span>
                   </div>
                   <div>

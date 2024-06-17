@@ -605,6 +605,14 @@ export const getNewOnsaleNfts = (ipfsNftsList) => {
   return newOnsaleNfts;
 };
 
+export const formatPrice = (nftPrice) => {
+  const formattedNum = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(nftPrice);
+  return formattedNum;
+};
+
 // export async function purchaseNftHandler(nftId) {
 //   try {
 //     const ipfsData = await getTargetNftToIpfsData(tokenUrl);

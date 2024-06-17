@@ -150,7 +150,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  dummyNfts.map(nft => (
+                  [...dummyNfts].splice(0, 6).map(nft => (
                     <MoveBgNftCard key={`home-bg-left-1-${nft.image}`} nft={nft} />
                   ))
                 }
@@ -159,7 +159,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  dummyNfts.reverse().map(nft => (
+                  [...dummyNfts].splice(7, 13).reverse().map(nft => (
                     <MoveBgNftCard key={`home-bg-left-2-${nft.image}`} nft={nft} direction={'up'} />
                   ))
                 }
@@ -189,7 +189,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  dummyNfts.map(nft => (
+                  [...dummyNfts].splice(0, 6).map(nft => (
                     <MoveBgNftCard key={`home-bg-right-1-${nft.image}`} nft={nft} />
                   ))
                 }
@@ -198,7 +198,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  dummyNfts.reverse().map(nft => (
+                  [...dummyNfts].splice(7, 13).reverse().map(nft => (
                     <MoveBgNftCard key={`home-bg-right-2-${nft.image}`} nft={nft} direction={'up'} />
                   ))
                 }

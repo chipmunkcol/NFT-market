@@ -6,7 +6,7 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart-wh.png";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
@@ -28,6 +28,7 @@ import { transactWithPurchaseNft } from "../../contracts/interface";
 // nftId, nftName, tokenUrl, nftPrice 
 const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
+
   const { handleWithLoading } = useAsyncTask();
   const { signer } = useContext(GlobalContext);
   const isMyNft = account === owner?.toLowerCase();
@@ -150,7 +151,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
         <Styled.Name>{nftName}</Styled.Name>
         <OnsalePriceWrap>
           {nftPrice} ETH ($
-          {(Number(nftPrice) * 2928).toFixed(2)}
+          {formatPrice(Number(nftPrice) * 2928)}
           )
         </OnsalePriceWrap>
         <div style={{ color: '#cccccc', marginTop: '5px', fontSize: '12px' }}>

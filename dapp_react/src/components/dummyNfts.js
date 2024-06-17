@@ -1,98 +1,88 @@
 export const dummyNfts = [
   {
-    name: "CryptoKitty #333",
-    description: "A cute CryptoKitty that enjoys long walks on the beach.",
-    image: "QmWa8JvYYRpB2QfJbYvZkXsSts3rRZ1hzakAusbsikqZKr",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-      {
-        trait_type: "Eyes",
-        value: "Cross-Eyed",
-      },
-      {
-        trait_type: "Fur",
-        value: "Sphynx",
-      },
-      {
-        trait_type: "Color",
-        value: "Chocolate",
-      },
-    ],
-    tokenUrl: "Qma2pa4fpY3kRhhCvTdnpXS48Jm62rMEu6maGkZc85HQWL",
+    name: "Founder's Pirate #196",
+    description: "Founder's Pirate #196 _desc",
+    image: "QmXdZNip1yYgxDmA4tG2PV5Qi2rupGf2fviTD3pFNubZLR",
+    tokenUrl: "QmampA1c3jhXDbr191TAtcmkRx8wuKCJ6bjuvKwdMsKwYS",
   },
   {
-    name: "Jack's NFT #4444",
-    description: "kkkkk",
-    image: "QmSTk5Mkb3WTVoff53gwKRPSQ92X5JSt3a1USkpXdFnjCX",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-    ],
-    tokenUrl: "Qmd9tKyn6NFKirCZa7wEm18MoWKPayphXmL5pceQzJYmww",
+    name: "Founder's Pirate #100",
+    description: "Founder's Pirate #100 _desc",
+    image: "QmUREQUpVC8M51sfHftHhiN84xWnQhUqzWgnkJFMhjcsFf",
+    tokenUrl: "QmSt1KWcEZfpGu7BjALRSLAUVdu9VRQx9toFYDxWwhVaRa",
   },
   {
-    name: "Jack's NFT #55555",
-    description: "zzzzzzzzzzzzz",
-    image: "QmcKDbPTYk2kXEucw9tAjsLtg6vTdHCz8zpxwg5uJvGRzH",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-    ],
-    tokenUrl: "QmdVUSa2rMXKJyTkpDJPadagWT7LEX9Y8QQcgbcTEkCbC8",
+    name: "#000 doodle",
+    description: "doodle_description",
+    image: "QmfSyxLdtUnwPUBJEjmorqXiSHb7BRqF7yNWZevg3VDiXb",
+    tokenUrl: "QmNgAeWzGfVyPQLb1w8aD3atxozdMAs3CiGPipXCzCYfBw",
+  },
+  {
+    name: "#000 borning monkey",
+    description:
+      "borning borning monkey_desciptionborning monkey_desciptionborning monkey_desciptionborning monkey_desciptionmonkey_desciption",
+    image: "QmXqKC7qCAU8sD8Rrw535HC2824c5EaGyHUtJcHBkVkeL2",
+    tokenUrl: "QmRyxs2iGv4qSibs1V1zedEwh2jtakX15z931WSmrrD86P",
+  },
+  {
+    name: "#000 jangkal cat",
+    description:
+      "jangkal cat_descriptionjangkal cat_descriptionjangkal cat_descriptionjangkal cat_descriptionjangkal cat_descriptionjangkal cat_description",
+    image: "QmUCxQVTKVXKtcxnZsGRus8ydWkDEzam1WNQHjbqQjsoBe",
+    tokenUrl: "QmRo8mUuzaSSAbWfKB6T7i398Qs8gqbPnYm4nH7TW6hu76",
   },
   {
     name: "51billion",
-    description: "mmmmmmmmmmmmmm",
+    description: "51billion_description",
     image: "QmdSGhWtyNDAQ7DRsDbipSx8Zm9pRP7NLJ8G9XudAdCgP5",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-    ],
-    tokenUrl: "QmNMuxHKqaJA5Ntujo6K2Ls8x5qvEikPjHpiMUyWWrrid3",
+    tokenUrl: "QmVkyvvsZVwteaABWBAZ1GF3s8ufu88fvozmsEbzMYJJu1",
   },
   {
-    name: "jangkal cat",
-    description: "jjjjjjjjjjjjj",
-    image: "QmUCxQVTKVXKtcxnZsGRus8ydWkDEzam1WNQHjbqQjsoBe",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-    ],
-    tokenUrl: "QmY8ag5BgAJZ9y8eK3rDaT6qjUKAWFcxiTZbVFhACNSp9o",
+    name: "#003 Jack's NFT ",
+    description: "A cute CryptoKitty that enjoys long walks on the beach.",
+    image: "QmfSeLSMHsKrLMLe4Wh5n47YTggdirDvxiNKs1oijJVpNr",
+    tokenUrl: "QmT5PCMQ52cnwF65E7j6QfmGtjGwjPk5Yq4qbw6epK2oni",
   },
   {
-    name: "borning monkey",
-    description: "pppppppppppp",
-    image: "QmXqKC7qCAU8sD8Rrw535HC2824c5EaGyHUtJcHBkVkeL2",
-    external_url:
-      "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
-    attributes: [
-      {
-        trait_type: "Breed",
-        value: "Siamese",
-      },
-    ],
-    tokenUrl: "QmbNi1e9q8bveH7U3NkmEum9eEA4sq9Bh8DsBLcBD3UJqg",
+    name: "#002 Jack's NFT",
+    description: "A cute CryptoKitty that enjoys long walks on the beach.",
+    image: "QmU7PvbNYu5xnGezJhhvZF1WJDTR1j6bBw9RZdZAhHocLc",
+    tokenUrl: "QmQmTKzxevqXZ39JueBgqkoXRdaTgAX4QN3JtuCWHRnPfFS5",
+  },
+  {
+    name: "Remilio 4889",
+    description: "Remilio 4889 _desc",
+    image: "QmQWFtXsrCsgrtHFx8cEC5MqiADMM9WfcVQh2UcLhqsjJ1",
+    tokenUrl: "QmXvJkkQpvzQqjKm8S4AD87FWKX6VhMi3aZYyQnkfMuSzp",
+  },
+  {
+    name: "#000 onchain monkey",
+    description: "onchain-monkey2 _desc",
+    image: "QmVmWGi3obo6T8zCTbrvs4ZBMZWX1ry2ZT3WNQXjgvdAcn",
+    tokenUrl: "QmYwD2H3o64N9VS3AMYyw6eLJxJ9xoxqnDmNWFazVMwijS",
+  },
+  {
+    name: "Mutant Ape Yacht Club",
+    description: "Mutant Ape Yacht Club _desc",
+    image: "QmUgsKoTXzJ58sMqqX4iV8F6NVwQqsiK6NbACTkRDpFoYA",
+    tokenUrl: "Qmc6ExSsQDs51X6gX4UpNQeEHiKJjTG3TpyjP7UzpnrZax",
+  },
+  {
+    name: "Founder's Pirate #1096",
+    description: "Founder's Pirate #1096 _desc",
+    image: "QmVP6hymA5Udt3BC9ivyT39pmdjY3SZ6LHUcH9wyPrhvRB",
+    tokenUrl: "QmdCVDKBwjSZHiGv8RNred2pNmrQ6XwLjqv1699MpGhYbx",
+  },
+  {
+    name: "Remilio 2378",
+    description: "Remilio 2378 _desc",
+    image: "QmeaKdxtPaU6HaovqjAb46YQcYWymYtM8VJPVSZnEghRBL",
+    tokenUrl: "QmdagPVRgZDAEmnfVasBFMujZcFTDqPeg27n39gLfucCTZ",
+  },
+  {
+    name: "Remilio 881",
+    description: "Remilio 881 _desc",
+    image: "QmeNidW9SULbXeyi1fHFqA8x7zeEEbvtKhRkYwPGiCDr48",
+    tokenUrl: "QmQmaCAQnsPKHAx6sdsEVhrXtbh6jWN6Q9fGWSMsna3wMznj",
   },
 ];

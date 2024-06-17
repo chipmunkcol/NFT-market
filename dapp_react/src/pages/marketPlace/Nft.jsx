@@ -10,7 +10,7 @@ import { pinStart } from "../../hooks/variables.";
 
 const Nft = () => {
   const { account } = useContext(GlobalContext);
-  const [gridCss] = useOutletContext();
+  const [gridCss, setCount] = useOutletContext();
   const [isLoadingApi, setIsLoadingApi] = useState(false);
   const allNftCount = useRef(0);
   const [offset, setOffset] = useState({ page: 0 });
@@ -123,10 +123,14 @@ const Nft = () => {
     return () => observer.disconnect();
   }, [isLoading]);
 
+  useEffect(() => {
+    setCount(onsaleNftList.length);
+  }, [onsaleNftList]);
+
 
   return (
     <>
-    <Count>결과 {onsaleNftList.length}개</Count>
+    {/* <Count>결과 {onsaleNftList.length}개</Count> */}
       { onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
       { !isLoadingApi &&
         onsaleNftList.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
