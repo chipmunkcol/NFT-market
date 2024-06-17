@@ -1,4 +1,4 @@
-export const pinStart = encodeURIComponent("20240531");
+export const pinStart = encodeURIComponent("20240617");
 
 // sample pinata url
 // const url = `https://api.pinata.cloud/data/pinList?
