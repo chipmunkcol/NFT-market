@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import { MintContract, SaleNftAddress } from "../../contracts/index";
 // import { toWei } from "web3-utils";
-import NftCard, * as Styled from "./NftCard";
+import * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
 import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";

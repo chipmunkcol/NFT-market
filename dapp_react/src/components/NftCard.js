@@ -24,3 +24,25 @@ export const Container = styled.div`
   font-size: 14px;
   text-align: center;
 `;
+
+  export const BgImg = styled.div`
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+  /* object-fit: cover; */
+  background-image: url(${(props) => props.$src});
+  background-size: 100%;
+  background-position: center;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    background-size: 110%;
+  }
+`;
+
+export const ImgWrap = styled.div`
+  width: 193px;
+  height: 200px;
+  border-top-right-radius: 0.75rem;
+  border-top-left-radius: 0.75rem;
+`;

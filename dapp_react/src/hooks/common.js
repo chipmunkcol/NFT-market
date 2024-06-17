@@ -7,12 +7,18 @@ import {
 } from "../../contracts/interface";
 
 export const getImageUrl = (imageIpfsHash) => {
-  return `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${imageIpfsHash}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`;
+  return `${
+    import.meta.env.VITE_GATEWAY_URL
+  }/ipfs/${imageIpfsHash}?pinataGatewayToken=${
+    import.meta.env.VITE_GATEWAY_TOKEN
+  }`;
 };
 
 export const getIpfsTokenData = async (tokenUrl) => {
   const res = await fetch(
-    `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${import.meta.env.VITE_GATEWAY_TOKEN}`
+    `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${
+      import.meta.env.VITE_GATEWAY_TOKEN
+    }`
     // `https://ipfs.io/ipfs/${tokenUrl}`
   );
   const resJson = await res.json();
@@ -598,3 +604,28 @@ export const getNewOnsaleNfts = (ipfsNftsList) => {
   });
   return newOnsaleNfts;
 };
+
+// export async function purchaseNftHandler(nftId) {
+//   try {
+//     const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+//     const updateResult = await P_updateMetadataPurchase(
+//       nftId,
+//       ipfsData,
+//       account
+//     );
+//     if (!updateResult.ok) return;
+
+//     const weiPrice = web3.utils.toWei(nftPrice, "ether");
+//     // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
+//     const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
+//     // console.log('res: ', res);
+//     if (res.status) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } catch (err) {
+//     console.log("err: ", err);
+//     return false;
+//   }
+// }
