@@ -31,7 +31,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
   const { handleWithLoading } = useAsyncTask();
   const { signer } = useContext(GlobalContext);
-  const isMyNft = account === owner?.toLowerCase();
+  const isMyNft = account?.toLowerCase() === owner?.toLowerCase();
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   const navigate = useNavigate();
 

@@ -205,12 +205,17 @@ export const P_removeMetadataAirdrop = async (tempIpfs, account) => {
 
 export const getCurrentTime = () => {
   const date = new Date();
-  // const year = date.getFullYear();
-  // const month = String(date.getMonth() + 1).padStart(2, "0");
-  // const day = String(date.getDate()).padStart(2, "0");
-
-  // return `${year}-${month}-${day}`;
   return String(date);
+};
+
+export const getCurrentDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hour = String(now.getHours()).padStart(2, "0");
+  const minute = String(now.getMinutes()).padStart(2, "0");
+  return `${year}.${month}.${day} ${hour}:${minute}`;
 };
 
 /**

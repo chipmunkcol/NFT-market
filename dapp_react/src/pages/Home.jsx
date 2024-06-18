@@ -16,7 +16,7 @@ import premiumCrown from '../assets/images/premium-crown.png';
 
 import Slider from "../components/Slider";
 import { S_Button } from "../styles/styledComponent";
-import { getImageUrl, getIpfsTokenData, getNewOnsaleNfts, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
+import { getCurrentDate, getImageUrl, getIpfsTokenData, getNewOnsaleNfts, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
 import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
@@ -168,7 +168,7 @@ function Home() {
             <RankingArea>
               <RankingTitle>
                 <h2>NFT 랭킹</h2>
-                <h4>2024.05.31 12:00 기준</h4>
+                <h4>{getCurrentDate()} 기준</h4>
               </RankingTitle>
               <RankingBox>
                 <FilterWrap>
@@ -189,7 +189,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [...dummyNfts].splice(0, 6).map(nft => (
+                  [...dummyNfts].splice(0, 6).reverse().map(nft => (
                     <MoveBgNftCard key={`home-bg-right-1-${nft.image}`} nft={nft} />
                   ))
                 }
@@ -198,7 +198,7 @@ function Home() {
             <TestWrap>
               <TestMovingBg>
                 {
-                  [...dummyNfts].splice(7, 13).reverse().map(nft => (
+                  [...dummyNfts].splice(7, 13).map(nft => (
                     <MoveBgNftCard key={`home-bg-right-2-${nft.image}`} nft={nft} direction={'up'} />
                   ))
                 }
@@ -215,7 +215,7 @@ function Home() {
                   <img src={goodHand} alt="good-hand" />
                 </TopPickImgWrap>
                 <h2>TOP 컬렉터의 NFT</h2>
-                <p>NFT에 진심인 그들의 선택은?</p>
+                <p>가장 인기있는 컬렉터의 NFT를 만나보세요</p>
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>

@@ -152,7 +152,7 @@ const MarketPlace = () => {
                   <ul onClick={collectionCategoryHandler}>
                     <h3>컬렉션</h3>
                     {
-                      ['pudge penguin', 'fake punks', '컬렉션 3', '컬렉션 4'].map(collection => (
+                      ['pudge penguin', 'fake funks'].map(collection => (
                         <NavButton key={`collection-category-${collection}`}>
                           {collection}
                         </NavButton>

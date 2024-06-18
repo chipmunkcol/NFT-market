@@ -60,7 +60,7 @@ function NftDetail() {
   }, []);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
-    if (metadata.owner === account) {
+    if (metadata.owner.toLowerCase() === account.toLowerCase()) {
       toastSwal('자신의 NFT는 구매할 수 없습니다.', 'warning');
       return;
     }
