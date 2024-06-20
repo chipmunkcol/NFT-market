@@ -158,7 +158,9 @@ function App() {
         refreshAccount(accounts);
 
         //signer
-        await setterSinger();
+        if (account) {
+          await setterSinger();
+        }
         window.ethereum.on("accountsChanged", refreshAccount);
       }
     };

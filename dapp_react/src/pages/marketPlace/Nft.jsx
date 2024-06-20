@@ -3,13 +3,13 @@ import OnsaleNftCard from "../../components/OnsaleNftCard";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useLocation, useOutletContext, useSearchParams } from "react-router-dom";
-import { getNftListAndCountToIpfs } from "../../hooks/common";
+import { getNftListAndCountToIpfs, isArraysEqual } from "../../hooks/common";
 import Spinner from "../../components/Spinner";
 import { pinStart } from "../../hooks/variables.";
 // import {tempNftArray} from "../../../../testJson/nftArray";
 
 const Nft = () => {
-  const { account } = useContext(GlobalContext);
+  const { account, onsaleNftRef } = useContext(GlobalContext);
   const [gridCss, setCount] = useOutletContext();
   const [isLoadingApi, setIsLoadingApi] = useState(false);
   const allNftCount = useRef(0);
@@ -51,15 +51,17 @@ const Nft = () => {
 
   const {search} = useLocation();
 
+  const [cache, setCache] = useState(true);
+
   const fetchNftList = async (url) => {
     const { ipfsDatas, count } = await getNftListAndCountToIpfs(url);
-    // if (!ipfsDatas) {
-    //   window.location.reload();
-    //   return;
-    // }
     allNftCount.current = count;
+    setCount(onsaleNftRef.current?.length);
+    if (isArraysEqual(ipfsDatas, onsaleNftRef.current)) return;
+    setCache(false);
     const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
     setOnsaleNftList(prev => [...prev, ...newOnsaleNfts]);
+    onsaleNftRef.current = ipfsDatas;
   }
 
   useEffect(() => {
@@ -130,9 +132,19 @@ const Nft = () => {
 
   return (
     <>
-    {/* <Count>결과 {onsaleNftList.length}개</Count> */}
-      { onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
-      { !isLoadingApi &&
+
+      { onsaleNftRef.current?.length < 1 && onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
+      { cache &&
+         <MarketWrap $gridCss={gridCss}>
+         {
+          onsaleNftRef.current?.length > 0 &&
+           getNewOnsaleNfts(onsaleNftRef.current).map(onsaleNft => (
+             <OnsaleNftCard key={`marketplace-nft-${onsaleNft.nftId}-${onsaleNft.tokenUrl}`} nft={onsaleNft} account={account} gridCss={gridCss} />
+           ))
+         }
+       </MarketWrap>
+      }
+      { !cache && !isLoadingApi &&
         onsaleNftList.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
           <MarketWrap $gridCss={gridCss}>
             {

@@ -26,6 +26,12 @@ import Sold from "./pages/mypageComponents/Sold.jsx";
 import NftDetail from "./pages/NftDetail";
 import { createBrowserRouter } from "react-router-dom";
 import CollectionNftDetail from "./pages/CollectionNftDetail.jsx";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -38,7 +44,7 @@ const router = createBrowserRouter([
       },
       {
         path: "market-place",
-        element: <MarketPlace />,
+        element: <QueryClientProvider client={queryClient}><MarketPlace /></QueryClientProvider>,
         children: [
           {
             path: "nft",
@@ -51,9 +57,6 @@ const router = createBrowserRouter([
         ],
       },
       {
-        // path: "nft-detail/:ipfsHash",
-        // path: "nft-detail/:ipfsHash/:nftId",
-        // element: <NftDetail />,
         path: "nft-detail",
         children: [
           {

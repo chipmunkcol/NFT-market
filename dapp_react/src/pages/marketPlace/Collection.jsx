@@ -3,20 +3,21 @@ import OnsaleNftCard from "../../components/OnsaleNftCard";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import { useLocation, useOutletContext, useSearchParams } from "react-router-dom";
-import { getNewOnsaleNfts, getNftListAndCountToIpfs } from "../../hooks/common";
+import { getNewOnsaleNfts, getNftListAndCountToIpfs, isArraysEqual } from "../../hooks/common";
 import Spinner from "../../components/Spinner";
 import { pinStart } from "../../hooks/variables.";
 
 // const tempNftKeyvalues = [{ "name": "CryptoKitty #123", "fileName": "test.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "jangkal cat", "fileName": "test10.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "borning monkey", "fileName": "test11.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "zeus", "fileName": "test12.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #222", "fileName": "test2.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #333", "fileName": "test3.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #111", "fileName": "test4.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #222", "fileName": "test5.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #333", "fileName": "test6.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #4444", "fileName": "test7.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }];
 
 const Collection = () => {
-  const { account } = useContext(GlobalContext);
+  const { account, onsaleCollectionRef } = useContext(GlobalContext);
   const [gridCss, setCount] = useOutletContext();
   const allNftCount = useRef(0);
   // 
   const [isLoadingApi, setIsLoadingApi] = useState(false);
   // const [offset, setOffset] = useState({ page: 0 });
   const [onsaleNftList, setOnsaleNftList] = useState([]);
+  const [cache, setCache] = useState(true);
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
@@ -37,8 +38,12 @@ const Collection = () => {
   const fetchNftList = async (url) => {
     const { ipfsDatas, count } = await getNftListAndCountToIpfs(url);
     allNftCount.current = count;
+    setCount(onsaleCollectionRef.current?.length * 10);
+    if (isArraysEqual(ipfsDatas, onsaleCollectionRef.current)) return;
+    setCache(false);
     const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
     setOnsaleNftList(prev => [...prev, ...newOnsaleNfts]);
+    onsaleCollectionRef.current = ipfsDatas;
   }
 
   useEffect(() => {
@@ -116,9 +121,20 @@ const Collection = () => {
 
   return (
     <>
-      {/* <Count>결과 {onsaleNftList.length}개</Count> */}
-      {onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />}
-      {!isLoadingApi &&
+      {/* {onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />} */}
+      {onsaleCollectionRef.current?.length < 1 && onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />}
+
+      {cache &&
+        <MarketWrap $gridCss={gridCss}>
+          {
+            onsaleCollectionRef.current?.length > 0 &&
+            getNewOnsaleNfts(onsaleCollectionRef.current).map(onsaleNft => (
+              <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} />
+            ))
+          }
+        </MarketWrap>
+      }
+      {!cache && !isLoadingApi &&
         onsaleNftList.length < 1 ? (<div style={{ padding: '30px' }}>판매중인 NFT가 없습니다.</div>) : (
         <MarketWrap $gridCss={gridCss}>
           {

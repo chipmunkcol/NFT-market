@@ -615,3 +615,23 @@ export const formatPrice = (nftPrice) => {
 export const commingSoon = () => {
   Swal.fire('준비중 입니다');
 }
+
+export function isArraysEqual(arr1, arr2) {
+  if (typeof(arr1) !== 'object' || typeof(arr2) !== 'object') return false;
+  // 두 배열의 길이가 다르면 false 반환
+  if (arr1?.length !== arr2?.length) return false;
+
+  // 각 배열의 객체들을 id로 정렬
+  arr1.sort((a, b) => a.id - b.id);
+  arr2.sort((a, b) => a.id - b.id);
+
+  // 정렬된 배열의 객체들의 id를 비교
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i].id !== arr2[i].id) {
+      return false;
+    }
+  }
+
+  // 모든 id가 같으면 true 반환
+  return true;
+}
