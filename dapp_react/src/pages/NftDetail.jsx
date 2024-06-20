@@ -8,11 +8,8 @@ import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
 import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
-import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
-import { SaleNftContract, web3 } from "../../contracts";
-import { transactWithPurchaseNft } from "../../contracts/interface";
 
 function NftDetail() {
   const params = useParams();
@@ -78,25 +75,6 @@ function NftDetail() {
       navigate(`/mypage/${account}`)
     } else {
       window.location.reload();
-    }
-  }
-
-  async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
-    try {
-      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, signer.address);
-      if (!updateResult.ok) return;
-
-      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
-      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: signer, value: weiPrice });
-      // console.log('res: ', res);
-      if (res.status) {
-        return true;
-      }
-    } catch (err) {
-      console.log('err: ', err);
-      return false;
     }
   }
 

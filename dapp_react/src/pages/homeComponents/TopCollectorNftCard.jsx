@@ -17,7 +17,7 @@ const TopCollectorNftCard = ({ nft }) => {
     if (nft?.isCollection === 'true') {
       navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
     } else {
-      navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
+      navigate(`/nft-detail/${nft.tokenUrl}/${nftId}`);
     }
   }
 

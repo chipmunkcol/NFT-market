@@ -1,8 +1,7 @@
 {
-  "name": "CryptoKitty #123",
-  "description": "A cute CryptoKitty that enjoys long walks on the beach.",
+  "name": "persona #2016",
+  "description": "It is a time capsule, reminding us of a cherished past. Its citizens, the Personas, are driven by their passions, whether it be sport, art, or fashion.",
   "image": "QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby",
-  "external_url": "https://opensea.io/assets/0x06012c8cf97bead5deae237070f9587f8e7a266d/123",
   "attributes": [
     {
       "trait_type": "Breed",

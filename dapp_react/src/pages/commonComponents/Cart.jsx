@@ -112,24 +112,22 @@ function Cart({ cartModalClose }) {
   const purchaseNftListHandler = async (nftList) => {
     try {
       let totalWeiPrice = 0;
-      const nftIds = nftList.map(nft => nft.nftId);
       for (const nft of nftList) {
-        const { nftId, nftPrice, tokenUrl } = nft;
+        totalWeiPrice += Number(web3.utils.toWei(nft.nftPrice, 'ether'));
+      }
+      const nftIds = nftList.map(nft => nft.nftId);
+      const res = await transactWithPurchaseNftList(signer, nftIds, String(totalWeiPrice));
+      if (!res.status) return false;
+
+      for (const nft of nftList) {
+        const { nftId, tokenUrl } = nft;
 
         const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-        const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
-        if (!updateResult.ok) return;
-
-        totalWeiPrice += Number(web3.utils.toWei(nftPrice, 'ether'));
+        await P_updateMetadataPurchase(nftId, ipfsData, account);
+        // if (!updateResult.ok) return;
       }
+      return true;
 
-      const res = await transactWithPurchaseNftList(signer, nftIds, String(totalWeiPrice));
-      if (res.status) {
-        return true;
-      } else {
-        return false;
-      }
-      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
     } catch (err) {
       console.log('err: ', err);
       return false;
@@ -139,13 +137,10 @@ function Cart({ cartModalClose }) {
   const purchaseController = async () => {
     const res = await handleWithLoading(() => purchaseNftListHandler(checkedList), 'NFT 구매 중입니다');
     if (res) {
-      // toastSwal('NFT 구매에 성공했습니다.');
-      // const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
+      await removeAllCartHandler();
       const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
       if (result.isConfirmed) {
         cartModalClose();
-        R_removeAllCartHandler();
-        removeAllCartHandler();
         navigate(`/mypage/${account}`);
       } else {
         window.location.reload();

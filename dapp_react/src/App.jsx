@@ -129,7 +129,7 @@ function App() {
       setBalance(balance);
 
       // signer
-      await setterSinger();
+      setterSinger();
     } else {
       Swal.fire("Please download metamask");
     }
@@ -242,8 +242,7 @@ function App() {
                   <img id="cart" src={iconCart} />
                 </IconWrap>
               </CartWrap>
-            </div>
-          )
+            </div>)
           }
           <Menubar>
             ☰

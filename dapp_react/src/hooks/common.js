@@ -536,25 +536,19 @@ export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
 
 export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
   try {
-    const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-    const updateResult = await P_updateMetadataPurchase(
-      nftId,
-      ipfsData,
-      signer.address
-    );
-    if (!updateResult.ok) return;
-
-    const weiPrice = web3.utils.toWei(nftPrice, "ether");
-    // const res = await SaleNftContract.methods
-    //   .purchaseNft(nftId)
-    //   .send({ from: account, value: weiPrice });
+    const weiPrice = web3.utils.toWei(nftPrice, 'ether');
     const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
-    // console.log('res: ', res);
-    if (res.status) {
+    if (!res.status) return false;
+
+    const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+    const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, signer.address);
+    if (!updateResult.ok) {
       return true;
+    } else {
+      return false;
     }
   } catch (err) {
-    console.log("err: ", err);
+    console.log('err: ', err);
     return false;
   }
 }
@@ -618,27 +612,6 @@ export const formatPrice = (nftPrice) => {
   return formattedNum;
 };
 
-// export async function purchaseNftHandler(nftId) {
-//   try {
-//     const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-//     const updateResult = await P_updateMetadataPurchase(
-//       nftId,
-//       ipfsData,
-//       account
-//     );
-//     if (!updateResult.ok) return;
-
-//     const weiPrice = web3.utils.toWei(nftPrice, "ether");
-//     // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
-//     const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
-//     // console.log('res: ', res);
-//     if (res.status) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   } catch (err) {
-//     console.log("err: ", err);
-//     return false;
-//   }
-// }
+export const commingSoon = () => {
+  Swal.fire('준비중 입니다');
+}

@@ -64,20 +64,18 @@ const NonSaleNftCard = ({ nft }) => {
 
     try {
       const price = Number(priceRef.current?.value);
-      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-      // console.log('ipfsData: ', ipfsData);
-
-      const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
-      if (!updateResult.ok) return;
-
-      // const approveResult = await MintContract.methods.approve(SaleNftAddress, nftId).send({ from: account });
       const approveResult = await transactWithApprove(signer, nftId);
-      // console.log('result: ', approveResult);
       if (!approveResult.status) return;
 
       const setOnsaleResult = await C_setOnsaleNft(signer, nftId, price);
-      if (setOnsaleResult.status) {
+      if (!setOnsaleResult.status) return;
+
+      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
+      const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
+      if (!updateResult.ok) {
         return true;
+      } else {
+        return false;
       }
     } catch (error) {
       console.error('Error setting onsale:', error);

@@ -6,7 +6,7 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
 import iconCart from "../assets/images/icon-cart-wh.png";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
@@ -41,10 +41,8 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       return;
     }
 
-    const res = await handleWithLoading(() => purchaseNftHandler(nftId), 'NFT 구매 중입니다');
+    const res = await handleWithLoading(() => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer), 'NFT 구매 중입니다');
     if (res) {
-      // toastSwal('NFT 구매에 성공했습니다.');
-      // const result = window.confirm(`NFT 구매 성공 \nMyPage로 확인하러 가기`);
       const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
       if (result.isConfirmed) {
         navigate(`/mypage/${account}`)
@@ -53,29 +51,6 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       }
     }
   };
-
-
-  async function purchaseNftHandler(nftId) {
-
-    try {
-      const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-      const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, account);
-      if (!updateResult.ok) return;
-
-      const weiPrice = web3.utils.toWei(nftPrice, 'ether');
-      // const res = await SaleNftContract.methods.purchaseNft(nftId).send({ from: account, value: weiPrice });
-      const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
-      // console.log('res: ', res);
-      if (res.status) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      console.log('err: ', err);
-      return false;
-    }
-  }
 
   // 장바구니에 담기
   const addCartHandler = async nft => {

@@ -190,15 +190,6 @@ function MintNft() {
 
       const tokenUrl = await pinJsonToIPFS(imageIpfsHash, metaData);
       if (tokenUrl) {
-        // const contractData = MintContract.methods.userMintNft(jsonData.name, tokenUrl).encodeABI();
-        // const provider = new ethers.BrowserProvider(window.ethereum);
-        // const signer = await provider.getSigner();
-        // const tx = await signer.sendTransaction({
-        //   to: MintAddress,
-        //   data: contractData
-        // });
-        // const receipt = await tx.wait();
-        // console.log('receipt: ', receipt.hash);
 
         const mintResult = await transactWithUserMintNft(signer, jsonData.name, tokenUrl);
         if (mintResult.status) {

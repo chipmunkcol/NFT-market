@@ -9,6 +9,8 @@ import iconGrid4 from '../assets/images/icon-grid4.png';
 import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { commingSoon } from "../hooks/common";
 // import { useNavigate, useHref, useMatch, useParams, useSearchParams } from 'react-router-dom'
 // import { useInView } from 'react-intersection-observer';
 
@@ -112,7 +114,7 @@ const MarketPlace = () => {
                 </IconWrap>
               </div>
               <div style={{ width: '240px', height: '48px' }}>
-                <Select >
+                <Select onClick={commingSoon}>
                   <option value='updated'>최신순</option>
                   <option value='row'>낮은 가격순</option>
                   <option value='high'>높은 가격순</option>
@@ -120,12 +122,12 @@ const MarketPlace = () => {
               </div>
               <IconContainer>
                 <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
-                  <IconList $iconPath={iconList} />
+                  <IconList onClick={commingSoon} $iconPath={iconList} />
                 </IconBox>
                 <IconBox onClick={grid5Hander}>
                   <IconList $iconPath={iconGrid4} />
                 </IconBox>
-                <IconBox onClick={grid7Hander} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
+                <IconBox onClick={commingSoon} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
                   <IconList $iconPath={iconGrid9} />
                 </IconBox>
               </IconContainer>
@@ -153,9 +155,11 @@ const MarketPlace = () => {
                     <h3>컬렉션</h3>
                     {
                       ['pudge penguin', 'fake funks'].map(collection => (
-                        <NavButton key={`collection-category-${collection}`}>
-                          {collection}
-                        </NavButton>
+                        <li key={`category-collection-${collection}`}>
+                          <NavButton>
+                            {collection}
+                          </NavButton>
+                        </li>
                       ))
                     }
                   </ul>
