@@ -74,7 +74,10 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
         const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
 
         if (!updateMetadataResult.ok) return;
-        toastSwal('장바구니에 담겼습니다.');
+        // pinata update 된 메타데이타 가져오는 시간이 꽤나 김...
+        setTimeout(() => {
+          toastSwal('장바구니에 담겼습니다.');
+        }, 3000);
       }
     } finally {
       setIsLoadingCart(false);

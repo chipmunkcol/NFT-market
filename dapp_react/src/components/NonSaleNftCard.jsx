@@ -72,7 +72,7 @@ const NonSaleNftCard = ({ nft }) => {
 
       const ipfsData = await getTargetNftToIpfsData(tokenUrl);
       const updateResult = await P_updateMetadataSetOnsale(nftId, ipfsData, price);
-      if (!updateResult.ok) {
+      if (updateResult.ok) {
         return true;
       } else {
         return false;

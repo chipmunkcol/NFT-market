@@ -546,7 +546,7 @@ export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
       ipfsData,
       signer.address
     );
-    if (!updateResult.ok) {
+    if (updateResult.ok) {
       return true;
     } else {
       return false;
