@@ -21,7 +21,7 @@ import iconProfile from "./assets/images/icon-profile-bk.png";
 import iconCart from "./assets/images/icon-cart.png";
 import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
-import { toastSwal } from "./hooks/swal";
+import { Confirm, toastSwal } from "./hooks/swal";
 import ScrollToTop from "./components/ScrollToTop";
 import { MintAddress, MintContract, web3 } from "../contracts";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
@@ -131,7 +131,10 @@ function App() {
       // signer
       setterSinger();
     } else {
-      Swal.fire("Please download metamask");
+      const res = await Confirm("메타마스크 지갑이 필요합니다", "지갑을 다운로드 하시겠습니까?");
+      if (res.isConfirmed) {
+        window.open("https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko", "_blank");
+      }
     }
   }
 

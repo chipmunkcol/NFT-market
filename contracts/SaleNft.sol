@@ -27,6 +27,23 @@ contract SaleNft {
     _;
   }
 
+  function getCartNfts(uint[] memory _nftIds) view public returns (OnsaleNftData[] memory) {
+    uint onsaleNftIdsLength = getOnsaleNftIdsLength();
+    require(onsaleNftIdsLength != 0, "There are no NFTs on sale");
+
+    OnsaleNftData[] memory onsaleNftData = new OnsaleNftData[](onsaleNftIdsLength);
+    for (uint i = 0; i < onsaleNftIdsLength; i++) {
+      uint nftId = onsaleNftIds[i];
+      if (_nftIds.findIndex(id => id == nftId) !== -1) {
+        string memory nftTokenUrl = mintContract.getTokenUrl(nftId);
+        uint nftPrice = nftPrices[nftId];
+
+        onsaleNftData[i] = OnsaleNftData(nftId, nftTokenUrl, nftPrice);
+      }
+    }
+    return onsaleNftData;
+  }
+
   // function approve(address to, uint256 tokenId) public virtual {
   //     _approve(to, tokenId, _msgSender());
   // }

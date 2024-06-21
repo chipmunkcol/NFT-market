@@ -33,15 +33,15 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    ),
     children: [
       {
         path: "",
-        element: (
-          <QueryClientProvider client={queryClient}>
-            <Home />
-          </QueryClientProvider>
-        ),
+        element: <Home />,
       },
       {
         path: "market-place",
