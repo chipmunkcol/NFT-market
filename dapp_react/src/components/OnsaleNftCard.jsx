@@ -36,6 +36,10 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   const navigate = useNavigate();
 
   const purchaseController = async () => {
+    if (!signer) {
+      toastSwal('메타마스크 지갑을 연결해주세요');
+      return;
+    }
     if (nftPrice === 0) {
       toastSwal('판매 등록되지 않은 nft입니다');
       return;
@@ -54,6 +58,10 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
 
   // 장바구니에 담기
   const addCartHandler = async nft => {
+    if (!signer) {
+      toastSwal('메타마스크 지갑을 연결해주세요');
+      return;
+    }
     setIsLoadingCart(true);
 
     try {

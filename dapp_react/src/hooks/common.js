@@ -46,7 +46,7 @@ export const ipfsPutOptions = (jsonKeyvalues) => {
 export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
   // const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
   const { isCollection } = ipfsData.metadata.keyvalues;
-  let jsonKeyvalues, numberOfSales, priceHistory;
+  let jsonKeyvalues, numberOfSales;
   if (isCollection === "true") {
     const collectionNftList = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
@@ -536,19 +536,23 @@ export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
 
 export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
   try {
-    const weiPrice = web3.utils.toWei(nftPrice, 'ether');
+    const weiPrice = web3.utils.toWei(nftPrice, "ether");
     const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
     if (!res.status) return false;
 
     const ipfsData = await getTargetNftToIpfsData(tokenUrl);
-    const updateResult = await P_updateMetadataPurchase(nftId, ipfsData, signer.address);
+    const updateResult = await P_updateMetadataPurchase(
+      nftId,
+      ipfsData,
+      signer.address
+    );
     if (!updateResult.ok) {
       return true;
     } else {
       return false;
     }
   } catch (err) {
-    console.log('err: ', err);
+    console.log("err: ", err);
     return false;
   }
 }
@@ -613,11 +617,11 @@ export const formatPrice = (nftPrice) => {
 };
 
 export const commingSoon = () => {
-  Swal.fire('준비중 입니다');
-}
+  Swal.fire("준비중 입니다");
+};
 
 export function isArraysEqual(arr1, arr2) {
-  if (typeof(arr1) !== 'object' || typeof(arr2) !== 'object') return false;
+  if (typeof arr1 !== "object" || typeof arr2 !== "object") return false;
   // 두 배열의 길이가 다르면 false 반환
   if (arr1?.length !== arr2?.length) return false;
 
@@ -635,3 +639,40 @@ export function isArraysEqual(arr1, arr2) {
   // 모든 id가 같으면 true 반환
   return true;
 }
+
+export const findNftsSoldExpensively = (ipfsList) => {
+  const nftList = ipfsList.map((ipfsData) => ({
+    ...ipfsData.metadata.keyvalues,
+    tokenUrl: ipfsData.ipfs_pin_hash,
+  }));
+
+  const expensiveNfts = [];
+  for (let i = 0; i < nftList.length; i++) {
+    if (!nftList[i].priceHistory) continue;
+    const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
+    const latestSoldPrice = targetNftPriceHistory[0].price;
+    if (latestSoldPrice > 0.19) {
+      // priceHistory
+      expensiveNfts.push(nftList[i]);
+    }
+  }
+  return expensiveNfts;
+};
+
+export const findTop10NumberOfSales = (ipfsList) => {
+  const nftList = ipfsList.map((ipfsData) => ({
+    ...ipfsData.metadata.keyvalues,
+    tokenUrl: ipfsData.ipfs_pin_hash,
+  }));
+
+  nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
+  return nftList.slice(0, 10);
+};
+
+export const findTopCollectorNfts = (ipfsDatas) => {
+  if (ipfsDatas.length === 0) return [];
+  const collections = ipfsDatas.map((ipfsData) => ipfsData.metadata.keyvalues);
+  collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
+  const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
+  return topCollectorNfts;
+};

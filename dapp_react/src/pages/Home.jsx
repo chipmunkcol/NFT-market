@@ -1,132 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useRef, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
-import { Web3 } from "web3";
-import { MintContract } from "../../contracts/index";
-import NonSaleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import styled from "styled-components";
-import bgMain from '../assets/images/bg-main.png';
-import test1 from '../assets/images/test/1.gif';
-import test2 from '../assets/images/test/2.png';
-import test3 from '../assets/images/test/3.png';
-import test4 from '../assets/images/test/4.png';
 import goodHand from '../assets/images/good-hand.png';
 import premiumCrown from '../assets/images/premium-crown.png';
 
 import Slider from "../components/Slider";
 import { S_Button } from "../styles/styledComponent";
-import { getCurrentDate, getImageUrl, getIpfsTokenData, getNewOnsaleNfts, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
+import { findNftsSoldExpensively, findTop10NumberOfSales, findTopCollectorNfts, getCurrentDate, getImageUrl, getIpfsTokenData, getNewOnsaleNfts, getNftListToIpfs, ipfsGetOptions } from "../hooks/common";
 import HomeNftCard from "./Create/homeComponents/HomeNftCard";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
 import Spinner from "../components/Spinner";
 import { dummyNfts } from "../components/dummyNfts";
 import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
-import { pinStart } from "../hooks/variables.";
-
-
-const temp = [{ name: 'test', image: 'QmRkVNwxQDPLYfMtymC4SPbRtTRGu8CWAabpVPpYSuUjby', price: 2 },
-{ name: 'test', image: 'QmTKwcbLe1P4Cq56omBtb2ocRmrfyRrUyxqA9LYSMjvcEB', price: 3 },
-{ name: 'test', image: 'QmWa8JvYYRpB2QfJbYvZkXsSts3rRZ1hzakAusbsikqZKr', price: 4 }
-]
+import { homeCollectionUrl, homeNftUrl, pinStart } from "../hooks/variables.";
+import { useQuery } from "@tanstack/react-query";
 
 // Detect the MetaMask Ethereum provider
 function Home() {
-  //state to store and show the connected account
-  // const [account, setAccount] =
-  //   useState("연결된 계정이 없습니다");
-  const { account } = useContext(GlobalContext);
+  const { data: nfts, isPending, isSuccess } = useQuery({
+    queryKey: ['home-nfts'],
+    queryFn: () => getNftListToIpfs(homeNftUrl)
+  });
+
+  const { data: collections, isPending: isPendingCollection, isSuccess: isSuccessCollection } = useQuery({
+    queryKey: ['home-collections'],
+    queryFn: () => getNftListToIpfs(homeCollectionUrl)
+  })
 
 
   const sliderRef = useRef(null);
 
-  // const handleNext = () => {
-  //   sliderRef.current.slideNext();
-  // }
-  // const handlePrev = () => {
-  //   sliderRef.current.slidePrev();
-  // }
-  // numberOfSales
-  const [isLoading, setIsLoading] = useState(false);
-  const [nftsSoldExpensively, setNftsSoldExpensively] = useState([]);
   const [nftsSoldExpensivelyIndex, setNftsSoldExpensivelyIndex] = useState(0);
 
-  const [top10Nfts, setTop10Nfts] = useState([]);
-  const findNftsSoldExpensively = nftList => {
-    const expensiveNfts = [];
-    for (let i = 0; i < nftList.length; i++) {
-      if (!nftList[i].priceHistory) continue;
-      const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
-      const latestSoldPrice = targetNftPriceHistory[0].price;
-      if (latestSoldPrice > 0.19) { // priceHistory
-        expensiveNfts.push(nftList[i]);
-      }
-    }
-    return expensiveNfts;
-  };
-
-  const findTop10NumberOfSales = nftList => {
-    nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
-    return nftList.slice(0, 10);
-  }
-
-  const getNftData = async () => {
-    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}`;
-    const ipfsList = await getNftListToIpfs(url);
-    const mintNftList = ipfsList.map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
-
-    const _nftsSoldExpensively = findNftsSoldExpensively(mintNftList);
-    const top10NftList = findTop10NumberOfSales(mintNftList);
-    setNftsSoldExpensively(_nftsSoldExpensively);
-    setTop10Nfts(top10NftList);
-  }
-
-
-  const [topCollectorNfts, setTopCollectorNfts] = useState([]);
   const [topCollectorNftsIndex, setTopCollectorNftsIndex] = useState(0);
 
-  const [isLoadingTopCollectorNfts, setIsLoadingTopCollectorNfts] = useState(false);
-
-
-  const findTopCollectorNfts = ipfsDatas => {
-    if (ipfsDatas.length === 0) return [];
-    const collections = ipfsDatas.map(ipfsData => ipfsData.metadata.keyvalues);
-    collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
-    const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
-    return topCollectorNfts;
-  }
-
-  const getCollectionData = async () => {
-    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"numberOfSales":{"value":"0","op":"gt"},"isCollection":{"value":"true","op":"eq"},"isHide":{"value":"false","op":"eq"}}`;
-    const ipfsDatas = await getNftListToIpfs(url);
-    const topCollectorNfts = findTopCollectorNfts(ipfsDatas);
-    setTopCollectorNfts(topCollectorNfts);
-  }
-
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      await getNftData();
-      setIsLoading(false);
-    }
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    async function fetchCollectorData() {
-      setIsLoadingTopCollectorNfts(true);
-      try {
-        await getCollectionData();
-      } finally {
-        setIsLoadingTopCollectorNfts(false);
-      }
-    }
-    fetchCollectorData();
-  }, []);
-
   const refreshTopCollectorNfts = () => {
-    if ((topCollectorNftsIndex + 1) * 3 < topCollectorNfts.length - 1) {
+    if (collections.length < 1) return;
+    if ((topCollectorNftsIndex + 1) * 3 < findTopCollectorNfts(collections).length - 1) {
       setTopCollectorNftsIndex(prev => prev + 3);
     } else {
       setTopCollectorNftsIndex(0);
@@ -134,7 +47,8 @@ function Home() {
   }
 
   const refreshNftsSoldExpensively = () => {
-    if (nftsSoldExpensivelyIndex < nftsSoldExpensively.length - 1) {
+    if (nfts.length < 1) return;
+    if (nftsSoldExpensivelyIndex < findNftsSoldExpensively(nfts).length - 1) {
       setNftsSoldExpensivelyIndex(prev => prev + 1);
     } else {
       setNftsSoldExpensivelyIndex(0);
@@ -178,9 +92,9 @@ function Home() {
                 </FilterWrap>
                 <ItemWrap>
                   {/* <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> */}
-                  {isLoading && <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} />}
-                  {!isLoading &&
-                    top10Nfts.map((nft, index) => (
+                  {isPending && <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} />}
+                  {isSuccess && nfts.length > 0 &&
+                    findTop10NumberOfSales(nfts).map((nft, index) => (
                       <Top10NftCard key={`top10Nfts-${nft.nftId}`} nft={nft} index={index} />
                     ))}
                 </ItemWrap>
@@ -219,10 +133,10 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoadingTopCollectorNfts && <Spinner />}
-                  {!isLoadingTopCollectorNfts &&
-                    topCollectorNfts.slice(topCollectorNftsIndex, topCollectorNftsIndex + 3).map(nft => (
-                      <TopCollectorNftCard nft={nft} />
+                  {isPendingCollection && <Spinner />}
+                  {isSuccessCollection && collections.length > 0 &&
+                    findTopCollectorNfts(collections).slice(topCollectorNftsIndex, topCollectorNftsIndex + 3).map(nft => (
+                      <TopCollectorNftCard key={`home-topCollectNfts-${nft.nftId}`} nft={nft} />
                     ))
                   }
                 </ul>
@@ -249,9 +163,9 @@ function Home() {
               </MainTitle>
               <div style={{ marginTop: '4rem' }}>
                 <ul style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem' }}>
-                  {isLoading && <Spinner />}
-                  {!isLoading && nftsSoldExpensively.length > 0 &&
-                    nftsSoldExpensively.slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => (
+                  {isPending && <Spinner />}
+                  {isSuccess && nfts.length > 0 &&
+                    findNftsSoldExpensively(nfts).slice(nftsSoldExpensivelyIndex, nftsSoldExpensivelyIndex + 1).map(nft => (
                       <TopCollectorNftCard key={`expensive-nft-${nft.nftId}`} nft={nft} />
                     ))
                   }
@@ -507,41 +421,3 @@ const Container = styled.div`
 //   background-color: rgba(0, 0, 0, 0.5);
 // `;
 export default Home;
-{/* Button to trigger Metamask connection */ }
-{/* <button onClick={() => connectMetamask()}>Connect to Metamask</button> */ }
-
-{/* Display the connected account */ }
-{/* <h2>{account}</h2>
-      <button onClick={onClickMint}>Mint 버튼</button>
-      {nftHash && <NonSaleNftCard nftHash={nftHash} />} */}
-
-
-// collection 도 ranking top price에 포함
-// const mintNftList = ipfsList.filter(ipfsData => !ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
-// const collectionGroup = ipfsList.filter(ipfsData => ipfsData.metadata.keyvalues.isCollection).map(ipfsData => ({ ...ipfsData.metadata.keyvalues, tokenUrl: ipfsData.ipfs_pin_hash }));
-
-// let collectionNftList = [];
-// collectionGroup.forEach(collection => {
-//   const parsedNftList = JSON.parse(collection.nftKeyvaluesList);
-//   const nftList = parsedNftList.map(nft => ({ ...nft, tokenUrl: collection.tokenUrl }));
-//   collectionNftList = [...collectionNftList, ...nftList];
-// });
-
-// const nftList = [...mintNftList, ...collectionNftList];
-
-// const findTopCollectorNfts = nftList => {
-//   if (nftList.length === 0) return [];
-//   const priceHistory = JSON.parse(nftList[0].priceHistory);
-//   let soldPrice = priceHistory[0]?.price;
-//   let maxPriceSoldNft = nftList[0];
-//   for (let i = 0; i < nftList.length; i++) {
-//     const targetNftPriceHistory = JSON.parse(nftList[i].priceHistory);
-//     const latestSoldPrice = targetNftPriceHistory[0].price;
-//     if (latestSoldPrice > soldPrice) { // priceHistory
-//       soldPrice = latestSoldPrice;
-//       maxPriceSoldNft = nftList[i];
-//     }
-//   }
-//   const MaxPriceSoldCollectorNfts = nftList.filter(nft => nft.tokenUrl === maxPriceSoldNft.tokenUrl);
-//   return MaxPriceSoldCollectorNfts;
-// };
