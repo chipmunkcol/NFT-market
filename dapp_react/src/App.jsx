@@ -24,6 +24,7 @@ import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { Confirm, toastSwal } from "./hooks/swal";
 import ScrollToTop from "./components/ScrollToTop";
 import { MintAddress, MintContract, web3 } from "../contracts";
+import Profile from "./pages/commonComponents/Profile";
 // import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
 
 // import Slider from "./components/Slider";
@@ -202,6 +203,15 @@ function App() {
     toastSwal("Copied to clipboard");
   }
 
+  // Profile 컴포넌트 (mypage & faucet)
+  const [profileModal, setProfileModal] = useState(false);
+  const profileModalOpen = () => {
+    setProfileModal(true);
+  }
+  const profileModalClose = () => {
+    setProfileModal(false);
+  }
+
   return (
     <>
       {/* <ScrollToTop /> */}
@@ -237,11 +247,13 @@ function App() {
                 <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
                 <div>ETH {balance}</div>
               </div>
-              <Link to={`/mypage/${account}`}>
+              {/* <Link to={`/mypage/${account}`}> */}
+              <ProfileWrap onClick={profileModalOpen}>
                 <IconWrap>
                   <img id="profile" src={iconProfile} />
                 </IconWrap>
-              </Link>
+              </ProfileWrap>
+              {/* </Link> */}
               <CartWrap onClick={cartModalOpen}>
                 <IconWrap>
                   <img id="cart" src={iconCart} />
@@ -252,6 +264,8 @@ function App() {
           <Menubar>
             ☰
           </Menubar>
+          {/* Profile Component */}
+          {profileModal && <Profile profileModalClose={profileModalClose} />}
           {/* Cart Component */}
           {cartModal && <Cart cartModalClose={cartModalClose} />}
         </Header>
@@ -283,6 +297,9 @@ const MainIconWrap = styled.div`
 // `;
 
 const CartWrap = styled.div`
+  cursor: pointer;
+`;
+const ProfileWrap = styled.div`
   cursor: pointer;
 `;
 

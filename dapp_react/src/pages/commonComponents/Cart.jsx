@@ -20,7 +20,7 @@ function Cart({ cartModalClose }) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { handleWithLoading } = useAsyncTask();
-  const onclick = e => {
+  const stopPropagation = e => {
     e.stopPropagation();
   }
 
@@ -150,7 +150,7 @@ function Cart({ cartModalClose }) {
 
   return (
     <Overlay onClick={cartModalClose}>
-      <Container onClick={onclick}>
+      <Container onClick={stopPropagation}>
         <div style={{ width: '100%', padding: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #cccccc' }}>
           <h2>Your cart</h2>
           <h4>Price : {cartPrice} ETH</h4>
