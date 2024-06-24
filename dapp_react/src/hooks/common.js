@@ -591,11 +591,13 @@ export const getTruncatedAccount = (account) => {
 };
 
 export const getNewOnsaleNfts = (ipfsNftsList) => {
+  if (!ipfsNftsList) return;
   let newOnsaleNfts = [];
   ipfsNftsList.forEach((data) => {
-    const collectionIpfs = data.ipfs_pin_hash;
+    const collectionIpfs = data?.ipfs_pin_hash;
+    if (!data.metadata.keyvalues.nftKeyvaluesList) return;
     const parsedCollectionNftList = JSON.parse(
-      data.metadata.keyvalues.nftKeyvaluesList
+      data.metadata.keyvalues?.nftKeyvaluesList
     );
 
     const newCollectionNftList = parsedCollectionNftList.map((v) => ({
