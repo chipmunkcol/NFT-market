@@ -6,20 +6,17 @@ import { useLocation, useOutletContext, useSearchParams } from "react-router-dom
 import { getNftListAndCountToIpfs, isArraysEqual } from "../../hooks/common";
 import Spinner from "../../components/Spinner";
 import { pinStart } from "../../hooks/variables.";
+import { useQuery } from "@tanstack/react-query";
 // import {tempNftArray} from "../../../../testJson/nftArray";
 
 const Nft = () => {
-  const { account, onsaleNftRef } = useContext(GlobalContext);
+  const { account, } = useContext(GlobalContext);
   const [gridCss, setCount] = useOutletContext();
-  const [isLoadingApi, setIsLoadingApi] = useState(false);
-  const allNftCount = useRef(0);
-  const [offset, setOffset] = useState({ page: 0 });
-  const [onsaleNftList, setOnsaleNftList] = useState([]);
+  // const [isLoadingApi, setIsLoadingApi] = useState(false);
+  // const [onsaleNftList, setOnsaleNftList] = useState([]);
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
   const category = searchParams.get('category');
-  const offsetRef = useRef(0);
-  console.log('offset: ', offsetRef.current);
 
   const encodedSearchQuery = encodeURIComponent(
     query
@@ -29,8 +26,8 @@ const Nft = () => {
     `%${category}%`
   );
 
-  // ipfsNftsList[0].metadata.keyvalues
   const getPreviousPrice = priceHistory => {
+    if (!priceHistory) return;
     const parsedPriceHistory = JSON.parse(priceHistory);
     if (parsedPriceHistory.length < 1) return 0;
 
@@ -51,118 +48,51 @@ const Nft = () => {
 
   const {search} = useLocation();
 
-  const [cache, setCache] = useState(true);
-
   const fetchNftList = async (url) => {
     const { ipfsDatas, count } = await getNftListAndCountToIpfs(url);
-    allNftCount.current = count;
-    setCount(onsaleNftRef.current?.length);
-    if (isArraysEqual(ipfsDatas, onsaleNftRef.current)) return;
-    setCache(false);
-    const newOnsaleNfts = getNewOnsaleNfts(ipfsDatas);
-    setOnsaleNftList(prev => [...prev, ...newOnsaleNfts]);
-    onsaleNftRef.current = ipfsDatas;
+    setCount(count);
+    return ipfsDatas;
   }
 
-  useEffect(() => {
-    const resetData = () => {
-      offsetRef.current = 0;
-      allNftCount.current = 0;
-      setOnsaleNftList([]);
-    };
-
-    resetData();
-  }, [search]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoadingApi(true);
-
-      const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-      const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-      const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-      
-      const currentUrl = query ? queryUrl : category ? categoryUrl : url;
-      try {
-        await fetchNftList(currentUrl);
-      } finally {
-        setIsLoadingApi(false);
+  const { data: onsaleNftList, isPending, isSuccess } = useQuery({
+    queryKey: ['marketplace_nft', search],
+    queryFn: () => {
+      const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageLimit=1000&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+      const queryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageLimit=1000&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+      const categoryUrl = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageLimit=1000&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+      if (query) {
+        return fetchNftList(queryUrl);
+      } else if (category) {
+        return fetchNftList(categoryUrl);
+      } else {
+        return fetchNftList(url);
       }
-
-    };
-
-    fetchData();
-  }, [search]);
-  // }, [offset, search]);
-  // }, [onsaleNftsInContract, query, offset, onsaleTrigger, purchaseTrigger]);
-
-  // 무한스크롤 구현
-  const [isLoading, setIsLoading] = useState(false);
-  const observerRef = useRef(null);
-
-  const infiniteScrollHandler = async () => {
-    setIsLoading(true);
-    // setOffset({ page: offsetRef.current + 1 });
-    offsetRef.current = offsetRef.current + 1;
-    const url = `https://api.pinata.cloud/data/pinList?pinStart=${pinStart}&pageOffset=${offsetRef.current * 10}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
-    try {
-      await fetchNftList(url);
-    } finally {
-      setIsLoading(false);
     }
-  }
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entryies) => {
-      if (entryies[0].isIntersecting && !isLoading && allNftCount.current - 10 > offsetRef.current * 10) {
-        infiniteScrollHandler();
-      }
-    }, { threshold: 1 });
-
-    observerRef.current = observer;
-    observer.observe(document.querySelector('#observer-target'));
-
-    return () => observer.disconnect();
-  }, [isLoading]);
-
-  useEffect(() => {
-    setCount(onsaleNftList.length);
-  }, [onsaleNftList]);
+  });
 
 
   return (
     <>
-
-      { onsaleNftRef.current?.length < 1 && onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
-      { cache &&
-         <MarketWrap $gridCss={gridCss}>
-         {
-          onsaleNftRef.current?.length > 0 &&
-           getNewOnsaleNfts(onsaleNftRef.current).map(onsaleNft => (
-             <OnsaleNftCard key={`marketplace-nft-${onsaleNft.nftId}-${onsaleNft.tokenUrl}`} nft={onsaleNft} account={account} gridCss={gridCss} />
-           ))
-         }
-       </MarketWrap>
-      }
-      { !cache && !isLoadingApi &&
-        onsaleNftList.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
+      { isPending && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
+      { isSuccess && onsaleNftList &&
+        getNewOnsaleNfts(onsaleNftList)?.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
           <MarketWrap $gridCss={gridCss}>
-            {
-              onsaleNftList.map(onsaleNft => (
+            {onsaleNftList &&
+              getNewOnsaleNfts(onsaleNftList).map(onsaleNft => (
                 <OnsaleNftCard key={`marketplace-nft-${onsaleNft.nftId}-${onsaleNft.tokenUrl}`} nft={onsaleNft} account={account} gridCss={gridCss} />
               ))
             }
           </MarketWrap>
         )
       }
-      <div id="observer-target" style={{ width: '100%', height: '1px', backgroundColor: 'transparent' }}></div>
+      {/* <div id="observer-target" style={{ width: '100%', height: '1px', backgroundColor: 'transparent' }}></div>
       {
         isLoading && <Spinner _custom={{
           color: '#3498db',
           size: '20px',
           height: '100px'
         }} />
-      }
+      } */}
     </>
   )
 }
