@@ -11,11 +11,21 @@
 
 ## 2-1. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
 
-=> (5/29) SC가 맞을듯 IPFS에서 불러오더라도 SC와 체킹하는 과정이 필요할듯
+=> (5/29) SC가 맞을듯 IPFS에서 불러오더라도 SC와 체킹하는 과정이 필요함
 정교하게 코딩해도 sc 와 ipfs api 둘중 하나의 call이 실패하는 경우를 막을 수가 없음
 물론 쿼리할 때 추가 state를 컨트롤 해야돼서 가스비가 증가하겠지만 별수 없는듯하다
 
-- IPFS 장단점
+=> (6/24) SC가 맞다는데는 변함은 없지만 내 DApp이 얼만큼 decentralize 하게 만들거냐에 따라 pinata가 아닌 개인 db
+를 사용하는 것은 필요할듯하다.
+state를 잔뜩 만들어서 SC를 커스텀하는것도 좋지만 (그치만 가스비는 누가내죠..?) SC에 모든걸 맡기기엔 UX가
+급격히 안좋아진다 모든 state 변경에는 가스비가 들 뿐 아니라 스마트 컨트렉트 통신자체가 일반적인(중앙집권화된)DB와의 api call과 비교해 속도가 매우 느림
+그래도 위 고민을 가장많이 했던 건 marketplace 페이지였는데 여긴 sc로 하는게 맞는것 같다 pinata 로 커스텀해서
+이것저것 보여준건 좋았는데 sc와 pinata 를 둘다 api post 하는게 100% 가 아닌이상 app 완성도가 너무 떨어지게됨
+거래마다 2개의 post api call하느라 에러처리나 코드의 분기점이 너무 많아져 중간부터 리팩토링이고 뭐고 코드 치기 바빴음..
+
+- sc로 해도 useQuery로 캐싱해서 최대한 대응할만 한듯
+
+* IPFS 장단점
 
 1. 메타데이터 수정 가능 (name, desc 등 변경 가능)
    => (5/29)기본적으로 nft data는 opensea의 json 형태이고(name, description, image, attributes)
@@ -33,8 +43,13 @@
 
 - IPFS 장단점
 
-1. 그냥 커스텀하기가 너무 좋아서 이쪽이 맞는거 같음 nft 민팅 시에 해당 내용을 metadata에 저장 후에 query로 구현하는게 용이해보임 배포시 속도와 가스비는 덤이고, 무엇보다 내가 sc쪽 전문으로 구현하는게 아니니까 내쪽에서 해결해보는걸로 하자
-   Pinata 관련 내용[https://docs.pinata.cloud/pinning/listing-files]
+(6/3) 그냥 커스텀하기가 너무 좋아서 이쪽이 맞는거 같음 nft 민팅 시에 해당 내용을 metadata에 저장 후에 query로 구현하는게 용이해보임 배포시 속도와 가스비는 덤이고, 무엇보다 내가 sc쪽 전문으로 구현하는게 아니니까 내쪽에서 해결해보는걸로 하자
+Pinata 관련 내용[https://docs.pinata.cloud/pinning/listing-files]
+
+(6/25) 당시엔 pinata로 판단해서 구현했는데 get은 tokenUrl 에 대한 json 값만 가져오고 나머지는 sc에서 get 해오는게
+좋아보임 내용은 2-1 (6/24 작성과 유사)
+
+## 2-3.
 
 ## 0. 그냥 이것저것
 
