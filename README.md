@@ -839,3 +839,7 @@ interface IERC721 is IERC165 {
 
 아래 구문 추가하니까 정상 작동 하는데 뭔가 찝찝쓰
 => thumbs={{swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null}}
+
+## 참고 자료
+
+()[]
