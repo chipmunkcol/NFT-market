@@ -6,7 +6,6 @@ import { useState } from "react";
 import { GlobalContext } from "./context/GlobalContext";
 import { useContext } from "react";
 
-// import { MintContract } from "../contracts/index";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { Web3 } from "web3";
 import { ethers } from 'ethers';
@@ -15,22 +14,13 @@ import Cart from "./pages/commonComponents/Cart";
 import MainSpinner from "./components/MainSpinner";
 import { getTruncatedAccount } from "./hooks/common";
 import Footer from "./components/Footer";
-import Swal from "sweetalert2";
 
 import iconProfile from "./assets/images/icon-profile-bk.png";
 import iconCart from "./assets/images/icon-cart.png";
 import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { Confirm, toastSwal } from "./hooks/swal";
-import ScrollToTop from "./components/ScrollToTop";
-import { MintAddress, MintContract, web3 } from "../contracts";
 import Profile from "./pages/commonComponents/Profile";
-// import { ReactComponent as opensea } from "./assets/images/opensea-symbol.svg"
-
-// import Slider from "./components/Slider";
-// import { useRef } from "react";
-
-// Detect the MetaMask Ethereum provider
 
 function App() {
 
@@ -41,35 +31,16 @@ function App() {
 
   const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  const $header = document.getElementById('header');
-  const changeheaderCss = (color, bgColor) => {
-    const $header = document.getElementById('header');
-    if (!$header) return;
+  const [headerTheme, setHeaderTheme] = useState('light');
 
-    $header.style.color = color;
-    $header.style.backgroundColor = bgColor;
-    $header.style.transition = 'color 0.5s ease-in-out, background-color 0.5s ease-in-out';
-  }
-
-  const changePathOfProfileAndCart = (profileSrc, cartSrc) => {
-    if (!account) return;
-    const $profile = document.getElementById('profile');
-    const $cart = document.getElementById('cart');
-    if (!$profile || !$cart) return;
-
-    $profile.src = profileSrc;
-    $cart.src = cartSrc;
-  }
 
   const handleScroll = e => {
     const scrollPosition = e.currentTarget.scrollY;
 
     if (scrollPosition === 0) {
-      changeheaderCss('#f0f0f1', '#161618');
-      changePathOfProfileAndCart(iconProfileWh, iconCartWh);
-    } else if (scrollPosition !== 0 && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
-      changeheaderCss('black', 'white');
-      changePathOfProfileAndCart(iconProfile, iconCart);
+      setHeaderTheme('dark');
+    } else if (scrollPosition !== 0 && headerTheme === 'dark') {
+      setHeaderTheme('light');
     }
     setLastScrollTop(scrollPosition);
   };
@@ -85,11 +56,9 @@ function App() {
 
   useEffect(() => {
     if (location.pathname === '/') {
-      changeheaderCss('#f0f0f1', '#161618');
-      changePathOfProfileAndCart(iconProfileWh, iconCartWh)
-    } else if (location.pathname !== '/' && $header?.style.backgroundColor === 'rgb(22, 22, 24)') {
-      changeheaderCss('black', 'white');
-      changePathOfProfileAndCart(iconProfile, iconCart);
+      setHeaderTheme('dark');
+    } else if (location.pathname !== '/' && headerTheme === 'dark') {
+      setHeaderTheme('light');
     }
   }, [location.pathname, account]);
 
@@ -218,7 +187,7 @@ function App() {
       <ScrollRestoration />
       <MainSpinner />
       <Container>
-        <Header id="header">
+        <Header id="header" $headertheme={headerTheme}>
           <Navbar>
             <Link to={'/'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -250,13 +219,15 @@ function App() {
               {/* <Link to={`/mypage/${account}`}> */}
               <ProfileWrap onClick={profileModalOpen}>
                 <IconWrap>
-                  <img id="profile" src={iconProfile} />
+                  {/* <img id="profile" src={headerTheme === 'dark' ? iconProfileWh : iconProfile} /> */}
+                  <div id="profile" $headertheme={headerTheme} />
                 </IconWrap>
               </ProfileWrap>
               {/* </Link> */}
               <CartWrap onClick={cartModalOpen}>
                 <IconWrap>
-                  <img id="cart" src={iconCart} />
+                  {/* <img id="cart" src={headerTheme === 'dark' ? iconCart : iconCartWh} /> */}
+                  <div id="cart" $headertheme={headerTheme} />
                 </IconWrap>
               </CartWrap>
             </div>)
@@ -312,26 +283,30 @@ const IconWrap = styled.div`
     border-color: transparent;
     background-color: rgba(18, 18, 18, 0.04);
     ${props => props.theme.variables.flex};
-  img {
+  #profile {
     width: 25px;
     height: 25px;
+    background-image: ${props => props.children.props.$headertheme === 'dark' ? `url(${iconProfileWh})` : `url(${iconProfile})`};
+    background-position: center;
+    background-size: cover;
+    transition: background-image 0.2s ease-in-out;
   }
+  #cart {
+    width: 25px;
+    height: 25px;
+    /* background-image: ${props => props.children.props.$headertheme === 'dark' ? `url(${iconCartWh})` : `url(${iconCart})`}; */
+    background-image: url(${props => props.children.props.$headertheme === 'light' ? iconCart : iconCartWh});
+    background-position: center;
+    background-size: cover;
+    transition: background-image 0.2s ease-in-out;
+  }
+  
 `;
 
 const ContainerHome = styled.div`
   width: 100%;
   /* height: 100%; */
 `;
-// const Background = styled.div`
-//   /* height: 100%; */
-//   padding-top: 100px;
-//   width: 100%;
-//   background-image: url(${bgMain});
-//   background-position: center;
-//   background-repeat: no-repeat;
-//   background-size: cover;
-// `;
-
 const Container = styled.div`
   /* position: relative; */
   /* width: 100vw; */
@@ -351,11 +326,12 @@ const Header = styled.div`
   /* margin-top: 100px; */
   padding: 0 50px 0 2rem;
   /* background-color: rgba(0, 0, 0, 0.7); */
-  background-color: #ffffff;
-  color: black;
+  background-color: ${props => props.$headertheme === 'dark' ? '#161618' : '#ffffff'};
+  color: ${props => props.$headertheme === 'dark' ? '#f0f0f1' : '#161618'};
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 `;
 const Menubar = styled.div`
   display: none;

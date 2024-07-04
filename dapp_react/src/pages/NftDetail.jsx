@@ -44,19 +44,19 @@ function NftDetail() {
     async function fetchMetadata() {
       const res = await getTargetNftToIpfsData(ipfsHash);
       const _metadata = res.metadata.keyvalues;
-      console.log('metadata: ', _metadata);
       const priceHistory = JSON.parse(_metadata.priceHistory);
-      console.log('priceHistory: ', priceHistory);
       const newPriceHistory = getNewPriceHistory(priceHistory);
       setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: newPriceHistory });
-      // let temp = [{ soldTime: '2024-05-01', nftPrice: 0.1 }, { soldTime: '2024-05-06', nftPrice: 0.7 },
-      // { soldTime: '2024-05-11', nftPrice: 1.3 }, { soldTime: '2024-05-20', nftPrice: 3 }];
-      // setMetadata({ ..._metadata, tokenUrl: ipfsHash, priceHistory: temp });
     }
     fetchMetadata();
   }, []);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
+    if (account === '' || !account) {
+      toastSwal('메타마스크 지갑을 연결해주세요.', 'warning');
+      return;
+    }
+
     if (metadata.owner.toLowerCase() === account.toLowerCase()) {
       toastSwal('자신의 NFT는 구매할 수 없습니다.', 'warning');
       return;
@@ -79,6 +79,11 @@ function NftDetail() {
   }
 
   const addCartController = async (metadata, account) => {
+    if (account === '' || !account) {
+      toastSwal('메타마스크 지갑을 연결해주세요.', 'warning');
+      return;
+    }
+
     if (metadata.owner === account) {
       toastSwal('자신의 NFT는 장바구니에 담을 수 없습니다.', 'warning');
       return;

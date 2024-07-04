@@ -88,6 +88,11 @@ function CollectionNftDetail() {
   }, [metadata]);
 
   const purchaseController = async (nftId, tokenUrl, nftPrice, account) => {
+    if (account === '' || !account) {
+      toastSwal('메타마스크 지갑을 연결해주세요.', 'warning');
+      return;
+    }
+
     if (metadata.owner.toLowerCase() === account.toLowerCase()) {
       toastSwal('자신의 NFT는 구매할 수 없습니다.', 'warning');
       return;
@@ -110,6 +115,11 @@ function CollectionNftDetail() {
   }
 
   const addCartController = async (metadata, account) => {
+    if (account === '' || !account) {
+      toastSwal('메타마스크 지갑을 연결해주세요.', 'warning');
+      return;
+    }
+
     if (metadata.owner === account) {
       toastSwal('자신의 NFT는 장바구니에 담을 수 없습니다.', 'warning');
       return;
