@@ -32,12 +32,14 @@ export const Container = styled.div`
   border-top-left-radius: 0.75rem;
   /* object-fit: cover; */
   background-image: url(${(props) => props.$src});
-  background-size: 100%;
   background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: all 0.3s ease-in-out;
+  /* background-size: 100%;
   &:hover {
     background-size: 110%;
-  }
+  } */
 `;
 
 export const ImgWrap = styled.div`

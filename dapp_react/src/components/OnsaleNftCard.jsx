@@ -173,12 +173,22 @@ const BgImg = styled.div`
   border-top-left-radius: 0.75rem;
   /* object-fit: cover; */
   background-image: url(${props => props.$src});
-  background-size: 100%;
   background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   transition: all 0.3s ease-in-out;
-  &:hover {
+
+  /* 이거 화면 width 애매할 때 image 보여주는게 애매해져서 일단 보류 */
+  /* background-size: 100%; */
+  /* &:hover {
     background-size: 110%;
-  }
+  } */
+  /* @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    background-size: cover;
+    &:hover {
+      background-size: cover;
+    }
+  } */
 `;
 
 const Content = styled.div`

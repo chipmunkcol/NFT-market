@@ -87,6 +87,12 @@ const MarketPlace = () => {
   // nft 갯수
   const [count, setCount] = useState(0);
 
+  // 카테고리 숨기기
+  const [categoryHidden, setCategoryHidden] = useState(false);
+  const toggleCategoryHidden = () => {
+    setCategoryHidden(prev => !prev);
+  }
+
   return (
     <Background>
       <Container>
@@ -106,20 +112,20 @@ const MarketPlace = () => {
           </div>
           <div style={{ padding: '10px 0' }}>
             <FlexWrap>
-              <div style={{ width: '77px' }}>결과 {count}개</div>
-              <div style={{ position: 'relative', width: '400px', height: '48px' }}>
+              <NftCount>결과 {count}개</NftCount>
+              <InputWrap >
                 <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
                 <IconWrap onClick={searchNfts}>
                   <IconFind />
                 </IconWrap>
-              </div>
-              <div style={{ width: '240px', height: '48px' }}>
+              </InputWrap>
+              <SelectBox>
                 <Select onClick={commingSoon}>
                   <option value='updated'>최신순</option>
                   <option value='row'>낮은 가격순</option>
                   <option value='high'>높은 가격순</option>
                 </Select>
-              </div>
+              </SelectBox>
               <IconContainer>
                 <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
                   <IconList onClick={commingSoon} $iconPath={iconList} />
@@ -135,7 +141,7 @@ const MarketPlace = () => {
           </div>
         </FixArea>
         <div style={{ paddingTop: '130px' }}>
-          <FlexWrap style={{ alignItems: 'normal' }} >
+          <MainBox $categoryHidden={categoryHidden} >
             <LeftPart>
               <CategoryBox>
                 <div>
@@ -169,12 +175,21 @@ const MarketPlace = () => {
             <RightPart>
               <Outlet context={[gridCss, setCount]} />
             </RightPart>
-          </FlexWrap>
+          </MainBox>
         </div>
       </Container>
     </Background>
   );
 }
+
+const SelectBox = styled.div`
+  width: 240px;
+  height: 48px;
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
+`;
 
 const NavButton = styled.button`
   padding: 12px 24px;
@@ -234,6 +249,12 @@ const FixArea = styled.div`
   position: fixed;
   background-color: white;
   z-index: 1;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 92%;
+    h1 {
+      font-size: 24px;
+    }
+  }
 `;
 
 const IconContainer = styled.div`
@@ -245,7 +266,21 @@ const IconContainer = styled.div`
   padding: 0.125rem;
   background-color: #f8f8f8;
   border-radius: 0.75rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
+
+const InputWrap = styled.div`
+/* style={{ position: 'relative', width: '400px', height: '48px' }} */
+  position: relative;
+  height: 48px;
+  width: 400px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 68%;
+  }
+`;
+
 const IconWrap = styled.div`
   position: absolute;
   top: 25%;
@@ -295,11 +330,25 @@ const Select = styled.select`
   padding: 0 0.75rem !important;
 `;
 
+const NftCount = styled.div`
+  width: 77px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    font-size: 14px;
+  }
+`;
+
 const FlexWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+  /* @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    justify-content: normal;
+  } */
+`;
+
+const MainBox = styled.div`
+display: flex;
+    gap: 20px;
 `;
 
 const Background = styled.div`
@@ -314,11 +363,13 @@ const Background = styled.div`
 `;
 
 const LeftPart = styled.div`
-  width: 16%;
+  /* width: 16%; */
+  width: 175px;
 `;
 const RightPart = styled.div`
-  width: 84%;
+  /* width: 84%; */
   /* padding-left: 1rem; */
+  width: calc(100% - 175px);
   text-align: center;
 `;
 
@@ -328,6 +379,9 @@ const Container = styled.div`
   color: black;
 
   padding: 0rem 2rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 0rem 1rem;
+  }
 `;
 
 

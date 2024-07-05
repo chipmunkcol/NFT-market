@@ -100,18 +100,13 @@ const Nft = () => {
 export default Nft;
 
 
-const Count = styled.div`
-    position: fixed;
-    z-index: 10;
-    top: 29%;
-    left: 32px;
-    font-size: 14px;
-`;
-
 const MarketWrap = styled.div`
   display: grid;
   grid-template-columns: ${props => props.$gridCss.gridTemplateColumns};
   gap: ${props => props.$gridCss.gap};
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `;
 
   // contract nfts 와 ipfs nfts 를 비교하여 같은 nfts 를 반환

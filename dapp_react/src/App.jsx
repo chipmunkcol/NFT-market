@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link, Outlet, ScrollRestoration, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
 // import bgMain from './assets/images/bg-main.png';
 import { GlobalContext } from "./context/GlobalContext";
@@ -23,56 +23,94 @@ import { Confirm, toastSwal } from "./hooks/swal";
 import Profile from "./pages/commonComponents/Profile";
 import Menubar from "./pages/commonComponents/Menubar";
 
-let myFunctionTimer;
+// let myFunctionTimer;
 function App() {
 
   const { account, setAccount, setSigner } = useContext(GlobalContext);
   const [balance, setBalance] = useState(0);
   const location = useLocation();
-  // console.log('location: ', location);
+  console.log('location: ', location);
 
   const [headerTheme, setHeaderTheme] = useState('light');
+  const myFunctionTimerRef = useRef(null);
 
+  useEffect(() => {
+    if (location.pathname === '/') {
+      setHeaderTheme('dark');
+      window.addEventListener('scroll', handleScroll);
+    } else {
+      setHeaderTheme('light');
+      window.removeEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [location.pathname]);
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY;
     if (scrollPosition === 0) {
       setHeaderTheme('dark');
-    } else if (scrollPosition !== 0 && headerTheme === 'dark') {
+    } else {
       setHeaderTheme('light');
     }
+
+    if (myFunctionTimerRef.current) {
+      clearTimeout(myFunctionTimerRef.current);
+    }
+    myFunctionTimerRef.current = setTimeout(() => {
+      console.log('scroll');
+    }, 100);
   };
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      window.addEventListener('scroll', () => {
-        if (myFunctionTimer) {
-          clearTimeout(myFunctionTimer);
-        }
-        myFunctionTimer = setTimeout(() => {
-          handleScroll();
-          console.log('scroll');
-        }, 100);
-      });
-    }
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [headerTheme]);
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      setHeaderTheme('dark');
-    } else if (location.pathname !== '/' && headerTheme === 'dark') {
-      setHeaderTheme('light');
-    }
-  }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname === '/') {
       window.scrollTo(0, 0);
     }
-  }, [location.pathname])
+  }, [location.pathname]);
+
+  // useEffect(() => {
+  //   if (location.pathname === '/') {
+  //     window.scrollTo(0, 0);
+  //   }
+  // }, [location.pathname])
+
+  // const handleScroll = () => {
+  //   const scrollPosition = window.scrollY;
+  //   if (scrollPosition === 0 && location.pathname === '/') {
+  //     setHeaderTheme('dark');
+  //   } else if (scrollPosition !== 0 && headerTheme === 'dark') {
+  //     setHeaderTheme('light');
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (location.pathname === '/') {
+  //     window.addEventListener('scroll', () => {
+  //       if (myFunctionTimer) {
+  //         clearTimeout(myFunctionTimer);
+  //       }
+  //       myFunctionTimer = setTimeout(() => {
+  //         handleScroll();
+  //         console.log('scroll');
+  //       }, 100);
+  //     });
+  //   } else {
+  //     window.removeEventListener('scroll', handleScroll);
+  //   }
+  //   return () => {
+  //     window.removeEventListener('scroll', handleScroll);
+  //   };
+  // }, [headerTheme, location.pathname]);
+
+  // useEffect(() => {
+  //   if (location.pathname === '/') {
+  //     setHeaderTheme('dark');
+  //   } else if (location.pathname !== '/' && headerTheme === 'dark') {
+  //     setHeaderTheme('light');
+  //   }
+  // }, [location.pathname]);
 
 
   /**
@@ -348,9 +386,9 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  /* @media (max-width: ${({ theme }) => theme.size.mobile}) {
-    height: 48px;
-  } */
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+  padding: 0 50px 0 1rem;
+  }
 `;
 const MenubarBtn = styled.div`
   display: none;

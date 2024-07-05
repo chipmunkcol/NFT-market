@@ -77,7 +77,7 @@ position: fixed;
   width: 100vw;
   z-index: 998;
   /* margin-top: 100px; */
-  padding: 0 50px 0px 2rem;
+  padding: 0 50px 1rem 1rem;
   /* background-color: rgba(67, 46, 46, 0.7); */
   background-color: ${props => props.$headertheme === 'dark' ? '#161618' : '#ffffff'};
   color: ${props => props.$headertheme === 'dark' ? '#f0f0f1' : '#161618'};
