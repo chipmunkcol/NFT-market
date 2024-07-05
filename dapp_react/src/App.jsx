@@ -21,6 +21,7 @@ import iconProfileWh from "./assets/images/icon-profile-wh.png";
 import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { Confirm, toastSwal } from "./hooks/swal";
 import Profile from "./pages/commonComponents/Profile";
+import Menubar from "./pages/commonComponents/Menubar";
 
 let myFunctionTimer;
 function App() {
@@ -214,10 +215,10 @@ function App() {
                 <div style={{ height: '30px', borderRight: '1.4px solid #12121214', paddingLeft: '10px' }} />
               </div>
             </Link>
-            <Link to={'/market-place/nft'}>
+            <Link to={'/market-place/nft'} id="nav-marketplace">
               <Nav>Marketplace</Nav>
             </Link>
-            <Link to={'/create'}>
+            <Link to={'/create'} id="nav-create">
               <Nav>Create</Nav>
             </Link>
           </Navbar>
@@ -250,10 +251,11 @@ function App() {
           {profileModal && <Profile profileModalClose={profileModalClose} />}
           {/* Cart Component */}
           {cartModal && <Cart cartModalClose={cartModalClose} />}
-          <Menubar onClick={menubarToggle}>
+          <MenubarBtn onClick={menubarToggle}>
             ☰
-          </Menubar>
+          </MenubarBtn>
         </Header>
+        {menubar && <Menubar menubarClose={menubarClose} cartModalOpen={cartModalOpen} connectMetamask={connectMetamask} headerTheme={headerTheme} />}
         {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
         <ContainerHome>
           {/* <Background> */}
@@ -346,11 +348,11 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  @media (max-width: ${({ theme }) => theme.size.mobile}) {
-    /* height: 48px; */
-  }
+  /* @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    height: 48px;
+  } */
 `;
-const Menubar = styled.div`
+const MenubarBtn = styled.div`
   display: none;
   font-size: 24px;
   cursor: pointer;
@@ -371,9 +373,17 @@ const Navbar = styled.div`
   align-items: center;
   gap: 50px;
   
-  @media (max-width: ${({ theme }) => theme.size.mobile}) {
-    display: none;
-    gap: 30px;
+  #nav-marketplace {
+    @media (max-width: ${({ theme }) => theme.size.mobile}) {
+      display: none;
+      gap: 30px;
+    }
+  }
+  #nav-create {
+    @media (max-width: ${({ theme }) => theme.size.mobile}) {
+      display: none;
+      gap: 30px;
+    }
   }
 `;
 
