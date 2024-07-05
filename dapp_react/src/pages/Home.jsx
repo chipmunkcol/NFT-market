@@ -121,7 +121,7 @@ function Home() {
           </div>
         </S_Background>
         <div style={{ marginTop: '-2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }}>
+          <FlexBox>
             <TopPicksBox>
               <BgTitle>TOP <br /> COLLECTOR</BgTitle>
               <MainTitle>
@@ -182,7 +182,7 @@ function Home() {
                 </ButtonArea>
               </div>
             </HighestPriceBox>
-          </div>
+          </FlexBox>
         </div>
       </Container>
     </Background>
@@ -204,6 +204,17 @@ const ButtonBox = styled.div`
     color: #6c707b;
   }
   cursor: pointer;
+`;
+const FlexBox = styled.div`
+  /* style={{ display: 'flex', justifyContent: 'center', gap: '2rem' }} */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    gap: 0;
+  }
 `;
 
 const ItemWrap = styled.ul`
@@ -233,8 +244,12 @@ const FilterItem = styled.li`
   }
 `;
 const RankingArea = styled.div`
-  width: 50%;
   padding: 3rem 1rem;
+  width: 50%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+    padding: 1rem 1rem;
+  }
 `;
 const RankingBox = styled.div`
   width: 100%;
@@ -270,6 +285,10 @@ const HighestPriceBox = styled.div`
   border-radius: 8px;
   color: #101010;
   text-align: center;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+    border-radius: 0;
+  }
 `;
 const TopPicksBox = styled.div`
   position: relative;
@@ -285,7 +304,10 @@ const TopPicksBox = styled.div`
   color: #101010;
   border-radius: 8px;
   text-align: center;
-  
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+    border-radius: 0;
+  }
 `;
 
 const MainTitle = styled.div`
@@ -364,28 +386,19 @@ const TestWrap = styled.div`
   /* width: 100px; */
   height: 800px;
   background-color: #161618;
+
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
 
 const TestMovingBg = styled.div`
-  /* display: flex;
-  flex-direction: column; */
   ${props => props.theme.variables.flexColumn};
   gap: 2rem;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* background-image: url('');
-  background-size: cover;
-  background-repeat: repeat-y;
-  animation: move-background 5s linear infinite;
-
-  @keyframes move-background {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 100% 0 ;
-      /* background-position: 0 100%; */
 `;
 
 const S_Background = styled.div`

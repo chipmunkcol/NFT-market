@@ -17,7 +17,7 @@ export default function Footer() {
 
   return (
     <Container>
-      <FlexBox style={{ gap: '10rem' }}>
+      <FlexBoxGap>
         <MailPart>
           <h2>Stay in the loop</h2>
           <p>
@@ -71,9 +71,9 @@ export default function Footer() {
             </ul>
           </div>
         </CommunityPart>
-      </FlexBox>
-      <div style={{ width: '100%', height: '1px', borderBottom: '1px solid rgba(229, 232, 235, 0.25)', padding: '2rem' }}></div>
-      <FlexBox style={{ padding: '4rem 6rem 0 0', justifyContent: 'space-between' }}>
+      </FlexBoxGap>
+      <Line />
+      <FlexBoxPadding >
         <IntroductionPart>
           <div>
             <LogoWrap>
@@ -88,7 +88,7 @@ export default function Footer() {
             and discover exclusive digital items.
           </p>
         </IntroductionPart>
-        <div style={{ display: 'flex', gap: '4rem' }}>
+        <CategoryWrap>
           <MarketPlacePart>
             <h3>Marketplace</h3>
             <ul>
@@ -129,11 +129,32 @@ export default function Footer() {
               <li>OpenSea DAO</li>
             </ul>
           </CompanyPart>
-        </div>
-      </FlexBox>
+        </CategoryWrap>
+      </FlexBoxPadding>
     </Container>
   )
 }
+
+const Line = styled.div`
+/* style={{ width: '100%', height: '1px', borderBottom: '1px solid rgba(229, 232, 235, 0.25)', padding: '2rem' }} */
+width: 100%;
+height: 1px;
+border-bottom: 1px solid rgba(229, 232, 235, 0.25);
+padding: 2rem 0;
+margin-bottom: 2rem;
+@media (max-width: ${({ theme }) => theme.size.mobile}) {
+  padding: 1rem 0;
+}
+`;
+
+const CategoryWrap = styled.div`
+/* div style={{ display: 'flex', gap: '4rem' }} */
+display: flex;
+gap: 4rem;
+@media (max-width: ${({ theme }) => theme.size.mobile}) {
+  display: none;
+}
+`;
 const LogoWrap = styled.div`
   width: 50px;
   height: 50px;
@@ -155,6 +176,10 @@ const MarketPlacePart = styled.div`
   }
   ul {
     ${props => props.theme.variables.flexGap('column', '10px')};
+  }
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
   }
 `;
 const MyAccountPart = styled(MarketPlacePart)``;
@@ -189,9 +214,19 @@ width: 30px;
   height: 20px;
 `;
 
-const FlexBox = styled.div`
+const FlexBoxGap = styled.div`
   display: flex;
-  /* justify-content: space-between; */
+  justify-content: space-between;
+  /* @media (max-width: ${({ theme }) => theme.size.mobile}) {
+  } */
+`;
+const FlexBoxPadding = styled.div`
+  display: flex;
+  justify-content: space-between;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    /* gap: 0;
+    flex-direction: column; */
+  }
 `;
 
 const MailPart = styled.div`
@@ -220,8 +255,15 @@ const MailPart = styled.div`
   p {
     line-height: 20px;
   }
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
-const CommunityPart = styled(MailPart)`
+const CommunityPart = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   ul {
       ${props => props.theme.variables.flex};
       gap: 10px;

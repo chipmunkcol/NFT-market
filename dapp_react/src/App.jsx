@@ -22,6 +22,7 @@ import iconCartWh from "./assets/images/icon-cart-wh.png";
 import { Confirm, toastSwal } from "./hooks/swal";
 import Profile from "./pages/commonComponents/Profile";
 
+let myFunctionTimer;
 function App() {
 
   const { account, setAccount, setSigner } = useContext(GlobalContext);
@@ -29,30 +30,34 @@ function App() {
   const location = useLocation();
   // console.log('location: ', location);
 
-  const [lastScrollTop, setLastScrollTop] = useState(0);
-
   const [headerTheme, setHeaderTheme] = useState('light');
 
 
-  const handleScroll = e => {
-    const scrollPosition = e.currentTarget.scrollY;
-
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY;
     if (scrollPosition === 0) {
       setHeaderTheme('dark');
     } else if (scrollPosition !== 0 && headerTheme === 'dark') {
       setHeaderTheme('light');
     }
-    setLastScrollTop(scrollPosition);
   };
 
   useEffect(() => {
     if (location.pathname === '/') {
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener('scroll', () => {
+        if (myFunctionTimer) {
+          clearTimeout(myFunctionTimer);
+        }
+        myFunctionTimer = setTimeout(() => {
+          handleScroll();
+          console.log('scroll');
+        }, 100);
+      });
     }
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollTop, location.pathname, account]);
+  }, [headerTheme]);
 
   useEffect(() => {
     if (location.pathname === '/') {
@@ -60,7 +65,7 @@ function App() {
     } else if (location.pathname !== '/' && headerTheme === 'dark') {
       setHeaderTheme('light');
     }
-  }, [location.pathname, account]);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (location.pathname === '/') {
@@ -181,6 +186,15 @@ function App() {
     setProfileModal(false);
   }
 
+  // 메뉴바 드롭다운
+  const [menubar, setMenubar] = useState(false);
+  const menubarToggle = () => {
+    setMenubar(prev => !prev);
+  }
+  const menubarClose = () => {
+    setMenubar(false);
+  }
+
   return (
     <>
       {/* <ScrollToTop /> */}
@@ -232,13 +246,13 @@ function App() {
               </CartWrap>
             </div>)
           }
-          <Menubar>
-            ☰
-          </Menubar>
           {/* Profile Component */}
           {profileModal && <Profile profileModalClose={profileModalClose} />}
           {/* Cart Component */}
           {cartModal && <Cart cartModalClose={cartModalClose} />}
+          <Menubar onClick={menubarToggle}>
+            ☰
+          </Menubar>
         </Header>
         {/* path에 따라 Outlet 만 변하고 Nav와 Footer은 고정 */}
         <ContainerHome>
@@ -332,10 +346,13 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    /* height: 48px; */
+  }
 `;
 const Menubar = styled.div`
   display: none;
-  font-size: 36px;
+  font-size: 24px;
   cursor: pointer;
 
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
