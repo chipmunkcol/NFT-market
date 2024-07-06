@@ -53,7 +53,7 @@ const Collection = () => {
     }
   });
   return (
-    <>
+    <Container>
       {/* {onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />} */}
       {isPending && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />}
       {isSuccess && onsaleNftList &&
@@ -75,13 +75,13 @@ const Collection = () => {
           height: '100px'
         }} />
       } */}
-    </>
+    </Container>
   )
 }
 
 export default Collection;
 
-
+const Container = styled.div``;
 
 const MarketWrap = styled.div`
   display: grid;

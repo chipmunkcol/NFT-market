@@ -72,7 +72,7 @@ const Nft = () => {
 
 
   return (
-    <>
+    <Container>
       { isPending && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} /> }
       { isSuccess && onsaleNftList &&
         getNewOnsaleNfts(onsaleNftList)?.length < 1 ? (<div style={{ padding:'30px' }}>판매중인 NFT가 없습니다.</div>) : (
@@ -93,11 +93,13 @@ const Nft = () => {
           height: '100px'
         }} />
       } */}
-    </>
+    </Container>
   )
 }
 
 export default Nft;
+
+const Container = styled.div``;
 
 
 const MarketWrap = styled.div`

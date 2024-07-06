@@ -352,36 +352,6 @@ const HighBgTitle = styled(BgTitle)`
 `;
 
 
-const ImgWrap = styled.div`
-  width: 100px;
-  height: 148px;
-`;
-const Img = styled.img`
-  width: 100%;
-  height: 148px;
-  object-fit: cover;
-  border-radius: 10px;
-  filter: brightness(0.2);
-  transition: filter 0.3s ease;
-
-  animation: move-image 30s linear infinite;
-  cursor: pointer;
-  &:hover {
-      filter: brightness(1);
-  }
-
-@keyframes move-image {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-`;
 const TestWrap = styled.div`
   /* width: 100px; */
   height: 800px;

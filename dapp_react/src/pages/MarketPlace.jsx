@@ -379,13 +379,19 @@ const Background = styled.div`
 
 const LeftPart = styled.div`
   /* width: 16%; */
-  /* width: 175px; */
+  width: 175px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: auto;
+  }
 `;
 const RightPart = styled.div`
   /* width: 84%; */
   /* padding-left: 1rem; */
-  /* width: calc(100% - 175px); */
   text-align: center;
+  width: calc(100% - 175px);
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
 
 const Container = styled.div`
