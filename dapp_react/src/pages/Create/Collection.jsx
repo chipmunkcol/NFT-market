@@ -106,8 +106,10 @@ function Collection() {
             />
           </LeftPart>
 
-          {/* router_Outlet */}
-          <Outlet context={{ files, setFiles }} />
+          <RightPart>
+            {/* router_Outlet */}
+            <Outlet context={{ files, setFiles }} />
+          </RightPart>
         </FlexBox>
       </Container>
     </Background>
@@ -127,6 +129,10 @@ const FlexBox = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 5rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
 
 const LeftPart = styled.div`
@@ -137,11 +143,19 @@ const LeftPart = styled.div`
   }
 `;
 
+const RightPart = styled.div`
+  width: 44%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
+`;
+
 
 const InputFileBox = styled.div`
   width: 100%;
   height: 100%;
   max-height: 555px;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;

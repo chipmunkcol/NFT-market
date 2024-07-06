@@ -215,7 +215,7 @@ function C_step2() {
 
 
   return (
-    <RightPart>
+    <Container>
       <div style={{ marginBottom: '20px', }}>NFT 총 수량 {files?.length}개</div>
       <InputLabel>Collection Name</InputLabel>
       <InputText type="text" onChange={onchangeNameData} value={collection.name} />
@@ -225,22 +225,21 @@ function C_step2() {
       <InputText type="date" onChange={onChangeStartAtData} value={collection.startAt} />
       <div>
         <h2 style={{ marginBottom: '10px' }}>사전 공개</h2>
-        <div style={{ display: 'flex' }}>
-          <div style={{ width: '70%' }}>
+        <PreviewWrap>
+          <ContentWrap>
             <div style={{ marginBottom: '10px' }}>컬렉션의 각 NFT에는 최종 자산을 업로드하고 <br />
               공개할 때까지 사전 공개 미디어가 표시됩니다
             </div>
             <div style={{ marginBottom: '10px', color: 'blue', cursor: 'pointer' }}>더 알아보기</div>
             <InputLabel>사전 공개 설명</InputLabel>
             <InputTextArea
-              style={{ width: '80%', height: '100px' }}
               placeholder="Bycl monkey is Comming soon!"
               onChange={onchangePreReleaseDesc}
               value={collection.preReleaseJsonData.description}
             />
 
-          </div>
-          <PreReleaseWrap>
+          </ContentWrap>
+          <ImageWrap>
             <div style={{ height: '150px' }}>
               <div style={{ height: '100%', backgroundColor: '#f3f4f6', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer' }} onClick={onClickFileHandler}>
                 {!collection.preReleaseJsonData.file ? (
@@ -266,8 +265,8 @@ function C_step2() {
               </div>
             </div>
             <div style={{ height: '52px', padding: '1rem' }}>myCollection</div>
-          </PreReleaseWrap>
-        </div>
+          </ImageWrap>
+        </PreviewWrap>
       </div>
       <h2 style={{ marginBottom: '10px' }}>수익에 대해</h2>
       <p style={{ marginBottom: '10px' }}>
@@ -310,13 +309,20 @@ function C_step2() {
         </div>
       </div>
 
-    </RightPart>
+    </Container>
   )
 }
 
 const OpenseaSymbol = styled(openseaSymbol)`
   width: 20px;
   height: 20px;
+`;
+
+const ContentWrap = styled.div`
+  width: 70%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
 
 const PreviewFile = styled.div`
@@ -372,11 +378,17 @@ const RateBox = styled.div`
   border: 1px solid rgba(18, 18, 18, 0.12);
 `;
 
-const PreReleaseWrap = styled.div`
-  /* display: flex;
-  flex-direction: column;
-  justify-content: center; */
+const PreviewWrap = styled.div`
+  display: flex;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    margin-bottom: 2rem;
+  }
+`;
+
+const ImageWrap = styled.div`
   width: 30%;
+  min-width: 160px;
   height: 202px;
   border-radius: 12px;
   overflow: hidden;
@@ -397,8 +409,7 @@ const InputText = styled.input`
 
 // const InputSpecific = styled(InputText)``;
 
-const RightPart = styled.div`
-  width: 44%;
+const Container = styled.div`
 `;
 const InputLabel = styled.div`
   margin-bottom: 0.75rem;
@@ -407,7 +418,7 @@ const InputLabel = styled.div`
 
 const InputTextArea = styled.textarea`
   width: 100%;
-  height: 48px;
+  height: 100px;
   padding: 0.75rem;
   border: 1px solid rgba(18, 18, 18, 0.32);
   border-radius: 5px;

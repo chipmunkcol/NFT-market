@@ -60,7 +60,7 @@ function C_step() {
   }
 
   return (
-    <RightPart>
+    <Container>
       <div style={{ marginBottom: '20px' }}>
         <h2>No. #{collectionIndex + 1} </h2>
         <h3>총 수량 {collection.nfts.length} 개</h3>
@@ -111,10 +111,11 @@ function C_step() {
       <Link to={"/create-collection/step-2"}>
         <S_Button >다음</S_Button>
       </Link>
-    </RightPart>
+    </Container>
   )
 }
 
+const Container = styled.div``;
 
 const InputText = styled.input`
   width: 100%;
