@@ -97,7 +97,7 @@ const MarketPlace = () => {
     <Background>
       <Container>
         <FixArea>
-          <div style={{ display: 'flex', alignItems: 'end', gap: '50px', padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }}>
+          <TitleBox>
             <h1>MarketPlace</h1>
             <div>
               <Link to={'nft'}>
@@ -109,7 +109,7 @@ const MarketPlace = () => {
                 <NavMain style={{ color: !isNftPath ? '#007bff' : 'black' }}>COLLECTION</NavMain>
               </Link>
             </div>
-          </div>
+          </TitleBox>
           <div style={{ padding: '10px 0' }}>
             <FlexWrap>
               <NftCount>결과 {count}개</NftCount>
@@ -202,6 +202,9 @@ const NavButton = styled.button`
     background-color: rgba(18, 18, 18, 0.04);
     /* border: 1px solid #f6f6f6; */
   }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    min-width: 100px;
+  }
 `;
 
 const NavMain = styled.span`
@@ -214,6 +217,18 @@ const NavMain = styled.span`
   cursor: pointer;
   &:hover {
     color: #2081e2cc;
+  }
+`;
+
+const TitleBox = styled.div`
+/* div style={{ display: 'flex', alignItems: 'end', gap: '50px', padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }} */
+  display: flex;
+  align-items: end;
+  gap: 50px;
+  padding: 10px 0 20px 0;
+  border-bottom: 1px solid #cccccc;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    gap: 20px;
   }
 `;
 
@@ -364,12 +379,12 @@ const Background = styled.div`
 
 const LeftPart = styled.div`
   /* width: 16%; */
-  width: 175px;
+  /* width: 175px; */
 `;
 const RightPart = styled.div`
   /* width: 84%; */
   /* padding-left: 1rem; */
-  width: calc(100% - 175px);
+  /* width: calc(100% - 175px); */
   text-align: center;
 `;
 

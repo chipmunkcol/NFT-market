@@ -17,7 +17,8 @@ export const Img = styled.img`
 
 export const Container = styled.div`
   position: relative;
-  max-width: 193px;
+  /* min-width: 193px; */
+  width: 193px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 15px;
   padding-bottom: 1rem;
@@ -25,7 +26,7 @@ export const Container = styled.div`
   text-align: center;
 `;
 
-  export const BgImg = styled.div`
+export const BgImg = styled.div`
   width: 100%;
   height: 100%;
   border-top-right-radius: 0.75rem;

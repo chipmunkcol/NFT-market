@@ -35,19 +35,19 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
       {/* 원래 header 부분 */}
       <Dropdown>
         <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <li><Link to={'/'}>Home</Link></li>
-          <li><Link to={'/market-place/nft'}>Marketplace</Link></li>
-          <li><Link to={'/create'}>Create</Link></li>
+          <Link to={'/'}><li>Home</li></Link>
+          <Link to={'/market-place/nft'}><li>Marketplace</li></Link>
+          <Link to={'/create'}><li>Create</li></Link>
           {
             account &&
             <>
-              <li><Link to={`/mypage/${account}`}>Mypage</Link></li>
+              <Link to={`/mypage/${account}`}><li>Mypage</li></Link>
               <li onClick={cartModalOpen}>Cart</li>
-              <li>
-                <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} >
+              <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} >
+                <li>
                   Faucet
-                </Link>
-              </li>
+                </li>
+              </Link>
             </>
           }
         </ul>

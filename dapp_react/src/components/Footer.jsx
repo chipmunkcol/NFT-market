@@ -261,6 +261,7 @@ const MailPart = styled.div`
   }
 `;
 const CommunityPart = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -282,9 +283,12 @@ const Container = styled.div`
     color: rgb(255, 255, 255);
     height: auto;
     width: 100%;
-    padding: 3rem 2rem 3rem 2rem;
     background-color: rgb(24, 104, 183);
     position: absolute;
     /* bottom: 0; */
     z-index: 998;
+    padding: 3rem 2rem 3rem 2rem;
+    @media (max-width: ${({ theme }) => theme.size.mobile}) {
+      padding: 3rem 1rem;
+    }
 `;

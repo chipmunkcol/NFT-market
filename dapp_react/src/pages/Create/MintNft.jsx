@@ -384,6 +384,10 @@ const FlexBox = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 5rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
 
 const LeftPart = styled.div`
@@ -391,6 +395,7 @@ const LeftPart = styled.div`
 
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     width: 100%;
+    height: 300px;
   }
 `;
 
@@ -457,6 +462,9 @@ const InputSpecific = styled(InputText)``;
 
 const RightPart = styled.div`
   width: 44%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
 const InputLabel = styled.div`
   margin-bottom: 0.75rem;
