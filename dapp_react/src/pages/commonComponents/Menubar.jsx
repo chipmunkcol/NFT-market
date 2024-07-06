@@ -11,7 +11,7 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
     <Container $headertheme={headerTheme}>
       <Header>
         <div>
-          <Link to={'/'}>
+          <Link to={'/'} onClick={menubarClose}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <MainIconWrap>
                 <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
@@ -35,15 +35,15 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
       {/* 원래 header 부분 */}
       <Dropdown>
         <ul style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Link to={'/'}><li>Home</li></Link>
-          <Link to={'/market-place/nft'}><li>Marketplace</li></Link>
-          <Link to={'/create'}><li>Create</li></Link>
+          <Link to={'/'} onClick={menubarClose}><li>Home</li></Link>
+          <Link to={'/market-place/nft'} onClick={menubarClose}><li>Marketplace</li></Link>
+          <Link to={'/create'} onClick={menubarClose}><li>Create</li></Link>
           {
             account &&
             <>
-              <Link to={`/mypage/${account}`}><li>Mypage</li></Link>
-              <li onClick={cartModalOpen}>Cart</li>
-              <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} >
+              <Link to={`/mypage/${account}`} onClick={menubarClose}><li>Mypage</li></Link>
+              <li onClick={() => { cartModalOpen(); menubarClose() }}>Cart</li>
+              <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} onClick={menubarClose} >
                 <li>
                   Faucet
                 </li>

@@ -38,12 +38,22 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const MyNftsWrap = styled.ul`
+export const MyNftsWrap = styled.ul`
   display: inline-grid;
   grid-template-columns: repeat(4, 1fr);
 
   gap: 20px;
-  padding: 1rem 0;
+  padding: 1rem 1rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    padding: 1rem 0rem;
+  }
+  
+  @media (max-width: 380px) {
+    grid-template-columns: repeat(1, 1fr);
+    padding: 1rem 1rem;
+  }
 `;
 
 export default All;

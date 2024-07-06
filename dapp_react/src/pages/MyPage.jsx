@@ -98,7 +98,7 @@ const MyPage = () => {
           </P_Info>
         </ProfileContainer>
       
-        <div style={{ position: 'relative', display: 'flex', flexDirection:'column', padding: '1rem 2rem', minHeight:'100px', gap: '30px', marginTop: "20px" }}>
+        <NavContainer>
           <div style={{ position: 'absolute', top: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
           <div style={{ display:'flex' }}>
             <NavButton>
@@ -117,9 +117,9 @@ const MyPage = () => {
           </div>
           <div style={{ position: 'absolute', bottom: '0px', width: 'calc(100% - 2rem)', height: '1px', borderBottom: '1px solid #cccccc' }}></div>
 
-        </div>
+        </NavContainer>
 
-        <FlexWrap $justifyContent={'space-between'} style={{ padding: '1rem 2rem', maxHeight:'500px' }}>
+        <MainBox >
           <LeftPart>
             <div>
                 <Link to={""}>
@@ -153,12 +153,37 @@ const MyPage = () => {
           <RightPart>
             <Outlet />
           </RightPart>
-        </FlexWrap>
+        </MainBox>
 
       </Container>
     </Background>
   );
 };
+
+const NavContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 2rem;
+  min-height: 100px;
+  gap: 30px;
+  margin-top: 20px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 1rem 1rem;
+  }
+`;
+
+const MainBox = styled.div`
+/* $justifyContent={'space-between'} style={{ padding: '1rem 2rem', maxHeight:'500px' }} */
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  max-height: 500px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    padding: 1rem 0rem;
+  }
+`;
 
 const NavButton = styled.button`
   padding: 12px 24px;
@@ -181,6 +206,9 @@ const LeftPart = styled.div`
 const RightPart = styled.div`
   width: 80%;
   overflow-y: auto;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
 
 const ProfileContainer = styled.div`
@@ -222,6 +250,9 @@ const P_Info = styled.div`
     font-size: 16px;
     font-weight: 400;
   }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 0 1rem;
+  }
 `;
 const FlexWrap = styled.div`
   display: flex;
@@ -246,23 +277,6 @@ const IconEther = styled(iconEther)`
   width: 20px;
   height: 20px;
 `;
-
-const Button = styled.button`
-  background-color: ${props => props.$isApproved ? 'green' : 'red'};
-  color: white;
-  border: none;
-  border-radius: 3px;
-  height: 45px;
-  cursor: pointer;
-`;
-
-const MyNftsWrap = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  padding: 1rem 0;
-`;
-
 const Background = styled.div`
   /* height: 100%; */
   padding-top: 72px;

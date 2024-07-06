@@ -70,49 +70,6 @@ function App() {
     }
   }, [location.pathname]);
 
-  // useEffect(() => {
-  //   if (location.pathname === '/') {
-  //     window.scrollTo(0, 0);
-  //   }
-  // }, [location.pathname])
-
-  // const handleScroll = () => {
-  //   const scrollPosition = window.scrollY;
-  //   if (scrollPosition === 0 && location.pathname === '/') {
-  //     setHeaderTheme('dark');
-  //   } else if (scrollPosition !== 0 && headerTheme === 'dark') {
-  //     setHeaderTheme('light');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (location.pathname === '/') {
-  //     window.addEventListener('scroll', () => {
-  //       if (myFunctionTimer) {
-  //         clearTimeout(myFunctionTimer);
-  //       }
-  //       myFunctionTimer = setTimeout(() => {
-  //         handleScroll();
-  //         console.log('scroll');
-  //       }, 100);
-  //     });
-  //   } else {
-  //     window.removeEventListener('scroll', handleScroll);
-  //   }
-  //   return () => {
-  //     window.removeEventListener('scroll', handleScroll);
-  //   };
-  // }, [headerTheme, location.pathname]);
-
-  // useEffect(() => {
-  //   if (location.pathname === '/') {
-  //     setHeaderTheme('dark');
-  //   } else if (location.pathname !== '/' && headerTheme === 'dark') {
-  //     setHeaderTheme('light');
-  //   }
-  // }, [location.pathname]);
-
-
   /**
    * singer injection
    */
@@ -323,9 +280,17 @@ const MainIconWrap = styled.div`
 
 const CartWrap = styled.div`
   cursor: pointer;
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
 const ProfileWrap = styled.div`
   cursor: pointer;
+  display: block;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
 
 const IconWrap = styled.div`

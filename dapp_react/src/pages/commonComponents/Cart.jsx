@@ -274,7 +274,7 @@ const Overlay = styled.div`
 `;
 
 const Container = styled.div`
-      width: 360px;
+    width: 360px;
     height: 380px;
     z-index: 150;
     /* position: absolute; */
@@ -288,6 +288,13 @@ const Container = styled.div`
     color: #121212;
     justify-content: center;
     overflow: hidden;
+    @media (max-width: ${({ theme }) => theme.size.mobile}) {
+      width: 95%;
+      height: 70%;
+      top: 50%;
+      left: 50%;
+    
+    }
 `;
 
 export default Cart;
