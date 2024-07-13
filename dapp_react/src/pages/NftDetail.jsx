@@ -94,6 +94,22 @@ function NftDetail() {
     }
   }
 
+  // chart mobie CSS
+  const [mobileSize, setMobileSize] = useState(false);
+  useEffect(() => {
+    // const handleResize = () => {
+    if (window.innerWidth <= 480) {
+      setMobileSize(true);
+    } else {
+      setMobileSize(false);
+    }
+    // }
+    // window.addEventListener('resize', handleResize);
+    // return () => {
+    //   window.removeEventListener('resize', handleResize);
+    // }
+  }, []);
+
   return (
     <Background>
       <Container>
@@ -146,7 +162,7 @@ function NftDetail() {
             </AttribuesBox>
           </LeftPart>
           <RightPart>
-            <div style={{ padding: '5px 0 0 20px' }}>
+            <RightWrap>
               <div style={{ marginBottom: '10px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <h1>{name}</h1>
@@ -187,7 +203,7 @@ function NftDetail() {
 
                   {/* 그래프 라이브러리 */}
                   {/* 그래프 라이브러리 */}
-                  <LineChart width={600} height={200} data={metadata.priceHistory} >
+                  <LineChart width={mobileSize ? 600 : 300} height={200} data={metadata.priceHistory} >
                     <Line type="monotone" dataKey="price" stroke="#8884d8" />
                     {/* <CartesianGrid stroke="#ccc" /> */}
                     <XAxis dataKey="soldTime" />
@@ -207,7 +223,7 @@ function NftDetail() {
                   <div>{description}</div>
                 </p>
               </DescriptionBox>
-            </div>
+            </RightWrap>
           </RightPart>
         </Flex>
       </Container>
@@ -215,7 +231,7 @@ function NftDetail() {
   );
 }
 
-const DescriptionBox = styled.div`
+export const DescriptionBox = styled.div`
   ${props => props.theme.variables.flexGap('column', '0px')}
   border: 1px solid rgba(18, 18, 18, 0.12);
   color: rgb(18, 18, 18);
@@ -234,10 +250,10 @@ const DescriptionBox = styled.div`
   }
 `;
 
-const PriceBox = styled(DescriptionBox)`
+export const PriceBox = styled(DescriptionBox)`
 `;
-const PriceHistory = styled(DescriptionBox)``;
-const AttribuesBox = styled(DescriptionBox)`
+export const PriceHistory = styled(DescriptionBox)``;
+export const AttribuesBox = styled(DescriptionBox)`
   ul {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -253,16 +269,24 @@ const AttribuesBox = styled(DescriptionBox)`
   }
 `;
 
-const Flex = styled.div`
+export const Flex = styled.div`
   display: flex;
   justify-content: center;
   /* align-items: center; */
   padding: 10px 30px;
+  flex-direction: row;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    flex-direction: column;
+    padding: 10px 10px;
+  }
 `;
-const LeftPart = styled.div`
+export const LeftPart = styled.div`
   width: 45%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
-const ImgBox = styled.div`
+export const ImgBox = styled.div`
   width: 100%;
   height: 550px;
   border: 1px solid rgba(18, 18, 18, 0.12);
@@ -275,8 +299,11 @@ const ImgBox = styled.div`
     gap: 10px;
     padding: 5px 10px;
   }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    height: auto;
+  }
 `;
-const ImgWrap = styled.div`
+export const ImgWrap = styled.div`
   width: 100%;
   height: calc(550px - 40px);
   display: flex;
@@ -287,12 +314,26 @@ const ImgWrap = styled.div`
     height: 100%;
     object-fit: cover;
   }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    height: auto;
+  }
 `;
-const RightPart = styled.div`
+export const RightPart = styled.div`
   width: 55%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
+  }
 `;
 
-const Background = styled.div`
+export const RightWrap = styled.div`
+/* {{ padding: '5px 0 0 20px' }} */
+  padding: 5px 0 0 20px;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 0;
+  }
+`;
+
+export const Background = styled.div`
   /* height: 100%; */
   padding-top: 72px;
   width: 100%;
@@ -301,14 +342,14 @@ const Background = styled.div`
 `;
 
 
-const Container = styled.div`
+export const Container = styled.div`
   min-height: 100vh;
   overflow: hidden;
   color: rgba(18, 18, 18, 1);
   /* padding: 0 50px 0 30px; */
 `;
 
-const SymbolImg = styled.div`
+export const SymbolImg = styled.div`
   width: 20px;
   height: 20px;
   img {
@@ -316,14 +357,14 @@ const SymbolImg = styled.div`
     height: 100%;
   }
 `;
-const ExpandImg = styled(expandIcon)`
+export const ExpandImg = styled(expandIcon)`
   width: 14px;
   height: 14px;
   fill: rgba(32, 129, 226, 0.8);
 `;
 
 
-const CartImg = styled.div`
+export const CartImg = styled.div`
   width: 20px;
   height: 20px;
 
@@ -333,7 +374,7 @@ const CartImg = styled.div`
   }
 `;
 
-const PurchaseBtn = styled.div`
+export const PurchaseBtn = styled.div`
   width: calc(100% - 56px);
     height: 100%;
     background-color: rgba(32, 129, 226, 1);
@@ -349,13 +390,13 @@ const PurchaseBtn = styled.div`
     }
 `;
 
-const CartBtn = styled(PurchaseBtn)`
+export const CartBtn = styled(PurchaseBtn)`
   width: 55px;
   border-radius: 0 10px 10px 0;
   height: 100%;
 `;
 
-const ButtonWrap = styled.div`
+export const ButtonWrap = styled.div`
   /* position: absolute;
   bottom: 0; */
   /* width: 100%; */
