@@ -103,11 +103,6 @@ function NftDetail() {
     } else {
       setMobileSize(false);
     }
-    // }
-    // window.addEventListener('resize', handleResize);
-    // return () => {
-    //   window.removeEventListener('resize', handleResize);
-    // }
   }, []);
 
   return (
@@ -203,7 +198,7 @@ function NftDetail() {
 
                   {/* 그래프 라이브러리 */}
                   {/* 그래프 라이브러리 */}
-                  <LineChart width={mobileSize ? 600 : 300} height={200} data={metadata.priceHistory} >
+                  <LineChart width={mobileSize ? 300 : 600} height={200} data={metadata.priceHistory} >
                     <Line type="monotone" dataKey="price" stroke="#8884d8" />
                     {/* <CartesianGrid stroke="#ccc" /> */}
                     <XAxis dataKey="soldTime" />
