@@ -266,8 +266,8 @@ const CommunityPart = styled.div`
   flex-direction: column;
   gap: 1rem;
   ul {
-      ${props => props.theme.variables.flex};
-      gap: 10px;
+    display: flex;
+    gap: 10px;
   }
   li {
     width: 54px;
