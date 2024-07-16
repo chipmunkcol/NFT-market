@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { GlobalContext } from "../context/GlobalContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -22,6 +22,7 @@ export default function Header() {
   const [balance, setBalance] = useState(0);
   const location = useLocation();
   console.log('location: ', location);
+  const navigate = useNavigate();
 
   const [headerTheme, setHeaderTheme] = useState('light');
   const myFunctionTimerRef = useRef(null);
@@ -95,9 +96,14 @@ export default function Header() {
       setterSinger();
     } else {
       const res = await Confirm("메타마스크 지갑이 필요합니다", "지갑을 다운로드 하시겠습니까?");
-      if (res.isConfirmed) {
+      if (!res.isConfirmed) return;
+      const isMobile = /Mobi/i.test(window.navigator.userAgent);
+      if (isMobile) {
+        window.open("https://metamask.app.link/dapp/nft-market-m271.vercel.app/", "_blank");
+      } else {
         window.open("https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko", "_blank");
       }
+
     }
   }
 
