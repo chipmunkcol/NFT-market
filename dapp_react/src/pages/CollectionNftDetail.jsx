@@ -131,6 +131,18 @@ function CollectionNftDetail() {
     }
   }
 
+  // chart mobie CSS
+  const [mobileSize, setMobileSize] = useState(false);
+  useEffect(() => {
+    // const handleResize = () => {
+    if (window.innerWidth <= 480) {
+      setMobileSize(true);
+    } else {
+      setMobileSize(false);
+    }
+  }, []);
+
+
   return (
     <Styled.Background>
       <Styled.Container>
@@ -224,7 +236,7 @@ function CollectionNftDetail() {
 
                   {/* 그래프 라이브러리 */}
                   {/* 그래프 라이브러리 */}
-                  <LineChart width={600} height={200} data={metadata.priceHistory} >
+                  <LineChart width={mobileSize ? 300 : 600} height={200} data={metadata.priceHistory} >
                     <Line type="monotone" dataKey="price" stroke="#8884d8" />
                     {/* <CartesianGrid stroke="#ccc" /> */}
                     <XAxis dataKey="soldTime" />
