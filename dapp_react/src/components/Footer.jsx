@@ -148,11 +148,12 @@ margin-bottom: 2rem;
 `;
 
 const CategoryWrap = styled.div`
-/* div style={{ display: 'flex', gap: '4rem' }} */
-display: flex;
 gap: 4rem;
+display: flex;
+width: 50%;
 @media (max-width: ${({ theme }) => theme.size.mobile}) {
   display: none;
+  width: 100%;
 }
 `;
 const LogoWrap = styled.div`
@@ -255,13 +256,12 @@ const MailPart = styled.div`
   p {
     line-height: 20px;
   }
-  display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     display: none;
   }
 `;
 const CommunityPart = styled.div`
-  width: 100%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -276,6 +276,9 @@ const CommunityPart = styled.div`
     background-color: rgba(32, 129, 226, 1);
     font-size: 14px;
     cursor: pointer;
+  }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
   }
 `;
 const Container = styled.div`

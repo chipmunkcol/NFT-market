@@ -180,8 +180,10 @@ const Container = styled.div`
   overflow: hidden;
   color: rgba(18, 18, 18, 1);
   padding: 0 0 0 30px;
+  margin-bottom: 0;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     padding: 0 1rem;
+    min-height: 50vh;
   }
 `;
 
