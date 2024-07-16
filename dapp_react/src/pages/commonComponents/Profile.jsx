@@ -5,10 +5,33 @@ import { GlobalContext } from "../../context/GlobalContext";
 
 
 export default function Profile({ profileModalClose }) {
-  const { account } = useContext(GlobalContext);
+  const { account, setAccount, setSigner } = useContext(GlobalContext);
 
   const stopPropagation = e => {
     e.stopPropagation();
+  }
+
+
+  function removeAccount() {
+    setAccount(null);
+    setSigner(null);
+  }
+
+  async function revokeMetamaskHandler() {
+    await window.ethereum.request({
+      "method": "wallet_revokePermissions",
+      "params": [
+        {
+          "eth_accounts": {}
+        }
+      ]
+    });
+    removeAccount();
+  }
+
+  function logoutController() {
+    revokeMetamaskHandler();
+    profileModalClose();
   }
 
   return (
@@ -19,10 +42,13 @@ export default function Profile({ profileModalClose }) {
             Mypage
           </Link>
         </NavBtn>
-        <NavBtn style={{ borderRadius: '0 0 10px 10px' }}>
+        <NavBtn style={{ borderRadius: '0 0 0 0' }}>
           <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} onClick={profileModalClose}>
             Faucet
           </Link>
+        </NavBtn>
+        <NavBtn style={{ borderRadius: '0 0 10px 10px' }} onClick={logoutController}>
+          Logout
         </NavBtn>
       </Container>
     </Overlay>
@@ -30,7 +56,7 @@ export default function Profile({ profileModalClose }) {
 }
 
 const NavBtn = styled.div`
-    height: 45%;
+    height: 30px;
     background-color: #f6f6f6;
     border-radius: 10px 10px 0 0;;
     display: flex;
@@ -38,6 +64,9 @@ const NavBtn = styled.div`
     align-items: center;
     font-size: 13px;
     cursor: pointer;
+    &:hover {
+        background-color: #e9e9e9;
+    }
 `;
 
 const Overlay = styled.div`
@@ -51,7 +80,6 @@ const Overlay = styled.div`
 
 const Container = styled.div`
     width: 100px;
-    height: 70px;
     z-index: 150;
     position: absolute;
     top: 65px;
