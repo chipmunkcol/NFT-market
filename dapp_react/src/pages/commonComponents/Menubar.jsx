@@ -109,11 +109,9 @@ const Container = styled.div`
 position: fixed;
   top: 0;
   /* height: 72px; */
-  width: 100vw;
+  width: 100%;
   z-index: 998;
-  /* margin-top: 100px; */
-  padding: 0 50px 1rem 1rem;
-  /* background-color: rgba(67, 46, 46, 0.7); */
+  padding: 0 1rem 1rem 1rem;
   background-color: ${props => props.$headertheme === 'dark' ? '#161618' : '#ffffff'};
   color: ${props => props.$headertheme === 'dark' ? '#f0f0f1' : '#161618'};
   display: flex;
