@@ -270,11 +270,9 @@ export const Container = styled.div`
   position: fixed;
   top: 0;
   height: 72px;
-  width: 100vw;
+  width: 100%;
   z-index: 998;
-  /* margin-top: 100px; */
-  padding: 0 50px 0 2rem;
-  /* background-color: rgba(0, 0, 0, 0.7); */
+  padding: 0 2rem 0 2rem;
   background-color: ${props => props.$headertheme === 'dark' ? '#161618' : '#ffffff'};
   color: ${props => props.$headertheme === 'dark' ? '#f0f0f1' : '#161618'};
   display: flex;
@@ -282,7 +280,7 @@ export const Container = styled.div`
   justify-content: space-between;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
-  padding: 0 50px 0 1rem;
+  padding: 0 1rem 0 1rem;
   }
 `;
 export const CartWrap = styled.div`
