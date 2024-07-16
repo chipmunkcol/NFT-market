@@ -4,18 +4,43 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import { S_Button } from "../../styles/styledComponent";
+import * as Styled from "../../components/Header"
 
 export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, headerTheme }) {
-  const { account } = useContext(GlobalContext);
+  const { account, setAccount, setSigner } = useContext(GlobalContext);
+
+
+  function removeAccount() {
+    setAccount(null);
+    setSigner(null);
+  }
+
+  async function revokeMetamaskHandler() {
+    await window.ethereum.request({
+      "method": "wallet_revokePermissions",
+      "params": [
+        {
+          "eth_accounts": {}
+        }
+      ]
+    });
+    removeAccount();
+  }
+
+  function logoutController() {
+    revokeMetamaskHandler();
+    profileModalClose();
+  }
+
   return (
     <Container $headertheme={headerTheme}>
       <Header>
         <div>
           <Link to={'/'} onClick={menubarClose}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <MainIconWrap>
+              <Styled.MainIconWrap>
                 <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
-              </MainIconWrap>
+              </Styled.MainIconWrap>
               <div style={{ fontSize: '21px', fontWeight: '900' }}>
                 NFT Sea
               </div>
@@ -25,9 +50,9 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {
             !account &&
-            <ButtonWrap>
+            <Styled.ButtonWrap>
               <S_Button onClick={connectMetamask}>Wallet</S_Button>
-            </ButtonWrap>
+            </Styled.ButtonWrap>
           }
           <CloseBtn onClick={menubarClose} >X</CloseBtn>
         </div>
@@ -48,6 +73,7 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
                   Faucet
                 </li>
               </Link>
+              <li onClick={logoutController}>Logout</li>
             </>
           }
         </ul>
@@ -56,7 +82,16 @@ export default function Menubar({ menubarClose, cartModalOpen, connectMetamask, 
   )
 }
 
-const ButtonWrap = styled.div``;
+const ButtonWrap = styled.div`
+span {
+    display: block;
+  }
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    span {
+      display: none;
+    }
+  }
+`;
 const CloseBtn = styled.div`
   font-size: 24px;
   font-weight: bold;

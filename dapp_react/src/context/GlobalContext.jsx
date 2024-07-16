@@ -3,7 +3,7 @@ import React, { createContext, useMemo, useRef, useState } from "react";
 export const GlobalContext = createContext({});
 
 const GlobalProvider = ({ children }) => {
-  const [account, setAccount] = useState("");
+  const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null); // [signer, setSigner] = useState(null)
   const [loadingState, setLoadingState] = useState({
     isLoading: false,

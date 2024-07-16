@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { GlobalContext } from "../context/GlobalContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -22,6 +22,7 @@ export default function Header() {
   const [balance, setBalance] = useState(0);
   const location = useLocation();
   console.log('location: ', location);
+  const navigate = useNavigate();
 
   const [headerTheme, setHeaderTheme] = useState('light');
   const myFunctionTimerRef = useRef(null);
@@ -74,6 +75,12 @@ export default function Header() {
   /**
    * connectMetamask
    */
+  async function setterAccountAndBalance(web3, accounts) {
+    setAccount(accounts);
+    const balance = await web3.eth.getBalance(accounts[0]);
+    setBalance(balance);
+  }
+
 
   async function connectMetamask() {
     //check metamask is installed
@@ -86,20 +93,23 @@ export default function Header() {
 
       //get the connected accounts
       const accounts = await web3.eth.getAccounts();
-      //show the first connected account in the react page
-      setAccount(accounts[0]);
-      const balance = await web3.eth.getBalance(accounts[0]);
-      setBalance(balance);
+      setterAccountAndBalance(web3, accounts[0]);
 
       // signer
       setterSinger();
     } else {
       const res = await Confirm("메타마스크 지갑이 필요합니다", "지갑을 다운로드 하시겠습니까?");
-      if (res.isConfirmed) {
+      if (!res.isConfirmed) return;
+      const isMobile = /Mobi/i.test(window.navigator.userAgent);
+      if (isMobile) {
+        window.open("https://metamask.app.link/dapp/nft-market-m271.vercel.app/", "_blank");
+      } else {
         window.open("https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko", "_blank");
       }
+
     }
   }
+
 
   /**
    * 자동 metamast 지갑 확인
@@ -204,45 +214,50 @@ export default function Header() {
             <Nav>Create</Nav>
           </Link>
         </Navbar>
-        {!account ? (
-          <ButtonWrap>
-            <S_Button onClick={connectMetamask}>Connect Wallet</S_Button>
-          </ButtonWrap>) : (
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', fontSize: '13px' }}>
-              <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
-              <div>ETH {balance}</div>
-            </div>
-            {/* <Link to={`/mypage/${account}`}> */}
-            <ProfileWrap onClick={profileModalOpen}>
-              <IconWrap>
-                {/* <img id="profile" src={headerTheme === 'dark' ? iconProfileWh : iconProfile} /> */}
-                <div id="profile" $headertheme={headerTheme} />
-              </IconWrap>
-            </ProfileWrap>
-            {/* </Link> */}
-            <CartWrap onClick={cartModalOpen}>
-              <IconWrap>
-                {/* <img id="cart" src={headerTheme === 'dark' ? iconCart : iconCartWh} /> */}
-                <div id="cart" $headertheme={headerTheme} />
-              </IconWrap>
-            </CartWrap>
-          </div>)
-        }
-        {/* Profile Component */}
-        {profileModal && <Profile profileModalClose={profileModalClose} />}
-        {/* Cart Component */}
-        {cartModal && <Cart cartModalClose={cartModalClose} />}
-        <MenubarBtn onClick={menubarToggle}>
-          ☰
-        </MenubarBtn>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+          {account && (
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', fontSize: '13px' }}>
+                <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
+                <div>ETH {balance}</div>
+              </div>
+              {/* <Link to={`/mypage/${account}`}> */}
+              <ProfileWrap onClick={profileModalOpen}>
+                <IconWrap>
+                  {/* <img id="profile" src={headerTheme === 'dark' ? iconProfileWh : iconProfile} /> */}
+                  <div id="profile" $headertheme={headerTheme} />
+                </IconWrap>
+              </ProfileWrap>
+              {/* </Link> */}
+              <CartWrap onClick={cartModalOpen}>
+                <IconWrap>
+                  {/* <img id="cart" src={headerTheme === 'dark' ? iconCart : iconCartWh} /> */}
+                  <div id="cart" $headertheme={headerTheme} />
+                </IconWrap>
+              </CartWrap>
+            </div>)
+          }
+          {/* Profile Component */}
+          {profileModal && <Profile profileModalClose={profileModalClose} />}
+          {/* Cart Component */}
+          {cartModal && <Cart cartModalClose={cartModalClose} />}
+          {!account && (
+            <ButtonWrap>
+              <S_Button onClick={connectMetamask}><span>Connect</span> Wallet</S_Button>
+            </ButtonWrap>)}
+          <MenubarBtn onClick={menubarToggle}>
+            ☰
+          </MenubarBtn>
+        </div>
       </Container>
+      {/* Menubar Component */}
       {menubar && <Menubar menubarClose={menubarClose} cartModalOpen={cartModalOpen} connectMetamask={connectMetamask} headerTheme={headerTheme} />}
     </>
   )
 }
 
-const MainIconWrap = styled.div`
+export const MainIconWrap = styled.div`
     width: 40px;
   height: 40px;
   img {
@@ -251,7 +266,7 @@ const MainIconWrap = styled.div`
   }
 `;
 
-const Container = styled.div`
+export const Container = styled.div`
   position: fixed;
   top: 0;
   height: 72px;
@@ -270,14 +285,14 @@ const Container = styled.div`
   padding: 0 50px 0 1rem;
   }
 `;
-const CartWrap = styled.div`
+export const CartWrap = styled.div`
   cursor: pointer;
   display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     display: none;
   }
 `;
-const ProfileWrap = styled.div`
+export const ProfileWrap = styled.div`
   cursor: pointer;
   display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
@@ -285,7 +300,7 @@ const ProfileWrap = styled.div`
   }
 `;
 
-const IconWrap = styled.div`
+export const IconWrap = styled.div`
   border-radius: 12px;
     padding: 0px 12px;
     position: relative;
@@ -313,12 +328,12 @@ const IconWrap = styled.div`
   }
 `;
 
-const MyAccount = styled.div`
+export const MyAccount = styled.div`
   /* font-size: 11px; */
   cursor: pointer;
 `;
 
-const MenubarBtn = styled.div`
+export const MenubarBtn = styled.div`
   display: none;
   font-size: 24px;
   cursor: pointer;
@@ -327,14 +342,19 @@ const MenubarBtn = styled.div`
     display: block;
   }
 `;
-const ButtonWrap = styled.div`
-  display: block;
+
+export const ButtonWrap = styled.div`
+  span {
+    display: contents;
+  }
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
-    display: none;
+    span {
+      display: none;
+    }
   }
 `;
 
-const Navbar = styled.div`
+export const Navbar = styled.div`
   display: flex;
   align-items: center;
   gap: 50px;
@@ -353,7 +373,7 @@ const Navbar = styled.div`
   }
 `;
 
-const Nav = styled.div`
+export const Nav = styled.div`
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
