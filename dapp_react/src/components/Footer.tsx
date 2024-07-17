@@ -1,18 +1,14 @@
 import styled from "styled-components";
-import { ReactComponent as twitter } from "../assets/images/twitter.svg"
-import { ReactComponent as instagram } from "../assets/images/instagram.svg"
-import { ReactComponent as discord } from "../assets/images/discord.svg"
-import { ReactComponent as youtube } from "../assets/images/youtube.svg"
-import { ReactComponent as tictoc } from "../assets/images/tictok.svg"
-import { Link } from "react-router-dom";
+import { ReactComponent as twitter } from "../assets/images/twitter.svg";
+import { ReactComponent as instagram } from "../assets/images/instagram.svg";
+import { ReactComponent as discord } from "../assets/images/discord.svg";
+import { ReactComponent as youtube } from "../assets/images/youtube.svg";
+import { ReactComponent as tictoc } from "../assets/images/tictok.svg";
 import Swal from "sweetalert2";
 
-
-
 export default function Footer() {
-
   const singupHandle = () => {
-    Swal.fire('Coming soon!, Thank you for signing up!');
+    Swal.fire("Coming soon!, Thank you for signing up!");
   };
 
   return (
@@ -21,7 +17,8 @@ export default function Footer() {
         <MailPart>
           <h2>Stay in the loop</h2>
           <p>
-            Join our mailing list to stay in the loop with our newest feature <br />
+            Join our mailing list to stay in the loop with our newest feature{" "}
+            <br />
             releases, NFT drops, and tips and tricks for navigating OpenSea.
           </p>
           <div>
@@ -62,7 +59,10 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://www.tiktok.com/@opensea?lang=en" target="_blank">
+                <a
+                  href="https://www.tiktok.com/@opensea?lang=en"
+                  target="_blank"
+                >
                   <SvgWrap>
                     <TictocSvg />
                   </SvgWrap>
@@ -73,11 +73,14 @@ export default function Footer() {
         </CommunityPart>
       </FlexBoxGap>
       <Line />
-      <FlexBoxPadding >
+      <FlexBoxPadding>
         <IntroductionPart>
           <div>
             <LogoWrap>
-              <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo" />
+              <img
+                src="https://opensea.io/static/images/logos/opensea-logo.svg"
+                alt="logo"
+              />
             </LogoWrap>
           </div>
           <h2>OpenSea</h2>
@@ -132,29 +135,29 @@ export default function Footer() {
         </CategoryWrap>
       </FlexBoxPadding>
     </Container>
-  )
+  );
 }
 
 const Line = styled.div`
-/* style={{ width: '100%', height: '1px', borderBottom: '1px solid rgba(229, 232, 235, 0.25)', padding: '2rem' }} */
-width: 100%;
-height: 1px;
-border-bottom: 1px solid rgba(229, 232, 235, 0.25);
-padding: 2rem 0;
-margin-bottom: 2rem;
-@media (max-width: ${({ theme }) => theme.size.mobile}) {
-  padding: 1rem 0;
-}
+  /* style={{ width: '100%', height: '1px', borderBottom: '1px solid rgba(229, 232, 235, 0.25)', padding: '2rem' }} */
+  width: 100%;
+  height: 1px;
+  border-bottom: 1px solid rgba(229, 232, 235, 0.25);
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 1rem 0;
+  }
 `;
 
 const CategoryWrap = styled.div`
-gap: 4rem;
-display: flex;
-width: 50%;
-@media (max-width: ${({ theme }) => theme.size.mobile}) {
-  display: none;
-  width: 100%;
-}
+  gap: 4rem;
+  display: flex;
+  width: 50%;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+    width: 100%;
+  }
 `;
 const LogoWrap = styled.div`
   width: 50px;
@@ -166,7 +169,7 @@ const LogoWrap = styled.div`
 `;
 const IntroductionPart = styled.div`
   /* display: flex; */
-  ${props => props.theme.variables.flexGap('column', '1rem')}
+  ${(props) => props.theme.variables.flexGap("column", "1rem")}
   p {
     line-height: 20px;
   }
@@ -176,7 +179,7 @@ const MarketPlacePart = styled.div`
     margin-bottom: 1rem;
   }
   ul {
-    ${props => props.theme.variables.flexGap('column', '10px')};
+    ${(props) => props.theme.variables.flexGap("column", "10px")};
   }
   display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
@@ -188,7 +191,7 @@ const ResourcePart = styled(MarketPlacePart)``;
 const CompanyPart = styled(MarketPlacePart)``;
 
 const SvgWrap = styled.div`
-  ${props => props.theme.variables.flex};
+  ${(props) => props.theme.variables.flex};
   height: 100%;
 `;
 const TwitterSvg = styled(twitter)`
@@ -196,22 +199,22 @@ const TwitterSvg = styled(twitter)`
   height: 20px;
 `;
 const InstagramSvg = styled(instagram)`
-width: 30px;
+  width: 30px;
   height: 20px;
 `;
 
 const DiscordSvg = styled(discord)`
-width: 30px;
+  width: 30px;
   height: 20px;
 `;
 
 const YoutubeSvg = styled(youtube)`
-width: 30px;
+  width: 30px;
   height: 20px;
 `;
 
 const TictocSvg = styled(tictoc)`
-width: 30px;
+  width: 30px;
   height: 20px;
 `;
 
@@ -282,16 +285,16 @@ const CommunityPart = styled.div`
   }
 `;
 const Container = styled.div`
-    /* ${props => props.theme.variables.flex}; */
-    color: rgb(255, 255, 255);
-    height: auto;
-    width: 100%;
-    background-color: rgb(24, 104, 183);
-    position: absolute;
-    /* bottom: 0; */
-    z-index: 998;
-    padding: 3rem 2rem 3rem 2rem;
-    @media (max-width: ${({ theme }) => theme.size.mobile}) {
-      padding: 3rem 1rem;
-    }
+  /* ${(props) => props.theme.variables.flex}; */
+  color: rgb(255, 255, 255);
+  height: auto;
+  width: 100%;
+  background-color: rgb(24, 104, 183);
+  position: absolute;
+  /* bottom: 0; */
+  z-index: 998;
+  padding: 3rem 2rem 3rem 2rem;
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    padding: 3rem 1rem;
+  }
 `;

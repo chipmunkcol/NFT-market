@@ -8,6 +8,21 @@
 3. vite.config.ts) export default defineConfig({
    plugins: [react(), svgr()],
    }); 추가
+4. typescript 사용시 아래 추가
+
+```
+1. type.d.ts type 정의한 파일 만들고
+declare module "*.svg" {
+  import React = require("react");
+  export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
+}
+
+2. ts 컴파일러가 ts|tsx 확장을 처리하도록 tsconfig.json에
+type.d.ts를 호출하도록 해준다
+ "include": ["src", "type.d.ts"],
+```
 
 ## 2-1. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
 
