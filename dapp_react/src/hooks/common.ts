@@ -5,8 +5,11 @@ import {
   transactWithSetOnsaleNft,
   transactWithSetOnsaleNfts,
 } from "../../contracts/interface";
+import { JsonRpcSigner } from "ethers";
+import { CartIpfsData, CartNft, IpfsData, NftMetadata } from "../../type";
+import { toastSwal } from "./swal";
 
-export const getImageUrl = (imageIpfsHash) => {
+export const getImageUrl = (imageIpfsHash: string) => {
   return `${
     import.meta.env.VITE_GATEWAY_URL
   }/ipfs/${imageIpfsHash}?pinataGatewayToken=${
@@ -14,7 +17,7 @@ export const getImageUrl = (imageIpfsHash) => {
   }`;
 };
 
-export const getIpfsTokenData = async (tokenUrl) => {
+export const getIpfsTokenData = async (tokenUrl: string) => {
   const res = await fetch(
     `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${
       import.meta.env.VITE_GATEWAY_TOKEN
@@ -32,7 +35,7 @@ export const ipfsGetOptions = {
   },
 };
 
-export const ipfsPutOptions = (jsonKeyvalues) => {
+export const ipfsPutOptions = (jsonKeyvalues: string) => {
   return {
     method: "PUT",
     headers: {
@@ -43,18 +46,43 @@ export const ipfsPutOptions = (jsonKeyvalues) => {
   };
 };
 
-export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
+export const validateAccountAndOnsale = (
+  metadata: NftMetadata,
+  account: string
+) => {
+  if (!account) {
+    toastSwal("메타마스크 지갑을 연결해주세요.", "warning");
+    return false;
+  }
+
+  if (metadata.owner.toLowerCase() === account.toLowerCase()) {
+    toastSwal("자신의 NFT는 구매할 수 없습니다.", "warning");
+    return false;
+  }
+
+  if (metadata.nftPrice === 0) {
+    toastSwal("판매등록 되지 않은 NFT입니다", "warning");
+    return false;
+  }
+  return true;
+};
+
+export const P_updateMetadataSetOnsale = async (
+  nftId: number,
+  ipfsData: any,
+  price: number
+) => {
   // const { numberOfSales, priceHistory } = ipfsData.metadata.keyvalues;
   const { isCollection } = ipfsData.metadata.keyvalues;
-  let jsonKeyvalues, numberOfSales;
+  let jsonKeyvalues, numberOfSales: number;
   if (isCollection === "true") {
     const collectionNftList = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
     );
-    const targetNft = collectionNftList.find((nft) => nft.nftId === nftId);
+    const targetNft = collectionNftList.find((nft: any) => nft.nftId === nftId);
     ({ numberOfSales } = targetNft);
 
-    const newCollectionNftList = collectionNftList.map((nft) =>
+    const newCollectionNftList = collectionNftList.map((nft: any) =>
       nft.nftId === nftId
         ? {
             ...nft,
@@ -105,13 +133,13 @@ export const P_updateMetadataSetOnsale = async (nftId, ipfsData, price) => {
   return result;
 };
 
-export const getNftListToIpfs = async (url) => {
+export const getNftListToIpfs = async (url: string) => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   return result.rows;
 };
 
-export const getNftListAndCountToIpfs = async (url) => {
+export const getNftListAndCountToIpfs = async (url: string) => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   const ipfsDatas = result.rows;
@@ -119,7 +147,9 @@ export const getNftListAndCountToIpfs = async (url) => {
   return { ipfsDatas, count };
 };
 
-export const getTargetNftToIpfsData = async (tokenUrl) => {
+export const getTargetNftToIpfsData = async (
+  tokenUrl: string
+): Promise<IpfsData> => {
   const res = await fetch(
     `https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`,
     ipfsGetOptions
@@ -128,15 +158,28 @@ export const getTargetNftToIpfsData = async (tokenUrl) => {
   return result.rows[0];
 };
 
-export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
+export const getTargetCartToIpfsData = async (
+  tokenUrl: string
+): Promise<CartIpfsData> => {
+  const res = await fetch(
+    `https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`,
+    ipfsGetOptions
+  );
+  const result = await res.json();
+  return result.rows[0];
+};
+
+export const P_AddNftIdOnCollection = async (tokenUrl: string, nftIds: any) => {
   const res = await getTargetNftToIpfsData(tokenUrl);
   const nftKeyvaluesList = JSON.parse(res.metadata.keyvalues.nftKeyvaluesList);
 
-  const _newNftKeyvaluesList = nftKeyvaluesList.map((nft, index) => ({
-    ...nft,
-    nftId: parseInt(nftIds[index]),
-    tokenUrl,
-  }));
+  const _newNftKeyvaluesList = nftKeyvaluesList.map(
+    (nft: any, index: number) => ({
+      ...nft,
+      nftId: parseInt(nftIds[index]),
+      tokenUrl,
+    })
+  );
   const newNftKeyvaluesList = JSON.stringify(_newNftKeyvaluesList);
 
   const name = res.metadata.name ? res.metadata.name : "";
@@ -156,11 +199,14 @@ export const P_AddNftIdOnCollection = async (tokenUrl, nftIds) => {
   return result;
 };
 
-export const P_updateMetadataAirdrop = async (tempIpfs, collectionIpfs) => {
+export const P_updateMetadataAirdrop = async (
+  tempIpfs: string,
+  collectionIpfs: string
+) => {
   const res = await getTargetNftToIpfsData(tempIpfs);
   const _keyvalues = res.metadata.keyvalues;
   const _nftKeyvaluesList = JSON.parse(_keyvalues.nftKeyvaluesList);
-  const newNftKeyvaluesList = _nftKeyvaluesList.map((nft) => ({
+  const newNftKeyvaluesList = _nftKeyvaluesList.map((nft: any) => ({
     ...nft,
     tokenUrl: collectionIpfs,
     isReveal: true,
@@ -184,7 +230,10 @@ export const P_updateMetadataAirdrop = async (tempIpfs, collectionIpfs) => {
   return result;
 };
 
-export const P_removeMetadataAirdrop = async (tempIpfs, account) => {
+export const P_removeMetadataAirdrop = async (
+  tempIpfs: string,
+  account: string
+) => {
   const res = await getTargetNftToIpfsData(tempIpfs);
 
   const name = res.metadata.name;
@@ -222,7 +271,7 @@ export const getCurrentDate = () => {
  *
  * @param {string} date
  */
-export const getCurrentYMD = (date) => {
+export const getCurrentYMD = (date: string) => {
   const dateObject = new Date(date);
   const year = String(dateObject.getFullYear()).slice(2);
   const month = String(dateObject.getMonth() + 1).padStart(2, "0");
@@ -230,7 +279,11 @@ export const getCurrentYMD = (date) => {
   return `${year}/${month}/${day}`;
 };
 
-export const getAddedPriceHistory = (priceHistory, owner, price) => {
+export const getAddedPriceHistory = (
+  priceHistory: string,
+  owner: string,
+  price: any
+) => {
   const _priceHistory = JSON.parse(priceHistory);
   const newPriceHistory = [..._priceHistory];
   const soldTime = getCurrentTime();
@@ -238,7 +291,11 @@ export const getAddedPriceHistory = (priceHistory, owner, price) => {
   return JSON.stringify(newPriceHistory);
 };
 
-export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
+export const P_updateMetadataPurchase = async (
+  nftId: number,
+  ipfsData: any,
+  account: string
+) => {
   const { isCollection } = ipfsData.metadata.keyvalues;
 
   let numberOfSales, priceHistory, owner, nftPrice;
@@ -246,7 +303,7 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
     const collectionNftList = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
     );
-    const targetNft = collectionNftList.find((nft) => nft.nftId === nftId);
+    const targetNft = collectionNftList.find((nft: any) => nft.nftId === nftId);
     ({ numberOfSales, priceHistory, owner, nftPrice } = targetNft);
   } else {
     ({ numberOfSales, priceHistory, owner, nftPrice } =
@@ -260,7 +317,7 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
     const collectionNftList = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
     );
-    const newCollectionNftList = collectionNftList.map((nft) =>
+    const newCollectionNftList = collectionNftList.map((nft: any) =>
       nft.nftId === nftId
         ? {
             ...nft,
@@ -304,19 +361,27 @@ export const P_updateMetadataPurchase = async (nftId, ipfsData, account) => {
   return result;
 };
 
-export const C_setOnsaleNft = async (signer, nftId, price) => {
+export const C_setOnsaleNft = async (
+  signer: JsonRpcSigner,
+  nftId: number,
+  price: any
+) => {
   const weiPrice = web3.utils.toWei(price, "ether");
   const result = await transactWithSetOnsaleNft(signer, nftId, weiPrice);
   return result;
 };
 
-export const C_setOnsaleNfts = async (signer, nftIds, price) => {
+export const C_setOnsaleNfts = async (
+  signer: JsonRpcSigner,
+  nftIds: any,
+  price: any
+) => {
   const weiPrice = web3.utils.toWei(price, "ether");
   const result = await transactWithSetOnsaleNfts(signer, nftIds, weiPrice);
   return result;
 };
 
-export const getImageIpfsHash = async (file) => {
+export const getImageIpfsHash = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
@@ -330,7 +395,11 @@ export const getImageIpfsHash = async (file) => {
   return resData.IpfsHash;
 };
 
-export const pinJsonToIPFS = async (imageIpfsHash, metaData, jsonData) => {
+export const pinJsonToIPFS = async (
+  imageIpfsHash: string,
+  metaData: any,
+  jsonData: any
+) => {
   const { name, description, attributes } = jsonData;
   const jsonContent = JSON.stringify({
     name,
@@ -357,7 +426,7 @@ export const pinJsonToIPFS = async (imageIpfsHash, metaData, jsonData) => {
   return result.IpfsHash;
 };
 
-export const pinFileToIPFS = async (files, metaData) => {
+export const pinFileToIPFS = async (files: File[], metaData: any) => {
   const formData = new FormData();
   const options = JSON.stringify({
     cidVersion: 0,
@@ -380,7 +449,7 @@ export const pinFileToIPFS = async (files, metaData) => {
   return result.IpfsHash;
 };
 
-export const validateCollectionData = (account, collection) => {
+export const validateCollectionData = (account: string, collection: any) => {
   if (!account) {
     Swal.fire("지갑을 연결해주세요");
     return false;
@@ -412,7 +481,11 @@ export const validateCollectionData = (account, collection) => {
   return true;
 };
 
-export const validateFormData = (account, jsonData, file) => {
+export const validateFormData = (
+  account: string,
+  jsonData: any,
+  file: File
+) => {
   if (!account) {
     Swal.fire("지갑을 연결해주세요");
     return false;
@@ -432,13 +505,13 @@ export const validateFormData = (account, jsonData, file) => {
   return true;
 };
 
-export const getRemovedNftListByPurchase = (nftId, nfts) => {
-  return nfts.filter((nft) => nft.nftId !== nftId);
+export const getRemovedNftListByPurchase = (nftId: number, nfts: any) => {
+  return nfts.filter((nft: any) => nft.nftId !== nftId);
 };
 
 // 장바구니 구현
 
-export const pinJsonToIPFSForCart = async (owner, nft) => {
+export const pinJsonToIPFSForCart = async (owner: string, nft: any) => {
   const jsonContent = JSON.stringify({
     owner,
     description: "Market-place 장바구니 구현을 위한 위한 데이터베이스 용 JSON",
@@ -468,14 +541,17 @@ export const pinJsonToIPFSForCart = async (owner, nft) => {
   return result.IpfsHash;
 };
 
-const checkDuplicattion = (cartList, nft) => {
-  const isDuplicated = cartList.some((cart) => cart.nftId === nft.nftId);
+const checkDuplicattion = (cartList: any, nft: any) => {
+  const isDuplicated = cartList.some((cart: any) => cart.nftId === nft.nftId);
   return isDuplicated;
 };
 
-export const P_updateMetadataAddCart = async (cartIpfsHash, nft) => {
-  const res = await getTargetNftToIpfsData(cartIpfsHash);
-  const cartList = JSON.parse(res.metadata.keyvalues.cart);
+export const P_updateMetadataAddCart = async (
+  cartIpfsHash: string,
+  nft: any
+) => {
+  const res = await getTargetCartToIpfsData(cartIpfsHash);
+  const cartList: CartNft[] = JSON.parse(res.metadata.keyvalues.cart);
   const isDuplicated = checkDuplicattion(cartList, nft);
   if (isDuplicated) return;
 
@@ -495,9 +571,12 @@ export const P_updateMetadataAddCart = async (cartIpfsHash, nft) => {
   return result;
 };
 
-export const P_updateMetadataRemoveCart = async (cartIpfsHash, _nftId) => {
-  const res = await getTargetNftToIpfsData(cartIpfsHash);
-  const cartList = JSON.parse(res.metadata.keyvalues.cart);
+export const P_updateMetadataRemoveCart = async (
+  cartIpfsHash: string,
+  _nftId: number
+) => {
+  const res = await getTargetCartToIpfsData(cartIpfsHash);
+  const cartList: CartNft[] = JSON.parse(res.metadata.keyvalues.cart);
   const newCartList = cartList.filter((cart) => cart.nftId !== _nftId);
 
   const jsonKeyvalues = JSON.stringify({
@@ -516,7 +595,7 @@ export const P_updateMetadataRemoveCart = async (cartIpfsHash, _nftId) => {
   return result;
 };
 
-export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
+export const P_updateMetadataRemoveAllCart = async (cartIpfsHash: string) => {
   const res = await getTargetNftToIpfsData(cartIpfsHash);
   const jsonKeyvalues = JSON.stringify({
     ipfsPinHash: cartIpfsHash,
@@ -534,7 +613,12 @@ export const P_updateMetadataRemoveAllCart = async (cartIpfsHash) => {
   return result;
 };
 
-export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
+export async function purchaseNftHandler(
+  nftId: number,
+  tokenUrl: string,
+  nftPrice: number,
+  signer: JsonRpcSigner
+): Promise<boolean> {
   try {
     const weiPrice = web3.utils.toWei(nftPrice, "ether");
     const res = await transactWithPurchaseNft(signer, nftId, weiPrice);
@@ -558,7 +642,7 @@ export async function purchaseNftHandler(nftId, tokenUrl, nftPrice, signer) {
 }
 
 // 장바구니에 담기
-export const addCartHandler = async (nft, account) => {
+export const addCartHandler = async (nft: any, account: string) => {
   let cartIpfsHash = localStorage.getItem(`cart-${account}`);
 
   try {
@@ -573,44 +657,46 @@ export const addCartHandler = async (nft, account) => {
         nft
       );
 
-      if (updateMetadataResult.ok) {
+      if (updateMetadataResult?.ok) {
         return true;
       }
     }
   } catch (err) {
     console.log("err: ", err);
     return false;
+  } finally {
+    return false;
   }
 };
 
-export const getTruncatedAccount = (account) => {
-  if (typeof account !== "string") return null;
+export const getTruncatedAccount = (account: string) => {
+  if (!account) return null;
   return account
     ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}`
     : null;
 };
 
-export const getNewOnsaleNfts = (ipfsNftsList) => {
+export const getNewOnsaleNfts = (ipfsNftsList: any) => {
   if (!ipfsNftsList) return;
-  let newOnsaleNfts = [];
-  ipfsNftsList.forEach((data) => {
+  const newOnsaleNfts: any = [];
+  ipfsNftsList.forEach((data: any) => {
     const collectionIpfs = data?.ipfs_pin_hash;
     if (!data.metadata.keyvalues.nftKeyvaluesList) return;
     const parsedCollectionNftList = JSON.parse(
       data.metadata.keyvalues?.nftKeyvaluesList
     );
 
-    const newCollectionNftList = parsedCollectionNftList.map((v) => ({
+    const newCollectionNftList = parsedCollectionNftList.map((v: any) => ({
       ...v,
       nftName: v.name,
       collectionIpfs,
     }));
-    newOnsaleNfts = [...newOnsaleNfts, ...newCollectionNftList];
+    newOnsaleNfts.push(newCollectionNftList);
   });
   return newOnsaleNfts;
 };
 
-export const formatPrice = (nftPrice) => {
+export const formatPrice = (nftPrice: number) => {
   const formattedNum = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -622,7 +708,7 @@ export const commingSoon = () => {
   Swal.fire("준비중 입니다");
 };
 
-export function isArraysEqual(arr1, arr2) {
+export function isArraysEqual(arr1: any[], arr2: any[]) {
   if (typeof arr1 !== "object" || typeof arr2 !== "object") return false;
   // 두 배열의 길이가 다르면 false 반환
   if (arr1?.length !== arr2?.length) return false;
@@ -642,8 +728,8 @@ export function isArraysEqual(arr1, arr2) {
   return true;
 }
 
-export const findNftsSoldExpensively = (ipfsList) => {
-  const nftList = ipfsList.map((ipfsData) => ({
+export const findNftsSoldExpensively = (ipfsList: any) => {
+  const nftList = ipfsList.map((ipfsData: any) => ({
     ...ipfsData.metadata.keyvalues,
     tokenUrl: ipfsData.ipfs_pin_hash,
   }));
@@ -661,20 +747,22 @@ export const findNftsSoldExpensively = (ipfsList) => {
   return expensiveNfts;
 };
 
-export const findTop10NumberOfSales = (ipfsList) => {
-  const nftList = ipfsList.map((ipfsData) => ({
+export const findTop10NumberOfSales = (ipfsList: any) => {
+  const nftList = ipfsList.map((ipfsData: any) => ({
     ...ipfsData.metadata.keyvalues,
     tokenUrl: ipfsData.ipfs_pin_hash,
   }));
 
-  nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
+  nftList.sort((a: any, b: any) => b.numberOfSales - a.numberOfSales);
   return nftList.slice(0, 10);
 };
 
-export const findTopCollectorNfts = (ipfsDatas) => {
+export const findTopCollectorNfts = (ipfsDatas: any) => {
   if (ipfsDatas.length === 0) return [];
-  const collections = ipfsDatas.map((ipfsData) => ipfsData.metadata.keyvalues);
-  collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
+  const collections = ipfsDatas.map(
+    (ipfsData: any) => ipfsData.metadata.keyvalues
+  );
+  collections.sort((a: any, b: any) => b.numberOfSales - a.numberOfSales);
   const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
   return topCollectorNfts;
 };

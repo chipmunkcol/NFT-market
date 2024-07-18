@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import useGetTokenData from "../../../hooks/useGetTokenData.jsx";
+import useGetTokenData from "../../../hooks/useGetTokenData";
 
 const HomeNftCard = ({ nftData }) => {
   const { name, tokenUrl, nftPrice } = nftData;
