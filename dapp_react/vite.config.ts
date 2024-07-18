@@ -5,7 +5,12 @@ import svgr from "vite-plugin-svgr";
 // import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default {
-  plugins: [react(), svgr()],
+  plugins: [
+    react(),
+    svgr({
+      include: "**/*.svg?react",
+    }),
+  ],
 };
 
 // export default defineConfig({

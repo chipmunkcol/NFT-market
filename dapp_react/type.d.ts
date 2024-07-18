@@ -1,12 +1,12 @@
 import { PriceHistory } from "./src/pages/NftDetail";
 import { JsonRpcSigner } from "ethers";
 
-// declare module "*.svg" {
-//   import React from "react";
-//   export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
-//   const src: string;
-//   export default src;
-// }
+declare module "*.svg?react" {
+  import React from "react";
+  export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
+}
 
 export type Nft = {
   name: string;

@@ -1,4 +1,3 @@
-/// <reference types="vite-plugin-svgr/client" />
 import styled from "styled-components";
 import Twitter from "/src/assets/images/twitter.svg?react";
 import Instagram from "/src/assets/images/instagram.svg?react";
