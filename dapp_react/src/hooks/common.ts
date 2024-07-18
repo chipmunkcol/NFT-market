@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { web3, SaleNftContract } from "../../contracts/index";
+import { web3 } from "../../contracts/index";
 import {
   transactWithPurchaseNft,
   transactWithSetOnsaleNft,
