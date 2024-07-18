@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { ReactComponent as openseaSymbol } from '../assets/images/opensea-symbol.svg';
-import { ReactComponent as imageSymbol } from '../assets/images/image-symbol.svg';
-import { ReactComponent as gridSymbol } from '../assets/images/grid4-symbol.svg';
+import openseaSymbol from "../assets/images/opensea-symbol.svg";
+import imageSymbol from "../assets/images/image-symbol.svg";
+import gridSymbol from "../assets/images/grid4-symbol.svg";
 import Slider from "./Create/Slider";
 import { useEffect } from "react";
 
 function Create() {
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -15,72 +14,90 @@ function Create() {
   return (
     <Background>
       <Container>
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: "flex" }}>
           <NavPart>
             <TitlwBox>
               <TitleWrap>
-                <div >
+                <div>
                   <OpenseaSymbol />
                 </div>
                 <h1>Create</h1>
               </TitleWrap>
             </TitlwBox>
-            <div style={{ width: '100%', }}>
+            <div style={{ width: "100%" }}>
               {/* <Link to={'collection'}> */}
-              <Link to={'/create-collection/step-1'}>
-                <CollectionBox >
-                  <div style={{ display: 'flex' }}>
+              <Link to={"/create-collection/step-1"}>
+                <CollectionBox>
+                  <div style={{ display: "flex" }}>
                     <CollectionWrap>
                       <CollectionTitle>
-                        <div >
+                        <div>
                           <GridSymbol />
                         </div>
-                        <h2 >Collection 드롭</h2>
+                        <h2>Collection 드롭</h2>
                       </CollectionTitle>
                       <p>컬렉션을 생성하고 지갑에 직접 NFT를 mint하세요.</p>
                     </CollectionWrap>
-                    <div style={{ width: '6%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' }}>
-                      {'>'}
+                    <div
+                      style={{
+                        width: "6%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      {">"}
                     </div>
                   </div>
                 </CollectionBox>
               </Link>
             </div>
-            <div style={{ width: '100%' }}>
-              <Link to={'/create-mint-nft'}>
+            <div style={{ width: "100%" }}>
+              <Link to={"/create-mint-nft"}>
                 <ImageBox>
-                  <div style={{ display: 'flex' }}>
+                  <div style={{ display: "flex" }}>
                     <NftWrap>
                       <ImageTitle>
-                        <div >
+                        <div>
                           <ImageSymbol />
                         </div>
-                        <h2 >NFT mint 하기</h2>
+                        <h2>NFT mint 하기</h2>
                       </ImageTitle>
-                      <p>다른 사람들이 mint할 수 있도록 NFT 컬렉션을 출시하세요.</p>
+                      <p>
+                        다른 사람들이 mint할 수 있도록 NFT 컬렉션을 출시하세요.
+                      </p>
                     </NftWrap>
-                    <div style={{ width: '6%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' }}>
-                      {'>'}
+                    <div
+                      style={{
+                        width: "6%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      {">"}
                     </div>
                   </div>
                 </ImageBox>
               </Link>
             </div>
           </NavPart>
-          <SliderPart >
+          <SliderPart>
             {/* <div style={{ width: '100%', height: '100%', backgroundColor: 'yellowgreen' }}>
           <Img />
         </div> */}
             <Slider />
           </SliderPart>
-        </div >
+        </div>
       </Container>
     </Background>
-  )
+  );
 }
 
 const NavPart = styled.div`
-/* div style={{ width: '50%', paddingRight: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem' }} */
+  /* div style={{ width: '50%', paddingRight: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem' }} */
   width: 50%;
   padding-right: 4rem;
   display: flex;
@@ -101,7 +118,7 @@ const SliderPart = styled.div`
 `;
 
 const CollectionBox = styled.div`
-/* style={{ border: '1px solid #dedede', borderRadius: '20px', padding: '24px 32px 24px 24px' }} */
+  /* style={{ border: '1px solid #dedede', borderRadius: '20px', padding: '24px 32px 24px 24px' }} */
   /* border: 1px solid #dedede; */
   border-radius: 20px;
   padding: 24px 32px 24px 24px;
@@ -118,9 +135,8 @@ const TitlwBox = styled.div`
   }
 `;
 
-
 const CollectionWrap = styled.div`
-/* div style={{ width: '94%' }} */
+  /* div style={{ width: '94%' }} */
   width: 94%;
   p {
     display: block;
@@ -134,7 +150,7 @@ const CollectionWrap = styled.div`
 const NftWrap = styled(CollectionWrap)``;
 
 const TitleWrap = styled.div`
-  ${props => props.theme.variables.flexGap('row', '1rem')};
+  ${(props) => props.theme.variables.flexGap("row", "1rem")};
   align-items: end;
   h1 {
     font-size: 48px;
@@ -166,7 +182,6 @@ const GridSymbol = styled(gridSymbol)`
   height: 14px;
 `;
 
-
 const Background = styled.div`
   /* height: 100%; */
   padding-top: 100px;
@@ -186,6 +201,5 @@ const Container = styled.div`
     min-height: 50vh;
   }
 `;
-
 
 export default Create;

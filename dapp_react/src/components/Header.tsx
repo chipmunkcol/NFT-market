@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { GlobalContext } from "../context/GlobalContext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -15,50 +15,51 @@ import iconProfile from "../assets/images/icon-profile-bk.png";
 import iconCart from "../assets/images/icon-cart.png";
 import iconProfileWh from "../assets/images/icon-profile-wh.png";
 import iconCartWh from "../assets/images/icon-cart-wh.png";
+import { GlobalContextType } from "../../type";
 
 export default function Header() {
-
-  const { account, setAccount, setSigner } = useContext(GlobalContext);
+  const { account, setAccount, setSigner } = useContext(
+    GlobalContext
+  ) as GlobalContextType;
   const [balance, setBalance] = useState(0);
   const location = useLocation();
-  console.log('location: ', location);
-  const navigate = useNavigate();
+  // console.log('location: ', location);
 
-  const [headerTheme, setHeaderTheme] = useState('light');
-  const myFunctionTimerRef = useRef(null);
+  const [headerTheme, setHeaderTheme] = useState("light");
+  const myFunctionTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (location.pathname === '/') {
-      setHeaderTheme('dark');
-      window.addEventListener('scroll', handleScroll);
+    if (location.pathname === "/") {
+      setHeaderTheme("dark");
+      window.addEventListener("scroll", handleScroll);
     } else {
-      setHeaderTheme('light');
-      window.removeEventListener('scroll', handleScroll);
+      setHeaderTheme("light");
+      window.removeEventListener("scroll", handleScroll);
     }
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [location.pathname]);
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY;
     if (scrollPosition === 0) {
-      setHeaderTheme('dark');
+      setHeaderTheme("dark");
     } else {
-      setHeaderTheme('light');
+      setHeaderTheme("light");
     }
 
     if (myFunctionTimerRef.current) {
       clearTimeout(myFunctionTimerRef.current);
     }
-    myFunctionTimerRef.current = setTimeout(() => {
-      console.log('scroll');
+    myFunctionTimerRef.current = window.setTimeout(() => {
+      console.log("scroll");
     }, 100);
   };
 
   useEffect(() => {
-    if (location.pathname === '/') {
+    if (location.pathname === "/") {
       window.scrollTo(0, 0);
     }
   }, [location.pathname]);
@@ -70,18 +71,11 @@ export default function Header() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
     setSigner(signer);
-  }
+  };
 
   /**
    * connectMetamask
    */
-  async function setterAccountAndBalance(web3, accounts) {
-    setAccount(accounts);
-    const balance = await web3.eth.getBalance(accounts[0]);
-    setBalance(balance);
-  }
-
-
   async function connectMetamask() {
     //check metamask is installed
     if (window.ethereum) {
@@ -93,29 +87,36 @@ export default function Header() {
 
       //get the connected accounts
       const accounts = await web3.eth.getAccounts();
-      setterAccountAndBalance(web3, accounts[0]);
+      setAccount(accounts[0]);
 
-      // signer
+      // inject signer
       setterSinger();
     } else {
-      const res = await Confirm("메타마스크 지갑이 필요합니다", "지갑을 다운로드 하시겠습니까?");
+      const res = await Confirm(
+        "메타마스크 지갑이 필요합니다",
+        "지갑을 다운로드 하시겠습니까?"
+      );
       if (!res.isConfirmed) return;
       const isMobile = /Mobi/i.test(window.navigator.userAgent);
       if (isMobile) {
-        window.open("https://metamask.app.link/dapp/nft-market-m271.vercel.app/", "_blank");
+        window.open(
+          "https://metamask.app.link/dapp/nft-market-m271.vercel.app/",
+          "_blank"
+        );
       } else {
-        window.open("https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko", "_blank");
+        window.open(
+          "https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko",
+          "_blank"
+        );
       }
-
     }
   }
-
 
   /**
    * 자동 metamast 지갑 확인
    */
   useEffect(() => {
-    const refreshAccount = (account) => {
+    const refreshAccount = (account: string) => {
       if (account?.length > 0) {
         setAccount(account[0]);
       } else {
@@ -152,113 +153,135 @@ export default function Header() {
       if (!account) return;
       const web3 = new Web3(window.ethereum);
       const balance = await web3.eth.getBalance(account);
-      const ethBalance = web3.utils.fromWei(balance, "ether");
-      setBalance(Number(ethBalance).toFixed(2));
+      const ethBalance = Number(web3.utils.fromWei(balance, "ether"));
+      setBalance(Number(ethBalance.toFixed(2)));
     }
 
     fetchBalance();
-
   }, [account]);
-
 
   // Cart 컴포넌트
   const [cartModal, setCartModal] = useState(false);
   const cartModalOpen = () => {
     setCartModal(true);
-  }
+  };
   const cartModalClose = () => {
     setCartModal(false);
-  }
+  };
 
-  const copyHandler = async () => {
+  const copyHandler = async (account: string) => {
     await navigator.clipboard.writeText(account);
     toastSwal("Copied to clipboard");
-  }
+  };
 
   // Profile 컴포넌트 (mypage & faucet)
   const [profileModal, setProfileModal] = useState(false);
   const profileModalOpen = () => {
     setProfileModal(true);
-  }
+  };
   const profileModalClose = () => {
     setProfileModal(false);
-  }
+  };
 
   // 메뉴바 드롭다운
   const [menubar, setMenubar] = useState(false);
   const menubarToggle = () => {
-    setMenubar(prev => !prev);
-  }
+    setMenubar((prev) => !prev);
+  };
   const menubarClose = () => {
     setMenubar(false);
-  }
+  };
   return (
     <>
       <Container id="header" $headertheme={headerTheme}>
         <Navbar>
-          <Link to={'/'}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <Link to={"/"}>
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
               <MainIconWrap>
-                <img src="https://opensea.io/static/images/logos/opensea-logo.svg" alt="logo"></img>
+                <img
+                  src="https://opensea.io/static/images/logos/opensea-logo.svg"
+                  alt="logo"
+                ></img>
               </MainIconWrap>
-              <div style={{ fontSize: '21px', fontWeight: '900' }}>
-                NFT Sea
-              </div>
-              <div style={{ height: '30px', borderRight: '1.4px solid #12121214', paddingLeft: '10px' }} />
+              <div style={{ fontSize: "21px", fontWeight: "900" }}>NFT Sea</div>
+              <div
+                style={{
+                  height: "30px",
+                  borderRight: "1.4px solid #12121214",
+                  paddingLeft: "10px",
+                }}
+              />
             </div>
           </Link>
-          <Link to={'/market-place/nft'} id="nav-marketplace">
+          <Link to={"/market-place/nft"} id="nav-marketplace">
             <Nav>Marketplace</Nav>
           </Link>
-          <Link to={'/create'} id="nav-create">
+          <Link to={"/create"} id="nav-create">
             <Nav>Create</Nav>
           </Link>
         </Navbar>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {account && (
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', fontSize: '13px' }}>
-                <MyAccount onClick={copyHandler}>{getTruncatedAccount(account)}</MyAccount>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                }}
+              >
+                <MyAccount onClick={() => copyHandler(account)}>
+                  {getTruncatedAccount(account)}
+                </MyAccount>
                 <div>ETH {balance}</div>
               </div>
               {/* <Link to={`/mypage/${account}`}> */}
               <ProfileWrap onClick={profileModalOpen}>
-                <IconWrap>
+                <IconWrap $headertheme={headerTheme}>
                   {/* <img id="profile" src={headerTheme === 'dark' ? iconProfileWh : iconProfile} /> */}
-                  <div id="profile" $headertheme={headerTheme} />
+                  <div id="profile" />
                 </IconWrap>
               </ProfileWrap>
               {/* </Link> */}
               <CartWrap onClick={cartModalOpen}>
-                <IconWrap>
+                <IconWrap $headertheme={headerTheme}>
                   {/* <img id="cart" src={headerTheme === 'dark' ? iconCart : iconCartWh} /> */}
-                  <div id="cart" $headertheme={headerTheme} />
+                  <div id="cart" />
                 </IconWrap>
               </CartWrap>
-            </div>)
-          }
+            </div>
+          )}
           {/* Profile Component */}
           {profileModal && <Profile profileModalClose={profileModalClose} />}
           {/* Cart Component */}
           {cartModal && <Cart cartModalClose={cartModalClose} />}
           {!account && (
             <ButtonWrap>
-              <S_Button onClick={connectMetamask}><span>Connect</span> Wallet</S_Button>
-            </ButtonWrap>)}
-          <MenubarBtn onClick={menubarToggle}>
-            ☰
-          </MenubarBtn>
+              <S_Button onClick={connectMetamask}>
+                <span>Connect</span> Wallet
+              </S_Button>
+            </ButtonWrap>
+          )}
+          <MenubarBtn onClick={menubarToggle}>☰</MenubarBtn>
         </div>
       </Container>
       {/* Menubar Component */}
-      {menubar && <Menubar menubarClose={menubarClose} cartModalOpen={cartModalOpen} connectMetamask={connectMetamask} headerTheme={headerTheme} />}
+      {menubar && (
+        <Menubar
+          menubarClose={menubarClose}
+          cartModalOpen={cartModalOpen}
+          connectMetamask={connectMetamask}
+          headerTheme={headerTheme}
+        />
+      )}
     </>
-  )
+  );
 }
 
 export const MainIconWrap = styled.div`
-    width: 40px;
+  width: 40px;
   height: 40px;
   img {
     width: 100%;
@@ -266,21 +289,22 @@ export const MainIconWrap = styled.div`
   }
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<{ $headertheme: string }>`
   position: fixed;
   top: 0;
   height: 72px;
   width: 100%;
   z-index: 998;
   padding: 0 2rem 0 2rem;
-  background-color: ${props => props.$headertheme === 'dark' ? '#161618' : '#ffffff'};
-  color: ${props => props.$headertheme === 'dark' ? '#f0f0f1' : '#161618'};
+  background-color: ${(props) =>
+    props.$headertheme === "dark" ? "#161618" : "#ffffff"};
+  color: ${(props) => (props.$headertheme === "dark" ? "#f0f0f1" : "#161618")};
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
-  padding: 0 1rem 0 1rem;
+    padding: 0 1rem 0 1rem;
   }
 `;
 export const CartWrap = styled.div`
@@ -298,19 +322,25 @@ export const ProfileWrap = styled.div`
   }
 `;
 
-export const IconWrap = styled.div`
+export const IconWrap = styled.div<{ $headertheme: string }>`
   border-radius: 12px;
-    padding: 0px 12px;
-    position: relative;
-    height: 48px;
-    min-width: 48px;
-    border-color: transparent;
-    background-color: rgba(18, 18, 18, 0.04);
-    ${props => props.theme.variables.flex};
+  padding: 0px 12px;
+  position: relative;
+  height: 48px;
+  min-width: 48px;
+  border-color: transparent;
+  background-color: rgba(18, 18, 18, 0.04);
+  /* ${(props) => props.theme.variables.flex}; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   #profile {
     width: 25px;
     height: 25px;
-    background-image: ${props => props.children.props.$headertheme === 'dark' ? `url(${iconProfileWh})` : `url(${iconProfile})`};
+    background-image: ${(props) =>
+      props.$headertheme === "dark"
+        ? `url(${iconProfileWh})`
+        : `url(${iconProfile})`};
     background-position: center;
     background-size: cover;
     transition: background-image 0.2s ease-in-out;
@@ -318,8 +348,10 @@ export const IconWrap = styled.div`
   #cart {
     width: 25px;
     height: 25px;
-    /* background-image: ${props => props.children.props.$headertheme === 'dark' ? `url(${iconCartWh})` : `url(${iconCart})`}; */
-    background-image: url(${props => props.children.props.$headertheme === 'light' ? iconCart : iconCartWh});
+    background-image: ${(props) =>
+      props.$headertheme === "dark"
+        ? `url(${iconCartWh})`
+        : `url(${iconCart})`};
     background-position: center;
     background-size: cover;
     transition: background-image 0.2s ease-in-out;
@@ -356,7 +388,7 @@ export const Navbar = styled.div`
   display: flex;
   align-items: center;
   gap: 50px;
-  
+
   #nav-marketplace {
     @media (max-width: ${({ theme }) => theme.size.mobile}) {
       display: none;
@@ -380,5 +412,3 @@ export const Nav = styled.div`
     font-size: 13px;
   }
 `;
-
-
