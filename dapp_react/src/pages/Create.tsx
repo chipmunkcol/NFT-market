@@ -1,4 +1,3 @@
-/// <reference types="vite-plugin-svgr/client" />
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import openseaSymbol from "../assets/images/opensea-symbol.svg?react";

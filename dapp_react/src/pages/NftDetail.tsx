@@ -1,4 +1,3 @@
-/// <reference types="vite-plugin-svgr/client" />
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
