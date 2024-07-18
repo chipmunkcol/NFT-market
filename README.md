@@ -22,6 +22,10 @@ declare module "*.svg" {
 2. ts 컴파일러가 ts|tsx 확장을 처리하도록 tsconfig.json에
 type.d.ts를 호출하도록 해준다
  "include": ["src", "type.d.ts"],
+
+3. 그리고 사용하는데서 요렇게 사용!
+import Tictoc from "../assets/images/tictok.svg";
+**import 하고 첫 문자 대문자!
 ```
 
 ## 2-1. nft를 민팅 or 생성 후 생성 된 nft data를 smart-contract(이하 SC) 에서 불러오는게 맞는지 ipfs (생성 시 메타데이터 PUT) 에서 불러오는게 맞는지에 대한 고찰
@@ -132,7 +136,18 @@ router 버전 바뀌면서 이거 사용하란다 <ScrollRestoration />
 (언제 나왔지.....? 세상이 너무 빨리 변한다!)
 📙공식문서 읽기[https://reactrouter.com/en/main/components/scroll-restoration]
 
-0. URI 사용시 주의할점
+3. recharts.js warning
+   width 를 option 으로 넣어주니까 warning 발생!이런 식으로 mobile 버전일 때 width 조절
+   <LineChart
+   width={mobileSize ? 300 : 600}
+   height={200}
+   data={metadata.priceHistory}
+
+   한줄 짜리가 아니라 좀 길어서 좀 신경쓰인당 아직 해결 안됐음 git에서 아조씨들 열심히 잡담중임
+
+   > [gitIssue](https://github.com/recharts/recharts/issues/3615#issuecomment-2135955727)
+
+4. URI 사용시 주의할점
 
 - Pinata 에서 제공하는 api query 사용하다보니까 생각보다 관련 지식이 필요함
   우선 전날하는 URL 는 string 형태여야 되는데 변수형태로 전달하려면 encodeURIComponent 함수로 변경해서 전달

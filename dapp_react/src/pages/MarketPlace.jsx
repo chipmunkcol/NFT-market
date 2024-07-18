@@ -389,6 +389,7 @@ const RightPart = styled.div`
   /* padding-left: 1rem; */
   text-align: center;
   width: calc(100% - 175px);
+  padding-bottom: 1rem;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     width: 100%;
   }

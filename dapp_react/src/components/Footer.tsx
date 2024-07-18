@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import twitter from "../assets/images/twitter.svg";
-import instagram from "../assets/images/instagram.svg";
-import discord from "../assets/images/discord.svg";
-import youtube from "../assets/images/youtube.svg";
-import tictoc from "../assets/images/tictok.svg";
+import  { ReactComponent as Twitter} from "/src/assets/images/twitter.svg";
+import  { ReactComponent as Instagram} from "/src/assets/images/instagram.svg";
+import  { ReactComponent as Discord} from "/src/assets/images/discord.svg";
+import  { ReactComponent as Youtube} from "/src/assets/images/youtube.svg";
+import  { ReactComponent as Tictoc} from "/src/assets/images/tictok.svg";
 import Swal from "sweetalert2";
 
 export default function Footer() {
@@ -194,26 +194,26 @@ const SvgWrap = styled.div`
   ${(props) => props.theme.variables.flex};
   height: 100%;
 `;
-const TwitterSvg = styled(twitter)`
+const TwitterSvg = styled(Twitter)`
   width: 30px;
   height: 20px;
 `;
-const InstagramSvg = styled(instagram)`
-  width: 30px;
-  height: 20px;
-`;
-
-const DiscordSvg = styled(discord)`
+const InstagramSvg = styled(Instagram)`
   width: 30px;
   height: 20px;
 `;
 
-const YoutubeSvg = styled(youtube)`
+const DiscordSvg = styled(Discord)`
   width: 30px;
   height: 20px;
 `;
 
-const TictocSvg = styled(tictoc)`
+const YoutubeSvg = styled(Youtube)`
+  width: 30px;
+  height: 20px;
+`;
+
+const TictocSvg = styled(Tictoc)`
   width: 30px;
   height: 20px;
 `;
