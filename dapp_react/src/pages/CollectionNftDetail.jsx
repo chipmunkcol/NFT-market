@@ -7,7 +7,7 @@ import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
-import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
+import expandIcon from "../assets/images/icon-expand.svg";
 import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
@@ -178,7 +178,7 @@ function CollectionNftDetail() {
               <h3>
                 Traits
               </h3>
-              <p>
+              <Styled.PaddingWrap>
                 <ul>
                   {
                     (typeof (tokenData?.attributes) === 'object' && tokenData.attributes?.length > 0) ? tokenData.attributes.map(attr => (
@@ -190,7 +190,7 @@ function CollectionNftDetail() {
                       <li>None</li>
                   }
                 </ul>
-              </p>
+              </Styled.PaddingWrap>
 
             </Styled.AttribuesBox>
           </Styled.LeftPart>
@@ -206,7 +206,7 @@ function CollectionNftDetail() {
                 <h3>
                   Price Info
                 </h3>
-                <p>
+                <Styled.PaddingWrap>
                   <div style={{ color: "#8a939b" }}>Current price</div>
                   <div>
                     <span style={{ fontSize: '30px', fontWeight: '700', color: '#121212', marginRight: '5px' }}>{metadata.nftPrice} ETH</span>
@@ -224,7 +224,7 @@ function CollectionNftDetail() {
                       </Styled.CartBtn>
                     </Styled.ButtonWrap>
                   </div>
-                </p>
+                </Styled.PaddingWrap>
               </Styled.PriceBox>
               <Styled.PriceHistory>
                 <h3>
@@ -251,10 +251,10 @@ function CollectionNftDetail() {
                 <h3>
                   Description
                 </h3>
-                <p style={{ height: '100px', overflow: 'auto' }}>
+                <Styled.PaddingWrap style={{ height: "100px", overflow: "auto" }}>
                   <div style={{ color: '#8a939b' }}>By <span>{name}Deployer</span></div>
                   <div>{tokenData.description}</div>
-                </p>
+                </Styled.PaddingWrap>
               </Styled.DescriptionBox>
             </Styled.RightWrap>
           </Styled.RightPart>

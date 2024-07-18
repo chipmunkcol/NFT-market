@@ -14,7 +14,7 @@ import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-import expandIcon from "../assets/images/icon-expand.svg";
+import ExpandIcon from "../assets/images/icon-expand.svg?react";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 import { GlobalContextType, NftMetadata, PriceHistoryT } from "../../type";
@@ -151,7 +151,7 @@ function NftDetail() {
 
             <AttribuesBox style={{ marginTop: "20px" }}>
               <h3>Traits</h3>
-              <p>
+              <PaddingWrap>
                 <ul>
                   {typeof attributes === "object" && attributes?.length > 0 ? (
                     attributes.map((attr) => (
@@ -168,7 +168,7 @@ function NftDetail() {
                     <li>None</li>
                   )}
                 </ul>
-              </p>
+              </PaddingWrap>
             </AttribuesBox>
           </LeftPart>
           <RightPart>
@@ -190,7 +190,7 @@ function NftDetail() {
               </div>
               <PriceBox>
                 <h3>Price Info</h3>
-                <p>
+                <PaddingWrap>
                   <div style={{ color: "#8a939b" }}>Current price</div>
                   <div>
                     <span
@@ -236,7 +236,7 @@ function NftDetail() {
                       </CartBtn>
                     </ButtonWrap>
                   </div>
-                </p>
+                </PaddingWrap>
               </PriceBox>
               <PriceHistory>
                 <h3>Price Info</h3>
@@ -262,12 +262,12 @@ function NftDetail() {
               </PriceHistory>
               <DescriptionBox>
                 <h3>Description</h3>
-                <p style={{ height: "100px", overflow: "auto" }}>
+                <PaddingWrap style={{ height: "100px", overflow: "auto" }}>
                   <div style={{ color: "#8a939b" }}>
                     By <span>{name} Deployer</span>
                   </div>
                   <div>{description}</div>
-                </p>
+                </PaddingWrap>
               </DescriptionBox>
             </RightWrap>
           </RightPart>
@@ -289,11 +289,12 @@ export const DescriptionBox = styled.div`
     border-bottom: 1px solid rgba(18, 18, 18, 0.12);
     padding: 10px;
   }
-  p {
-    ${(props) => props.theme.variables.flexGap("column", "10px")}
-    padding: 20px;
-    font-size: 16px;
-  }
+`;
+
+export const PaddingWrap = styled.div`
+  ${(props) => props.theme.variables.flexGap("column", "10px")}
+  padding: 20px;
+  font-size: 16px;
 `;
 
 export const PriceBox = styled(DescriptionBox)``;
@@ -401,7 +402,7 @@ export const SymbolImg = styled.div`
     height: 100%;
   }
 `;
-export const ExpandImg = styled(expandIcon)`
+export const ExpandImg = styled(ExpandIcon)`
   width: 14px;
   height: 14px;
   fill: rgba(32, 129, 226, 0.8);

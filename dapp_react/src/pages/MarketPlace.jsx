@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { GlobalContext } from "../context/GlobalContext";
 // import { S_Button, S_Wallet_Button } from "../styles/styledComponent";
 import bgMain from '../assets/images/bg-main.png';
-import { ReactComponent as iconFind } from '../assets/images/icon-find.svg';
+import iconFind from '../assets/images/icon-find.svg';
 import iconGrid4 from '../assets/images/icon-grid4.png';
 import iconGrid9 from '../assets/images/icon-grid9.png';
 import iconList from '../assets/images/icon-list.png';
@@ -389,6 +389,7 @@ const RightPart = styled.div`
   /* padding-left: 1rem; */
   text-align: center;
   width: calc(100% - 175px);
+  padding-bottom: 1rem;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     width: 100%;
   }

@@ -4,7 +4,7 @@ import { MintContract, MintAddress, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import saleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
-import { ReactComponent as iconEther } from '../assets/images/icon-ether.svg';
+import iconEther from '../assets/images/icon-ether.svg';
 import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 import AirdropNftCard from "./mypageComponents/AirdropNftCard";
