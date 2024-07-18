@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { ReactComponent as twitter } from "../assets/images/twitter.svg";
-import { ReactComponent as instagram } from "../assets/images/instagram.svg";
-import { ReactComponent as discord } from "../assets/images/discord.svg";
-import { ReactComponent as youtube } from "../assets/images/youtube.svg";
-import { ReactComponent as tictoc } from "../assets/images/tictok.svg";
+import twitter from "../assets/images/twitter.svg";
+import instagram from "../assets/images/instagram.svg";
+import discord from "../assets/images/discord.svg";
+import youtube from "../assets/images/youtube.svg";
+import tictoc from "../assets/images/tictok.svg";
 import Swal from "sweetalert2";
 
 export default function Footer() {

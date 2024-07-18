@@ -6,7 +6,14 @@ import {
   transactWithSetOnsaleNfts,
 } from "../../contracts/interface";
 import { JsonRpcSigner } from "ethers";
-import { CartIpfsData, CartNft, IpfsData, NftMetadata } from "../../type";
+import {
+  CartIpfsData,
+  CartNft,
+  CollectionIpfsData,
+  CollectionNft,
+  IpfsData,
+  NftMetadata,
+} from "../../type";
 import { toastSwal } from "./swal";
 
 export const getImageUrl = (imageIpfsHash: string) => {
@@ -169,17 +176,28 @@ export const getTargetCartToIpfsData = async (
   return result.rows[0];
 };
 
-export const P_AddNftIdOnCollection = async (tokenUrl: string, nftIds: any) => {
-  const res = await getTargetNftToIpfsData(tokenUrl);
-  const nftKeyvaluesList = JSON.parse(res.metadata.keyvalues.nftKeyvaluesList);
-
-  const _newNftKeyvaluesList = nftKeyvaluesList.map(
-    (nft: any, index: number) => ({
-      ...nft,
-      nftId: parseInt(nftIds[index]),
-      tokenUrl,
-    })
+export const getTargetCollectionToIpfsData = async (
+  tokenUrl: string
+): Promise<CollectionIpfsData> => {
+  const res = await fetch(
+    `https://api.pinata.cloud/data/pinList?cid=${tokenUrl}`,
+    ipfsGetOptions
   );
+  const result = await res.json();
+  return result.rows[0];
+};
+
+export const P_AddNftIdOnCollection = async (tokenUrl: string, nftIds: any) => {
+  const res = await getTargetCollectionToIpfsData(tokenUrl);
+  const nftKeyvaluesList: CollectionNft[] = JSON.parse(
+    res.metadata.keyvalues.nftKeyvaluesList
+  );
+
+  const _newNftKeyvaluesList = nftKeyvaluesList.map((nft, index: number) => ({
+    ...nft,
+    nftId: parseInt(nftIds[index]),
+    tokenUrl,
+  }));
   const newNftKeyvaluesList = JSON.stringify(_newNftKeyvaluesList);
 
   const name = res.metadata.name ? res.metadata.name : "";
@@ -203,10 +221,12 @@ export const P_updateMetadataAirdrop = async (
   tempIpfs: string,
   collectionIpfs: string
 ) => {
-  const res = await getTargetNftToIpfsData(tempIpfs);
+  const res = await getTargetCollectionToIpfsData(tempIpfs);
   const _keyvalues = res.metadata.keyvalues;
-  const _nftKeyvaluesList = JSON.parse(_keyvalues.nftKeyvaluesList);
-  const newNftKeyvaluesList = _nftKeyvaluesList.map((nft: any) => ({
+  const _nftKeyvaluesList: CollectionNft[] = JSON.parse(
+    _keyvalues.nftKeyvaluesList
+  );
+  const newNftKeyvaluesList = _nftKeyvaluesList.map((nft) => ({
     ...nft,
     tokenUrl: collectionIpfs,
     isReveal: true,
@@ -293,18 +313,20 @@ export const getAddedPriceHistory = (
 
 export const P_updateMetadataPurchase = async (
   nftId: number,
-  ipfsData: any,
+  ipfsData: any, // CollectionIpfsData | IpfsData
   account: string
 ) => {
   const { isCollection } = ipfsData.metadata.keyvalues;
 
-  let numberOfSales, priceHistory, owner, nftPrice;
+  let numberOfSales: any, priceHistory, owner, nftPrice;
   if (isCollection === "true") {
-    const collectionNftList = JSON.parse(
+    const collectionNftList: CollectionNft[] = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
     );
-    const targetNft = collectionNftList.find((nft: any) => nft.nftId === nftId);
-    ({ numberOfSales, priceHistory, owner, nftPrice } = targetNft);
+    const targetNft = collectionNftList.find((nft) => nft.nftId === nftId);
+    if (targetNft) {
+      ({ numberOfSales, priceHistory, owner, nftPrice } = targetNft);
+    }
   } else {
     ({ numberOfSales, priceHistory, owner, nftPrice } =
       ipfsData.metadata.keyvalues);
@@ -314,10 +336,10 @@ export const P_updateMetadataPurchase = async (
 
   let jsonKeyvalues;
   if (isCollection === "true") {
-    const collectionNftList = JSON.parse(
+    const collectionNftList: CollectionNft[] = JSON.parse(
       ipfsData.metadata.keyvalues.nftKeyvaluesList
     );
-    const newCollectionNftList = collectionNftList.map((nft: any) =>
+    const newCollectionNftList = collectionNftList.map((nft) =>
       nft.nftId === nftId
         ? {
             ...nft,

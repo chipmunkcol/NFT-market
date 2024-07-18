@@ -106,6 +106,37 @@ export type IpfsData = {
   // number_of_files: number;
 };
 
+export type CollectionNft = {
+  name: string;
+  fileName: string;
+  owner: string;
+  isOnsale: string;
+  isCollection: string;
+  nftPrice: number;
+  numberOfSales: number;
+  priceHistory: string; // PriceHistoryT[];
+  tags: string;
+  nftId: number;
+  tokenUrl: string;
+  isReveal: boolean;
+};
+
+export type CollectionIpfsData = {
+  ipfs_pin_hash: string;
+  metadata: {
+    name: string;
+    keyvalues: {
+      tags: string;
+      owner: string;
+      isHide: string;
+      isOnsale: string;
+      isCollection: string;
+      numberOfSales: number;
+      nftKeyvaluesList: string; // CollectionNft[];
+    };
+  };
+};
+
 export type CartNft = {
   nftId: number;
   nftName: string;

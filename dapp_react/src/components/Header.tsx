@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { GlobalContext } from "../context/GlobalContext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -16,7 +16,6 @@ import iconCart from "../assets/images/icon-cart.png";
 import iconProfileWh from "../assets/images/icon-profile-wh.png";
 import iconCartWh from "../assets/images/icon-cart-wh.png";
 import { GlobalContextType } from "../../type";
-import { RegisteredSubscription } from "web3-eth";
 
 export default function Header() {
   const { account, setAccount, setSigner } = useContext(
