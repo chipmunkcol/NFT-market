@@ -3,7 +3,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "hardhat": "^2.19.5",
-    "rollup-plugin-polyfill-node": "^0.13.0"
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "vite-plugin-svgr": "^4.2.0"
   },
   "scripts": {
     "start": "cd dapp_react && npm run dev",

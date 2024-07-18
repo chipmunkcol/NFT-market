@@ -7,7 +7,7 @@ import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip, } from "recharts";
-import { ReactComponent as expandIcon } from "../assets/images/icon-expand.svg";
+import expandIcon from "../assets/images/icon-expand.svg";
 import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";

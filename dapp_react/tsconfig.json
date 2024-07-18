@@ -21,8 +21,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
+    // "types": ["type.d.ts"]
   },
-  // "include": ["src", "type.d.ts"],
-  "include": ["src"],
+  "include": ["src", "type.d.ts"],
+  // "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

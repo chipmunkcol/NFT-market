@@ -1,8 +1,9 @@
+/// <reference types="vite-plugin-svgr/client" />
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { ReactComponent as openseaSymbol } from "../assets/images/opensea-symbol.svg";
-import { ReactComponent as imageSymbol } from "../assets/images/image-symbol.svg";
-import { ReactComponent as gridSymbol } from "../assets/images/grid4-symbol.svg";
+import openseaSymbol from "../assets/images/opensea-symbol.svg?react";
+import imageSymbol from "../assets/images/image-symbol.svg?react";
+import gridSymbol from "../assets/images/grid4-symbol.svg?react";
 import Slider from "./Create/Slider";
 import { useEffect } from "react";
 

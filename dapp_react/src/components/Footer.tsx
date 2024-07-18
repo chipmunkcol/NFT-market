@@ -1,9 +1,10 @@
+/// <reference types="vite-plugin-svgr/client" />
 import styled from "styled-components";
-import  { ReactComponent as Twitter} from "/src/assets/images/twitter.svg";
-import  { ReactComponent as Instagram} from "/src/assets/images/instagram.svg";
-import  { ReactComponent as Discord} from "/src/assets/images/discord.svg";
-import  { ReactComponent as Youtube} from "/src/assets/images/youtube.svg";
-import  { ReactComponent as Tictoc} from "/src/assets/images/tictok.svg";
+import Twitter from "/src/assets/images/twitter.svg?react";
+import Instagram from "/src/assets/images/instagram.svg?react";
+import Discord from "/src/assets/images/discord.svg?react";
+import Youtube from "/src/assets/images/youtube.svg?react";
+import Tictoc from "/src/assets/images/tictok.svg?react";
 import Swal from "sweetalert2";
 
 export default function Footer() {
@@ -78,7 +79,7 @@ export default function Footer() {
           <div>
             <LogoWrap>
               <img
-                src="https://opensea.io/static/images/logos/opensea-logo.svg"
+                src="https://opensea.io/static/images/logos/opensea-logo.svg?react"
                 alt="logo"
               />
             </LogoWrap>

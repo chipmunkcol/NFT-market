@@ -1,3 +1,4 @@
+/// <reference types="vite-plugin-svgr/client" />
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
@@ -14,7 +15,7 @@ import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-import { ReactComponent as ExpandIcon } from "../assets/images/icon-expand.svg";
+import ExpandIcon from "../assets/images/icon-expand.svg?react";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 import { GlobalContextType, NftMetadata, PriceHistoryT } from "../../type";

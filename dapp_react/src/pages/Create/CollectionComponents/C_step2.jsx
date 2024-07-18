@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { C_setOnsaleNft, C_setOnsaleNfts, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
-import { ReactComponent as openseaSymbol } from "../../../assets/images/opensea-symbol.svg"
+import openseaSymbol from "../../../assets/images/opensea-symbol.svg"
 import useAsyncTask from "../../../hooks/useAsyncTask";
 import { Confirm, toastSwal } from "../../../hooks/swal";
 import Swal from "sweetalert2";
