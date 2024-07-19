@@ -7,7 +7,8 @@ import { useRef } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
 import { C_setOnsaleNft, C_setOnsaleNfts, P_AddNftIdOnCollection, getImageIpfsHash, getImageUrl, pinFileToIPFS, pinJsonToIPFS, validateCollectionData, validateFormData } from "../../../hooks/common";
-import openseaSymbol from "../../../assets/images/opensea-symbol.svg"
+// import openseaSymbol from "../../../assets/images/opensea-symbol.svg"
+import openseaSymbol from "../../../assets/images/opensea-symbol.png";
 import useAsyncTask from "../../../hooks/useAsyncTask";
 import { Confirm, toastSwal } from "../../../hooks/swal";
 import Swal from "sweetalert2";
@@ -284,7 +285,10 @@ function C_step2() {
         </div>
         <div style={{ display: 'flex', gap: '5px' }}>
           <MyAddressBox>
-            <OpenseaSymbol />
+            {/* <OpenseaSymbol /> */}
+            <SymbolImg >
+              <img src={openseaSymbol} alt="openseaSymbol" />
+            </SymbolImg>
             <div>오픈씨</div>
           </MyAddressBox>
           <RateBox>
@@ -313,13 +317,22 @@ function C_step2() {
   )
 }
 
-const OpenseaSymbol = styled(openseaSymbol)`
+
+const SymbolImg = styled.div`
   width: 20px;
   height: 20px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 `;
+// const OpenseaSymbol = styled(openseaSymbol)`
+//   width: 20px;
+//   height: 20px;
+// `;
 
 const ContentWrap = styled.div`
-  width: 70%;
+  width: 67%;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     width: 100%;
   }
@@ -380,9 +393,11 @@ const RateBox = styled.div`
 
 const PreviewWrap = styled.div`
   display: flex;
+  gap: 2rem;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     flex-direction: column;
     margin-bottom: 2rem;
+    gap: 0;
   }
 `;
 

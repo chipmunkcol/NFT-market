@@ -1,64 +1,57 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-// import { MintContract, web3 } from "../../contracts/index";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { GlobalContext } from "../context/GlobalContext";
-// import { S_Button, S_Wallet_Button } from "../styles/styledComponent";
-import bgMain from '../assets/images/bg-main.png';
-import iconFind from '../assets/images/icon-find.svg';
-import iconGrid4 from '../assets/images/icon-grid4.png';
-import iconGrid9 from '../assets/images/icon-grid9.png';
-import iconList from '../assets/images/icon-list.png';
+import bgMain from "../assets/images/bg-main.png";
+// import iconFind from "../assets/images/icon-find.svg";
+import iconFind from "../assets/images/icon-find.png";
+import iconGrid4 from "../assets/images/icon-grid4.png";
+import iconGrid9 from "../assets/images/icon-grid9.png";
+import iconList from "../assets/images/icon-list.png";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import { commingSoon } from "../hooks/common";
-// import { useNavigate, useHref, useMatch, useParams, useSearchParams } from 'react-router-dom'
-// import { useInView } from 'react-intersection-observer';
 
-// const dummyData = [{ name: '111', price: 3, isOnsale: true }, { name: '222', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }, { name: 'test', price: 3, isOnsale: true }];
 const MarketPlace = () => {
-  // const { onsaleNftListLength } = useContext(GlobalContext);
   const navigate = useNavigate();
-  const searchRef = useRef('');
+  const searchRef = useRef("");
   const location = useLocation();
-  const isNftPath = location.pathname.includes('nft');
+  const isNftPath = location.pathname.includes("nft");
 
-  const onChangeSearch = e => {
+  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     searchRef.current = e.target.value;
-  }
+  };
 
-  const localStorageGrid = Number(localStorage.getItem('grid'));
+  const localStorageGrid = Number(localStorage.getItem("grid"));
   const [grid, setGrid] = useState(localStorageGrid ? localStorageGrid : 5);
   const [gridCss, setGridCss] = useState({
     grid,
-    gridTemplateColumns: 'repeat(5, 1fr)',
-    gap: '10px', // '5px',
-    cardWidth: '193px', // '123px',
-    fontSize: '14px', // '12px',
+    gridTemplateColumns: "repeat(5, 1fr)",
+    gap: "10px", // '5px',
+    cardWidth: "193px", // '123px',
+    fontSize: "14px", // '12px',
   });
   const grid5Hander = () => {
-    localStorage.setItem('grid', 5);
+    localStorage.setItem("grid", "5");
     setGrid(5);
-  }
-  const grid7Hander = () => {
-    localStorage.setItem('grid', 8);
-    setGrid(8);
-  }
+  };
+  // const grid7Hander = () => {
+  //   localStorage.setItem('grid', '8');
+  //   setGrid(8);
+  // }
 
   useEffect(() => {
     setGridCss({
       grid,
       gridTemplateColumns: `repeat(${grid}, 1fr)`,
-      gap: grid === 5 ? '10px' : '5px',
-      cardWidth: grid === 5 ? '193px' : '123px',
-      fontSize: grid === 5 ? '14px' : '12px',
+      gap: grid === 5 ? "10px" : "5px",
+      cardWidth: grid === 5 ? "193px" : "123px",
+      fontSize: grid === 5 ? "14px" : "12px",
     });
   }, [grid]);
 
   const searchNfts = async () => {
-    if (searchRef.current === '' && isNftPath) {
-      navigate('/market-place/nft');
-    } else if (searchRef.current === '' && !isNftPath) {
-      navigate('/market-place/collection');
+    if (searchRef.current === "" && isNftPath) {
+      navigate("/market-place/nft");
+    } else if (searchRef.current === "" && !isNftPath) {
+      navigate("/market-place/collection");
     } else if (isNftPath) {
       navigate(`/market-place/nft?query=${searchRef.current}`);
     } else {
@@ -66,21 +59,21 @@ const MarketPlace = () => {
     }
   };
 
-  const onKeydownHandler = e => {
-    e.key === 'Enter' && searchNfts();
+  const onKeydownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.key === "Enter" && searchNfts();
   };
 
-  const categoryHandler = (e) => {
-    if (e.target.nodeName !== 'BUTTON') return;
+  const categoryHandler = (e: React.MouseEvent<HTMLUListElement>) => {
+    if (e.currentTarget.nodeName !== "BUTTON") return;
 
-    const category = e.target.innerText;
+    const category = e.currentTarget.innerHTML;
     navigate(`?category=${category}`);
   };
 
-  const collectionCategoryHandler = (e) => {
-    if (e.target.nodeName !== 'BUTTON') return;
+  const collectionCategoryHandler = (e: React.MouseEvent<HTMLUListElement>) => {
+    if (e.currentTarget.nodeName !== "BUTTON") return;
 
-    const category = e.target.innerText;
+    const category = e.currentTarget.innerText;
     navigate(`/market-place/collection?query=${category}`);
   };
 
@@ -88,10 +81,10 @@ const MarketPlace = () => {
   const [count, setCount] = useState(0);
 
   // 카테고리 숨기기
-  const [categoryHidden, setCategoryHidden] = useState(false);
-  const toggleCategoryHidden = () => {
-    setCategoryHidden(prev => !prev);
-  }
+  // const [categoryHidden, setCategoryHidden] = useState(false);
+  // const toggleCategoryHidden = () => {
+  //   setCategoryHidden(prev => !prev);
+  // }
 
   return (
     <Background>
@@ -100,58 +93,86 @@ const MarketPlace = () => {
           <TitleBox>
             <h1>MarketPlace</h1>
             <div>
-              <Link to={'nft'}>
-                <NavMain style={{ color: isNftPath ? '#007bff' : 'black' }}>NFT</NavMain>
+              <Link to={"nft"}>
+                <NavMain style={{ color: isNftPath ? "#007bff" : "black" }}>
+                  NFT
+                </NavMain>
               </Link>
             </div>
             <div>
-              <Link to={'collection'} >
-                <NavMain style={{ color: !isNftPath ? '#007bff' : 'black' }}>COLLECTION</NavMain>
+              <Link to={"collection"}>
+                <NavMain style={{ color: !isNftPath ? "#007bff" : "black" }}>
+                  COLLECTION
+                </NavMain>
               </Link>
             </div>
           </TitleBox>
-          <div style={{ padding: '10px 0' }}>
+          <div style={{ padding: "10px 0" }}>
             <FlexWrap>
               <NftCount>결과 {count}개</NftCount>
-              <InputWrap >
-                <Input type="text" placeholder="이름 또는 태그로 검색" onChange={onChangeSearch} onKeyDown={onKeydownHandler} />
+              <InputWrap>
+                <Input
+                  type="text"
+                  placeholder="이름 또는 태그로 검색"
+                  onChange={onChangeSearch}
+                  onKeyDown={onKeydownHandler}
+                />
                 <IconWrap onClick={searchNfts}>
-                  <IconFind />
+                  {/* <IconFind /> */}
+                  <FindImg>
+                    <img src={iconFind} alt="find-icon" />
+                  </FindImg>
                 </IconWrap>
               </InputWrap>
               <SelectBox>
                 <Select onClick={commingSoon}>
-                  <option value='updated'>최신순</option>
-                  <option value='row'>낮은 가격순</option>
-                  <option value='high'>높은 가격순</option>
+                  <option value="updated">최신순</option>
+                  <option value="row">낮은 가격순</option>
+                  <option value="high">높은 가격순</option>
                 </Select>
               </SelectBox>
               <IconContainer>
-                <IconBox style={{ borderTopLeftRadius: '0.75rem', borderBottomLeftRadius: '0.75rem' }}>
+                <IconBox
+                  style={{
+                    borderTopLeftRadius: "0.75rem",
+                    borderBottomLeftRadius: "0.75rem",
+                  }}
+                >
                   <IconList onClick={commingSoon} $iconPath={iconList} />
                 </IconBox>
                 <IconBox onClick={grid5Hander}>
                   <IconList $iconPath={iconGrid4} />
                 </IconBox>
-                <IconBox onClick={commingSoon} style={{ borderTopRightRadius: '0.75rem', borderBottomRightRadius: '0.75rem' }}>
+                <IconBox
+                  onClick={commingSoon}
+                  style={{
+                    borderTopRightRadius: "0.75rem",
+                    borderBottomRightRadius: "0.75rem",
+                  }}
+                >
                   <IconList $iconPath={iconGrid9} />
                 </IconBox>
               </IconContainer>
             </FlexWrap>
           </div>
         </FixArea>
-        <div style={{ paddingTop: '130px' }}>
-          <MainBox $categoryHidden={categoryHidden} >
+        <div style={{ paddingTop: "130px" }}>
+          <MainBox>
             <LeftPart>
               <CategoryBox>
                 <div>
                   <ul onClick={categoryHandler}>
                     <h3>카테고리</h3>
-                    {['예술', '유명인', '게임', '음악', '가상자산', '프로필 사진'].map(category => (
+                    {[
+                      "예술",
+                      "유명인",
+                      "게임",
+                      "음악",
+                      "가상자산",
+                      "프로필 사진",
+                    ].map((category) => (
                       <li key={`category-${category}`}>
-                        <NavButton>
-                          {category}
-                        </NavButton>
+                        <NavButton>{category}</NavButton>
                       </li>
                     ))}
                   </ul>
@@ -159,15 +180,11 @@ const MarketPlace = () => {
                 <div>
                   <ul onClick={collectionCategoryHandler}>
                     <h3>컬렉션</h3>
-                    {
-                      ['pudge penguin', 'fake funks'].map(collection => (
-                        <li key={`category-collection-${collection}`}>
-                          <NavButton>
-                            {collection}
-                          </NavButton>
-                        </li>
-                      ))
-                    }
+                    {["pudge penguin", "fake funks"].map((collection) => (
+                      <li key={`category-collection-${collection}`}>
+                        <NavButton>{collection}</NavButton>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </CategoryBox>
@@ -180,7 +197,16 @@ const MarketPlace = () => {
       </Container>
     </Background>
   );
-}
+};
+
+const FindImg = styled.div`
+  width: 24px;
+  height: 24px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
 
 const SelectBox = styled.div`
   width: 240px;
@@ -221,7 +247,7 @@ const NavMain = styled.span`
 `;
 
 const TitleBox = styled.div`
-/* div style={{ display: 'flex', alignItems: 'end', gap: '50px', padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }} */
+  /* div style={{ display: 'flex', alignItems: 'end', gap: '50px', padding: '10px 0 20px 0', borderBottom: '1px solid #cccccc' }} */
   display: flex;
   align-items: end;
   gap: 50px;
@@ -240,7 +266,7 @@ const CategoryBox = styled.div`
   ul {
     display: flex;
     flex-direction: column;
-    gap: 5Px;
+    gap: 5px;
   }
 
   h3 {
@@ -255,7 +281,6 @@ const CategoryBox = styled.div`
     &:hover {
       color: #007bff;
     }
-  
   }
 `;
 
@@ -287,7 +312,7 @@ const IconContainer = styled.div`
 `;
 
 const InputWrap = styled.div`
-/* style={{ position: 'relative', width: '400px', height: '48px' }} */
+  /* style={{ position: 'relative', width: '400px', height: '48px' }} */
   position: relative;
   height: 48px;
   width: 400px;
@@ -302,10 +327,10 @@ const IconWrap = styled.div`
   left: 0.75rem;
   cursor: pointer;
 `;
-const IconFind = styled(iconFind)`
-  width: 24px;
-  height: 24px;
-`
+// const IconFind = styled(iconFind)`
+//   width: 24px;
+//   height: 24px;
+// `;
 const IconBox = styled.div`
   width: 44px;
   height: 44px;
@@ -319,8 +344,8 @@ const IconBox = styled.div`
   cursor: pointer;
 `;
 
-const IconList = styled.div`
-  background-image: url(${props => props.$iconPath && props.$iconPath});
+const IconList = styled.div<{ $iconPath: string }>`
+  background-image: url(${(props) => props.$iconPath && props.$iconPath});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -362,8 +387,8 @@ const FlexWrap = styled.div`
 `;
 
 const MainBox = styled.div`
-display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 `;
 
 const Background = styled.div`
@@ -406,9 +431,7 @@ const Container = styled.div`
   }
 `;
 
-
 export default MarketPlace;
-
 
 // async function getOnsaleNftList() {
 //   if (!account) return;
