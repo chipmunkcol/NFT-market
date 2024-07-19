@@ -41,7 +41,7 @@ export default function Footer() {
                   {/* <SvgWrap>
                     <TwitterSvg />
                   </SvgWrap> */}
-                  <SymbolImg >
+                  <SymbolImg>
                     <img src={Twitter} alt="twitter" />
                   </SymbolImg>
                 </a>
@@ -51,7 +51,7 @@ export default function Footer() {
                   {/* <SvgWrap>
                     <InstagramSvg />
                   </SvgWrap> */}
-                  <SymbolImg >
+                  <SymbolImg>
                     <img src={Instagram} alt="Instagram" />
                   </SymbolImg>
                 </a>
@@ -71,7 +71,7 @@ export default function Footer() {
                   {/* <SvgWrap>
                     <YoutubeSvg />
                   </SvgWrap> */}
-                  <SymbolImg >
+                  <SymbolImg>
                     <img src={Youtube} alt="Youtube" />
                   </SymbolImg>
                 </a>
@@ -221,10 +221,10 @@ const MyAccountPart = styled(MarketPlacePart)``;
 const ResourcePart = styled(MarketPlacePart)``;
 const CompanyPart = styled(MarketPlacePart)``;
 
-const SvgWrap = styled.div`
-  ${(props) => props.theme.variables.flex};
-  height: 100%;
-`;
+// const SvgWrap = styled.div`
+//   ${(props) => props.theme.variables.flex};
+//   height: 100%;
+// `;
 // const TwitterSvg = styled(Twitter)`
 //   width: 30px;
 //   height: 20px;
