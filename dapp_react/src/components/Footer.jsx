@@ -1,9 +1,15 @@
 import styled from "styled-components";
-import Twitter from "/src/assets/images/twitter.svg?react";
-import Instagram from "/src/assets/images/instagram.svg?react";
-import Discord from "/src/assets/images/discord.svg?react";
-import Youtube from "/src/assets/images/youtube.svg?react";
-import Tictoc from "/src/assets/images/tictok.svg?react";
+// import Twitter from "../assets/images/twitter.svg?react";
+// import Instagram from "../assets/images/instagram.svg?react";
+// import Discord from "../assets/images/discord.svg?react";
+// import Youtube from "../assets/images/youtube.svg?react";
+// import Tictoc from "../assets/images/tictok.svg?react";
+
+import Twitter from "../assets/images/twitter.png";
+import Instagram from "../assets/images/instagram.png";
+import Discord from "../assets/images/discord.png";
+import Youtube from "../assets/images/youtube.png";
+// import Tictoc from "../assets/images/tictok.png";
 import Swal from "sweetalert2";
 
 export default function Footer() {
@@ -32,33 +38,45 @@ export default function Footer() {
             <ul>
               <li>
                 <a href="https://x.com/opensea" target="_blank">
-                  <SvgWrap>
+                  {/* <SvgWrap>
                     <TwitterSvg />
-                  </SvgWrap>
+                  </SvgWrap> */}
+                  <SymbolImg >
+                    <img src={Twitter} alt="twitter" />
+                  </SymbolImg>
                 </a>
               </li>
               <li>
                 <a href="https://www.instagram.com/opensea/" target="_blank">
-                  <SvgWrap>
+                  {/* <SvgWrap>
                     <InstagramSvg />
-                  </SvgWrap>
+                  </SvgWrap> */}
+                  <SymbolImg >
+                    <img src={Instagram} alt="Instagram" />
+                  </SymbolImg>
                 </a>
               </li>
               <li>
                 <a href="https://discord.com/invite/opensea" target="_blank">
-                  <SvgWrap>
+                  {/* <SvgWrap>
                     <DiscordSvg />
-                  </SvgWrap>
+                  </SvgWrap> */}
+                  <SymbolImg>
+                    <img src={Discord} alt="Discord" />
+                  </SymbolImg>
                 </a>
               </li>
               <li>
                 <a href="https://www.youtube.com/c/OpenSeaTV " target="_blank">
-                  <SvgWrap>
+                  {/* <SvgWrap>
                     <YoutubeSvg />
-                  </SvgWrap>
+                  </SvgWrap> */}
+                  <SymbolImg >
+                    <img src={Youtube} alt="Youtube" />
+                  </SymbolImg>
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a
                   href="https://www.tiktok.com/@opensea?lang=en"
                   target="_blank"
@@ -66,8 +84,11 @@ export default function Footer() {
                   <SvgWrap>
                     <TictocSvg />
                   </SvgWrap>
+                  <SymbolImg >
+                    <img src={Tictoc} alt="Tictoc" />
+                  </SymbolImg>
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </CommunityPart>
@@ -138,6 +159,16 @@ export default function Footer() {
   );
 }
 
+const SymbolImg = styled.div`
+  /* width: 20px;
+  height: 20px; */
+  padding: 12px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
 const Line = styled.div`
   /* style={{ width: '100%', height: '1px', borderBottom: '1px solid rgba(229, 232, 235, 0.25)', padding: '2rem' }} */
   width: 100%;
@@ -194,29 +225,29 @@ const SvgWrap = styled.div`
   ${(props) => props.theme.variables.flex};
   height: 100%;
 `;
-const TwitterSvg = styled(Twitter)`
-  width: 30px;
-  height: 20px;
-`;
-const InstagramSvg = styled(Instagram)`
-  width: 30px;
-  height: 20px;
-`;
+// const TwitterSvg = styled(Twitter)`
+//   width: 30px;
+//   height: 20px;
+// `;
+// const InstagramSvg = styled(Instagram)`
+//   width: 30px;
+//   height: 20px;
+// `;
 
-const DiscordSvg = styled(Discord)`
-  width: 30px;
-  height: 20px;
-`;
+// const DiscordSvg = styled(Discord)`
+//   width: 30px;
+//   height: 20px;
+// `;
 
-const YoutubeSvg = styled(Youtube)`
-  width: 30px;
-  height: 20px;
-`;
+// const YoutubeSvg = styled(Youtube)`
+//   width: 30px;
+//   height: 20px;
+// `;
 
-const TictocSvg = styled(Tictoc)`
-  width: 30px;
-  height: 20px;
-`;
+// const TictocSvg = styled(Tictoc)`
+//   width: 30px;
+//   height: 20px;
+// `;
 
 const FlexBoxGap = styled.div`
   display: flex;
