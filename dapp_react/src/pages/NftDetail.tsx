@@ -14,7 +14,8 @@ import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-import ExpandIcon from "../assets/images/icon-expand.svg?react";
+// import ExpandIcon from "../assets/images/icon-expand.svg?react";
+import ExpandIcon from "../assets/images/icon-expand.png";
 import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 import { GlobalContextType, NftMetadata, PriceHistoryT } from "../../type";
@@ -135,7 +136,10 @@ function NftDetail() {
                   <div>
                     {/* view original (pinata) */}
                     <a href={image} target="_blank">
-                      <ExpandImg />
+                      {/* <ExpandImg /> */}
+                      <ExpandImg>
+                        <img src={ExpandIcon} alt="expand-icon" />
+                      </ExpandImg>
                     </a>
                   </div>
                   <div>
@@ -240,7 +244,7 @@ function NftDetail() {
               </PriceBox>
               <PriceHistory>
                 <h3>Price Info</h3>
-                <p style={{ fontSize: "11px" }}>
+                <div style={{ fontSize: "11px", padding: "1rem" }}>
                   {/* <div style={{ display: 'flex' }}> */}
                   <span>Volume (ETH)</span>
 
@@ -258,7 +262,7 @@ function NftDetail() {
                     <Tooltip />
                   </LineChart>
                   {/* </div> */}
-                </p>
+                </div>
               </PriceHistory>
               <DescriptionBox>
                 <h3>Description</h3>
@@ -402,11 +406,20 @@ export const SymbolImg = styled.div`
     height: 100%;
   }
 `;
-export const ExpandImg = styled(ExpandIcon)`
+
+export const ExpandImg = styled.div`
   width: 14px;
   height: 14px;
-  fill: rgba(32, 129, 226, 0.8);
+  img {
+    width: 100%;
+    height: 100%;
+  }
 `;
+// export const ExpandImg = styled(ExpandIcon)`
+//   width: 14px;
+//   height: 14px;
+//   fill: rgba(32, 129, 226, 0.8);
+// `;
 
 export const CartImg = styled.div`
   width: 20px;

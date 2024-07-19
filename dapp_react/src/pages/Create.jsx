@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import openseaSymbol from "../assets/images/opensea-symbol.svg?react";
-import imageSymbol from "../assets/images/image-symbol.svg?react";
-import gridSymbol from "../assets/images/grid4-symbol.svg?react";
+// import openseaSymbol from "../assets/images/opensea-symbol.svg?react";
+// import imageSymbol from "../assets/images/image-symbol.svg?react";
+// import gridSymbol from "../assets/images/grid4-symbol.svg?react";
+import openseaSymbol from "../assets/images/opensea-symbol.png";
+import imageSymbol from "../assets/images/image-symbol.png";
+import gridSymbol from "../assets/images/grid4-symbol.png";
+
 import Slider from "./Create/Slider";
 import { useEffect } from "react";
 
@@ -19,7 +23,10 @@ function Create() {
             <TitlwBox>
               <TitleWrap>
                 <div>
-                  <OpenseaSymbol />
+                  {/* <OpenseaSymbol /> */}
+                  <SymbolImg >
+                    <img src={openseaSymbol} alt="openseaSymbol" />
+                  </SymbolImg>
                 </div>
                 <h1>Create</h1>
               </TitleWrap>
@@ -32,7 +39,10 @@ function Create() {
                     <CollectionWrap>
                       <CollectionTitle>
                         <div>
-                          <GridSymbol />
+                          {/* <GridSymbol /> */}
+                          <SymbolImg style={{ width: '20px' }}>
+                            <img src={gridSymbol} alt="openseaSymbol" />
+                          </SymbolImg>
                         </div>
                         <h2>Collection 드롭</h2>
                       </CollectionTitle>
@@ -60,7 +70,10 @@ function Create() {
                     <NftWrap>
                       <ImageTitle>
                         <div>
-                          <ImageSymbol />
+                          {/* <ImageSymbol /> */}
+                          <SymbolImg style={{ width: '25px' }}>
+                            <img src={imageSymbol} alt="openseaSymbol" />
+                          </SymbolImg>
                         </div>
                         <h2>NFT mint 하기</h2>
                       </ImageTitle>
@@ -96,6 +109,15 @@ function Create() {
   );
 }
 
+const SymbolImg = styled.div`
+  /* width: 20px;
+  height: 20px; */
+  /* padding: 12px; */
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
 const NavPart = styled.div`
   /* div style={{ width: '50%', paddingRight: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem' }} */
   width: 50%;
@@ -169,18 +191,18 @@ const ImageTitle = styled(TitleWrap)`
   padding: 0.5rem 0px;
   gap: 10px;
 `;
-const OpenseaSymbol = styled(openseaSymbol)`
-  width: 40px;
-  height: 40px;
-`;
-const ImageSymbol = styled(imageSymbol)`
-  width: 20px;
-  height: 20px;
-`;
-const GridSymbol = styled(gridSymbol)`
-  width: 14px;
-  height: 14px;
-`;
+// const OpenseaSymbol = styled(openseaSymbol)`
+//   width: 40px;
+//   height: 40px;
+// `;
+// const ImageSymbol = styled(imageSymbol)`
+//   width: 20px;
+//   height: 20px;
+// `;
+// const GridSymbol = styled(gridSymbol)`
+//   width: 14px;
+//   height: 14px;
+// `;
 
 const Background = styled.div`
   /* height: 100%; */

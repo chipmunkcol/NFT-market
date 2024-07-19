@@ -230,7 +230,7 @@ function CollectionNftDetail() {
                 <h3>
                   Price Info
                 </h3>
-                <p style={{ fontSize: '11px' }}>
+                <div style={{ fontSize: '11px', padding: '1rem' }}>
                   {/* <div style={{ display: 'flex' }}> */}
                   <span>Volume (ETH)</span>
 
@@ -244,7 +244,7 @@ function CollectionNftDetail() {
                     <Tooltip />
                   </LineChart>
                   {/* </div> */}
-                </p>
+                </div>
 
               </Styled.PriceHistory>
               <Styled.DescriptionBox>
