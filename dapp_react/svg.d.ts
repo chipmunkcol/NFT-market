@@ -5,10 +5,10 @@ declare module "*.svg" {
   // export default src;
 }
 
-declare module "vite-plugin-svgr/client" {
-  export interface SvgrComponent
-    extends React.FunctionComponent<React.SVGProps<SVGSVGElement>> {}
+// declare module "vite-plugin-svgr/client" {
+//   export interface SvgrComponent
+//     extends React.FunctionComponent<React.SVGProps<SVGSVGElement>> {}
 
-  const ReactComponent: SvgrComponent;
-  export default ReactComponent;
-}
+//   const ReactComponent: SvgrComponent;
+//   export default ReactComponent;
+// }
