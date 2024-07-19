@@ -7,7 +7,6 @@ import {
   getImageUrl,
   getIpfsTokenData,
   getTargetCollectionToIpfsData,
-  getTargetNftToIpfsData,
   purchaseNftHandler,
   validateAccountAndOnsale,
 } from "../hooks/common";
