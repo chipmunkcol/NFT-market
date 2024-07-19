@@ -4,7 +4,8 @@ import { MintContract, MintAddress, web3 } from "../../contracts/index";
 import styled from "styled-components";
 import saleNftCard from "../components/NonSaleNftCard";
 import { GlobalContext } from "../context/GlobalContext";
-import iconEther from '../assets/images/icon-ether.svg';
+// import iconEther from '../assets/images/icon-ether.svg';
+import iconEther from '../assets/images/icon-ether.png';
 import NonSaleNftCard from "../components/NonSaleNftCard";
 import { Link, Outlet } from "react-router-dom";
 import AirdropNftCard from "./mypageComponents/AirdropNftCard";
@@ -91,7 +92,9 @@ const MyPage = () => {
             <h1>name</h1>
             <FlexWrap>
               <P_IconWrap>
-                <IconEther />
+                <EtherImg>
+                  <img src={iconEther} alt="ether-icon"/>
+                </EtherImg>
               </P_IconWrap>
               <p onClick={copyHandler} style={{ cursor:'pointer' }}>{truncatedAccount}</p>
             </FlexWrap>
@@ -160,6 +163,15 @@ const MyPage = () => {
   );
 };
 
+
+const EtherImg = styled.div`
+  width: 20px;
+  height: 20px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`;
 const NavContainer = styled.div`
   position: relative;
   display: flex;
@@ -273,10 +285,10 @@ const P_IconWrap = styled.div`
     border-radius: 50%;
   } */
 `;
-const IconEther = styled(iconEther)`
-  width: 20px;
-  height: 20px;
-`;
+// const IconEther = styled(iconEther)`
+//   width: 20px;
+//   height: 20px;
+// `;
 const Background = styled.div`
   /* height: 100%; */
   padding-top: 72px;
