@@ -34,7 +34,7 @@ export type Collection = {
   nfts: Nft[];
   nftsLength: number;
   perPrice: number;
-  startAt: number;
+  startAt: string;
   preReleaseJsonData: {
     description: string;
     file: File | null;
@@ -62,6 +62,8 @@ export type GlobalContextType = {
   setOnsaleNftList: React.Dispatch<React.SetStateAction<Nft[]>>;
   trigger: boolean;
   setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+  collectionIndex: number;
+  setCollectionIndex: React.Dispatch<React.SetStateAction<number>>;
   collection: Collection;
   setCollection: React.Dispatch<React.SetStateAction<Collection>>;
   resetCollection: () => void;

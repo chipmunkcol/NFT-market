@@ -9,6 +9,7 @@ import { JsonRpcSigner } from "ethers";
 import {
   CartIpfsData,
   CartNft,
+  Collection,
   CollectionIpfsData,
   CollectionNft,
   IpfsData,
@@ -403,7 +404,7 @@ export const C_setOnsaleNfts = async (
   return result;
 };
 
-export const getImageIpfsHash = async (file: File) => {
+export const getImageIpfsHash = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("file", file);
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
@@ -448,7 +449,10 @@ export const pinJsonToIPFS = async (
   return result.IpfsHash;
 };
 
-export const pinFileToIPFS = async (files: File[], metaData: any) => {
+export const pinFileToIPFS = async (
+  files: File[],
+  metaData: any
+): Promise<string> => {
   const formData = new FormData();
   const options = JSON.stringify({
     cidVersion: 0,
@@ -471,7 +475,10 @@ export const pinFileToIPFS = async (files: File[], metaData: any) => {
   return result.IpfsHash;
 };
 
-export const validateCollectionData = (account: string, collection: any) => {
+export const validateCollectionData = (
+  account: string | null,
+  collection: Collection
+) => {
   if (!account) {
     Swal.fire("지갑을 연결해주세요");
     return false;
