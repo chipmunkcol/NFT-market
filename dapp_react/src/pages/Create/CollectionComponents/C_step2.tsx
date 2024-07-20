@@ -190,7 +190,7 @@ function C_step2() {
     // perPriceRef.current = e.target.value;
     setCollection((prev) => ({
       ...prev,
-      perPrice: parseFloat(e.currentTarget.value),
+      perPrice: parseFloat(e.target.value),
     }));
   };
 
@@ -253,7 +253,6 @@ function C_step2() {
   };
 
   const cancelHandler = () => {
-    if (!inputFileRef.current?.value) return;
     setCollection((prev) => ({
       ...prev,
       preReleaseJsonData: {
@@ -261,7 +260,6 @@ function C_step2() {
         file: null,
       },
     }));
-    inputFileRef.current.value = "";
   };
 
   return (

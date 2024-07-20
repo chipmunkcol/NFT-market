@@ -82,6 +82,7 @@ function Collection() {
               <InputFileBox
                 onClick={onClickFileHandler}
                 onDrop={onchangeHandler}
+                accept="application/json"
               >
                 <div style={{ width: "40px", height: "40px" }}>
                   <IconUpload />
