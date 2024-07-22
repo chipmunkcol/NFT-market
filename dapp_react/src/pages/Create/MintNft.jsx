@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Confirm } from "../../hooks/swal";
 import Web3 from "web3";
 import { ethers } from "ethers";
+import Swal from "sweetalert2";
 
 function MintNft() {
   const { account, signer } = useContext(GlobalContext);
@@ -56,6 +57,12 @@ function MintNft() {
 
   const onchangeHandler = async (e) => {
     const file = e.target.files[0];
+    const maxSize = 5 * 1024 * 1024; // 5MB 제한
+    const fileSize = file.size;
+    if (fileSize > maxSize) {
+      Swal.fire("파일 사이즈는 5MB 이하로 업로드해주세요.");
+      return;
+    }
     setFile(file);
 
     if (file.type === "application/json") {
@@ -268,7 +275,7 @@ function MintNft() {
                 </div>
                 <h2>미디어 파일 끌어다 놓기</h2>
                 <h3>파일 찾아보기</h3>
-                <h4>최대 크기: 50MB</h4>
+                <h4>최대 크기: 5MB</h4>
                 <h4>JPG, PNG, GIF, SVG, MP4</h4>
               </InputFileBox>
             ) : (
@@ -284,6 +291,7 @@ function MintNft() {
               ref={inputFileRef}
               style={{ display: "none" }}
               onChange={onchangeHandler}
+              accept="image/*"
               {...getInputProps()}
             />
           </LeftPart>

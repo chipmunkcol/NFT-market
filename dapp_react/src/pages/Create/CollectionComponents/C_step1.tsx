@@ -1,67 +1,67 @@
-import { useState } from "react";
-import { S_Button } from "../../../styles/styledComponent"
+import React, { ChangeEvent } from "react";
+import { S_Button } from "../../../styles/styledComponent";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { GlobalContext } from "../../../context/GlobalContext";
+import { GlobalContextType } from "../../../../type";
 
 function C_step() {
-
-  const { collection, setCollection, collectionIndex } = useContext(GlobalContext);
-  const [tags, setTags] = useState("");
+  const { collection, setCollection, collectionIndex } = useContext(
+    GlobalContext
+  ) as GlobalContextType;
   // collection 의 nfts[collectionIndex]의 name, desc, tags를 변경
-  const onchangeNameData = (e) => {
+  const onchangeNameData = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCollection((prev) => ({
       ...prev,
       nfts: prev.nfts.map((nft, index) => {
         if (index === collectionIndex) {
           return {
             ...nft,
-            name: e.target.value
-          }
+            name: e.target.value,
+          };
         }
         return nft;
-      })
+      }),
     }));
   };
-  const onchangeDescData = (e) => {
+  const onchangeDescData = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCollection((prev) => ({
       ...prev,
       nfts: prev.nfts.map((nft, index) => {
         if (index === collectionIndex) {
           return {
             ...nft,
-            description: e.target.value
-          }
+            description: e.target.value,
+          };
         }
         return nft;
-      })
+      }),
     }));
   };
 
   // 태그
-  const addTagHandler = e => {
+  const addTagHandler = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     if (collection.tags.includes(value)) {
       return;
     }
-    // setTags(prev => [...prev, value]);
-    setCollection(prev => ({
+    setCollection((prev) => ({
       ...prev,
-      tags: [...prev.tags, value]
+      tags: [...prev.tags, value],
     }));
   };
 
-  const removeTagHandler = (tag) => {
-    setCollection(prev => ({
+  const removeTagHandler = (tag: string) => {
+    setCollection((prev) => ({
       ...prev,
-      tags: prev.tags.filter(item => item !== tag)
+      tags: prev.tags.filter((item) => item !== tag),
     }));
-  }
+  };
 
   return (
     <Container>
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: "20px" }}>
         <h2>No. #{collectionIndex + 1} </h2>
         <h3>총 수량 {collection.nfts.length} 개</h3>
       </div>
@@ -72,23 +72,16 @@ function C_step() {
         onChange={onchangeNameData}
       />
       <InputLabel>설명</InputLabel>
-      {/* <InputText
-              type="text"
-              value={data.desc}
-              onChange={onchangeDescData}
-            /> */}
       <InputTextArea
         value={collection.nfts[collectionIndex]?.description}
-        onChange={onchangeDescData}>
-      </InputTextArea>
+        onChange={onchangeDescData}
+      ></InputTextArea>
       <InputLabel>태그</InputLabel>
       <p style={{ fontSize: "14px", marginBottom: "0.75rem" }}>
-        태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로
-        표시되며 아이템 페이지에도 나열됩니다.
+        태그는 아이템의 속성을 설명합니다. 컬렉션 페이지 내에 필터로 표시되며
+        아이템 페이지에도 나열됩니다.
       </p>
-      <select style={{ marginBottom: "5px" }}
-        onChange={addTagHandler}
-      >
+      <select style={{ marginBottom: "5px" }} onChange={addTagHandler}>
         <option style={{ display: "none" }}>ex</option>
         <option>예술</option>
         <option>유명인</option>
@@ -98,21 +91,18 @@ function C_step() {
         <option>프로필 사진</option>
       </select>
       <TagBox>
-        {
-          collection.tags.map(tag => (
-            <Tag>
-              {tag}
-              <span onClick={() => removeTagHandler(tag)}>X</span>
-            </Tag>
-          ))
-        }
+        {collection.tags.map((tag) => (
+          <Tag>
+            {tag}
+            <span onClick={() => removeTagHandler(tag)}>X</span>
+          </Tag>
+        ))}
       </TagBox>
-      {/* <S_Button onClick={handleSubmission}>생성</S_Button> */}
       <Link to={"/create-collection/step-2"}>
-        <S_Button >다음</S_Button>
+        <S_Button>다음</S_Button>
       </Link>
     </Container>
-  )
+  );
 }
 
 const Container = styled.div``;
@@ -126,19 +116,18 @@ const InputText = styled.input`
   margin-bottom: 1rem;
 `;
 
-
 const Tag = styled.div`
-    background-color: darkgray;
-    color: white;
-    border-radius: 40px;
-    padding: 4px 9px;
-    font-size: 11px;
-    margin-right: 5px;
+  background-color: darkgray;
+  color: white;
+  border-radius: 40px;
+  padding: 4px 9px;
+  font-size: 11px;
+  margin-right: 5px;
 
-    span {
-        margin-left: 5px;
-        cursor: pointer;
-    }
+  span {
+    margin-left: 5px;
+    cursor: pointer;
+  }
 `;
 
 const TagBox = styled.div`
@@ -150,16 +139,9 @@ const TagBox = styled.div`
   padding: 0 10px;
   margin-bottom: 20px;
 `;
-
-const InputSpecific = styled(InputText)``;
-
-const RightPart = styled.div`
-  width: 44%;
-`;
 const InputLabel = styled.div`
   margin-bottom: 0.75rem;
 `;
-
 
 const InputTextArea = styled.textarea`
   width: 100%;
@@ -169,6 +151,5 @@ const InputTextArea = styled.textarea`
   border-radius: 5px;
   margin-bottom: 1rem;
 `;
-
 
 export default C_step;

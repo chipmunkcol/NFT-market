@@ -16,7 +16,7 @@ function Collection() {
 
   const [files, setFiles] = useState(null);
   const onchangeHandler = (e) => {
-    const fileList = Object.values(e.target.files)
+    const fileList = Object.values(e.target.files);
     if (fileList.length !== 10) {
       Swal.fire('업로드 에러', '현재 버전에서는 파일 업로드 시 정확히 10개의 파일만 업로드 가능합니다. 감사합니다👩‍💻');
       setFiles(null);
@@ -82,6 +82,7 @@ function Collection() {
               <InputFileBox
                 onClick={onClickFileHandler}
                 onDrop={onchangeHandler}
+                accept="application/json"
               >
                 <div style={{ width: "40px", height: "40px" }}>
                   <IconUpload />

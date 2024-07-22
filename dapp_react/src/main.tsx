@@ -18,7 +18,7 @@ import MyPage from "./pages/MyPage";
 import MintNft from "./pages/Create/MintNft.jsx";
 import Collection from "./pages/Create/Collection.jsx";
 import C_step1 from "./pages/Create/CollectionComponents/C_step1.jsx";
-import C_step2 from "./pages/Create/CollectionComponents/C_step2.jsx";
+import C_step2 from "./pages/Create/CollectionComponents/C_step2.js";
 import All from "./pages/mypageComponents/All.jsx";
 import Nonsale from "./pages/mypageComponents/Nonsale.jsx";
 import Onsale from "./pages/mypageComponents/Onsale.jsx";
