@@ -63,17 +63,19 @@ const MarketPlace = () => {
     e.key === "Enter" && searchNfts();
   };
 
-  const categoryHandler = (e: React.MouseEvent<HTMLUListElement>) => {
-    if (e.currentTarget.nodeName !== "BUTTON") return;
-
-    const category = e.currentTarget.innerHTML;
+  const categoryHandler = (e: any) => {
+    // const _category = e.currentTarget?.innerHTML;
+    // if (!_category) return;
+    // const category = _category.split(" ").join("");
+    const category = e.currentTarget?.innerHTML;
     navigate(`?category=${category}`);
   };
 
-  const collectionCategoryHandler = (e: React.MouseEvent<HTMLUListElement>) => {
-    if (e.currentTarget.nodeName !== "BUTTON") return;
-
-    const category = e.currentTarget.innerText;
+  const collectionCategoryHandler = (e: any) => {
+    // const _category = e.currentTarget?.innerHTML;
+    // if (!_category) return;
+    // const category = _category.split(" ").join("");
+    const category = e.currentTarget?.innerHTML;
     navigate(`/market-place/collection?query=${category}`);
   };
 
@@ -161,7 +163,7 @@ const MarketPlace = () => {
             <LeftPart>
               <CategoryBox>
                 <div>
-                  <ul onClick={categoryHandler}>
+                  <ul>
                     <h3>카테고리</h3>
                     {[
                       "예술",
@@ -172,17 +174,21 @@ const MarketPlace = () => {
                       "프로필 사진",
                     ].map((category) => (
                       <li key={`category-${category}`}>
-                        <NavButton>{category}</NavButton>
+                        <NavButton onClick={categoryHandler}>
+                          {category}
+                        </NavButton>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <ul onClick={collectionCategoryHandler}>
+                  <ul>
                     <h3>컬렉션</h3>
                     {["pudge penguin", "fake funks"].map((collection) => (
                       <li key={`category-collection-${collection}`}>
-                        <NavButton>{collection}</NavButton>
+                        <NavButton onClick={collectionCategoryHandler}>
+                          {collection}
+                        </NavButton>
                       </li>
                     ))}
                   </ul>
