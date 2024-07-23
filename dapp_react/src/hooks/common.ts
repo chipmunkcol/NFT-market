@@ -141,7 +141,15 @@ export const P_updateMetadataSetOnsale = async (
   return result;
 };
 
-export const getNftListToIpfs = async (url: string) => {
+export const getNftListToIpfs = async (url: string): Promise<IpfsData[]> => {
+  const res = await fetch(url, ipfsGetOptions);
+  const result = await res.json();
+  return result.rows;
+};
+
+export const getCollectionListToIpfs = async (
+  url: string
+): Promise<CollectionIpfsData[]> => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   return result.rows;
@@ -776,22 +784,22 @@ export const findNftsSoldExpensively = (ipfsList: any) => {
   return expensiveNfts;
 };
 
-export const findTop10NumberOfSales = (ipfsList: any) => {
-  const nftList = ipfsList.map((ipfsData: any) => ({
+export const findTop10NumberOfSales = (ipfsList: IpfsData[]) => {
+  const nftList = ipfsList.map((ipfsData) => ({
     ...ipfsData.metadata.keyvalues,
     tokenUrl: ipfsData.ipfs_pin_hash,
   }));
 
-  nftList.sort((a: any, b: any) => b.numberOfSales - a.numberOfSales);
+  nftList.sort((a, b) => b.numberOfSales - a.numberOfSales);
   return nftList.slice(0, 10);
 };
 
-export const findTopCollectorNfts = (ipfsDatas: any) => {
+export const findTopCollectorNfts = (
+  ipfsDatas: CollectionIpfsData[]
+): CollectionNft[] => {
   if (ipfsDatas.length === 0) return [];
-  const collections = ipfsDatas.map(
-    (ipfsData: any) => ipfsData.metadata.keyvalues
-  );
-  collections.sort((a: any, b: any) => b.numberOfSales - a.numberOfSales);
+  const collections = ipfsDatas.map((ipfsData) => ipfsData.metadata.keyvalues);
+  collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
   const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
   return topCollectorNfts;
 };

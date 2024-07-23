@@ -1,5 +1,6 @@
 import { PriceHistory } from "./src/pages/NftDetail";
 import { JsonRpcSigner } from "ethers";
+import { MyNft } from "./types/contract";
 
 export type Nft = {
   name: string;
@@ -56,8 +57,8 @@ export type GlobalContextType = {
       message: string;
     }>
   >;
-  myNfts: Nft[];
-  setMyNfts: React.Dispatch<React.SetStateAction<Nft[]>>;
+  myNfts: MyNft[];
+  setMyNfts: React.Dispatch<React.SetStateAction<MyNft[]>>;
   onsaleNftList: Nft[];
   setOnsaleNftList: React.Dispatch<React.SetStateAction<Nft[]>>;
   trigger: boolean;
