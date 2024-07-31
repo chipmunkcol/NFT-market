@@ -1,3 +1,4 @@
+import { ListObjectsCommandOutput } from "@aws-sdk/client-s3";
 import { PriceHistory } from "./src/pages/NftDetail";
 import { JsonRpcSigner } from "ethers";
 import { MyNft } from "./types/contract";
@@ -42,7 +43,11 @@ export type Collection = {
   };
 };
 
+type S3Obects = Required<ListObjectsCommandOutput>["Contents"];
+
 export type GlobalContextType = {
+  s3Obects: S3Obects;
+  setS3Objects: React.Dispatch<React.SetStateAction<S3Obects>>;
   account: string | null;
   setAccount: React.Dispatch<React.SetStateAction<string | null>>;
   signer: JsonRpcSigner | null;

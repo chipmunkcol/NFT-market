@@ -5,6 +5,7 @@ export const GlobalContext = createContext({});
 import { ReactNode } from "react";
 
 const GlobalProvider = ({ children }: { children: ReactNode }) => {
+  const [s3Obects, setS3Objects] = useState([]);
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
   const [loadingState, setLoadingState] = useState({
@@ -100,6 +101,8 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
       setSigner,
       onsaleNftRef,
       onsaleCollectionRef,
+      s3Obects,
+      setS3Objects,
     }),
     [
       onsaleCollectionRef,
@@ -117,6 +120,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
       offset,
       loadingState,
       onsaleNftListLength,
+      s3Obects,
     ]
   );
   return (

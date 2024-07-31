@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-
 const TopCollectorNftCard = ({ nft }) => {
 
   const navigate = useNavigate();

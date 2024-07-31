@@ -25,6 +25,10 @@ export const getImageUrl = (imageIpfsHash: string) => {
   }`;
 };
 
+export const getResizeImageUrl = (s3ObectKey: string) => {
+  return `${import.meta.env.VITE_IMAGE_RESIZE_URL}/${s3ObectKey}`;
+};
+
 export const getIpfsTokenData = async (tokenUrl: string) => {
   const res = await fetch(
     `${import.meta.env.VITE_GATEWAY_URL}/ipfs/${tokenUrl}?pinataGatewayToken=${

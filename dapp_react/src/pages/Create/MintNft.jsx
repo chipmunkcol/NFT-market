@@ -118,31 +118,6 @@ function MintNft() {
   };
 
 
-
-  // const pinFileToIPFS = async (metaData) => {
-  //   const formData = new FormData();
-  //   const options = JSON.stringify({
-  //     cidVersion: 0,
-  //   });
-
-  //   formData.append("file", file);
-  //   formData.append("pinataMetadata", metaData);
-  //   formData.append("pinataOptions", options);
-
-  //   const res = await fetch(
-  //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-  //       },
-  //       body: formData,
-  //     }
-  //   );
-  //   const result = await res.json();
-  //   return result.IpfsHash;
-  // }
-
   const pinJsonToIPFS = async (imageIpfsHash, metaData) => {
     const jsonContent = JSON.stringify({
       name: jsonData.name,
@@ -162,7 +137,6 @@ function MintNft() {
     return result.IpfsHash;
   }
 
-  // 판매등록 함수
   const mintNftController = async () => {
     const res = await handleWithLoading(() => handleSubmission(), 'NFT 발행 중입니다');
     if (res) {
@@ -171,7 +145,6 @@ function MintNft() {
       if (result.isConfirmed) {
         navigate(`/mypage/${account}`)
       }
-      // const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);
     }
   }
   const handleSubmission = async () => {
