@@ -21,6 +21,7 @@ import { dummyNfts } from "../components/dummyNfts";
 import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
 import { homeCollectionUrl, homeNftUrl } from "../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
+import ExpensiveNftCard from "./homeComponents/ExpensiveNftCard";
 
 // Detect the MetaMask Ethereum provider
 function Home() {
@@ -242,7 +243,7 @@ function Home() {
                         nftsSoldExpensivelyIndex + 1
                       )
                       .map((nft) => (
-                        <TopCollectorNftCard
+                        <ExpensiveNftCard
                           key={`expensive-nft-${nft.nftId}`}
                           nft={nft}
                         />

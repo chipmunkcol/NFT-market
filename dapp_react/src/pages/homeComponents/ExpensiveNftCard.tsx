@@ -1,24 +1,25 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-const TopCollectorNftCard = ({ nft }) => {
+import { nftMetadataAddSoldPrice } from "../../../type";
 
+interface ExpensiveNftCardProps {
+  nft: nftMetadataAddSoldPrice;
+}
+const ExpensiveNftCard = ({ nft }: ExpensiveNftCardProps) => {
   const navigate = useNavigate();
-  const tokenUrl = nft?.isCollection === 'true' ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
-  // const tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
+  const { nftPrice, nftId, tokenUrl } = nft;
   const tokenData = useGetTokenData(tokenUrl);
-  const { nftPrice, nftId } = nft;
 
   const soldPrice = nft.soldPrice;
 
-
   const navigateDetailPage = () => {
-    if (nft?.isCollection === 'true') {
+    if (nft?.isCollection === "true") {
       navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
     } else {
       navigate(`/nft-detail/${nft.tokenUrl}/${nftId}`);
     }
-  }
+  };
 
   return (
     <>
@@ -28,15 +29,15 @@ const TopCollectorNftCard = ({ nft }) => {
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}
+          Last sold price
           <p>{soldPrice ? soldPrice : nftPrice} ETH</p>
         </TopContent>
       </TopItemBox>
     </>
-  )
-}
+  );
+};
 
-export default TopCollectorNftCard;
-
+export default ExpensiveNftCard;
 
 const TopItemBox = styled.li`
   width: 184px;
@@ -53,7 +54,7 @@ const TopImgWrap = styled.div`
   cursor: pointer;
 `;
 const TopContent = styled.div`
-  ${props => props.theme.variables.flexColumn};
+  ${(props) => props.theme.variables.flexColumn};
   padding-top: 1rem;
   gap: 0.5rem;
   h3 {

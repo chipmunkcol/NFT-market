@@ -14,6 +14,8 @@ import {
   CollectionNft,
   IpfsData,
   NftMetadata,
+  nftMetadataAddSoldPrice,
+  NftMetadataBase,
 } from "../../type";
 import { toastSwal } from "./swal";
 
@@ -769,8 +771,10 @@ export function isArraysEqual(arr1: any[], arr2: any[]) {
   return true;
 }
 
-export const findNftsSoldExpensively = (ipfsList: any) => {
-  const nftList = ipfsList.map((ipfsData: any) => ({
+export const findNftsSoldExpensively = (
+  ipfsList: IpfsData[]
+): nftMetadataAddSoldPrice[] => {
+  const nftList = ipfsList.map((ipfsData) => ({
     ...ipfsData.metadata.keyvalues,
     tokenUrl: ipfsData.ipfs_pin_hash,
   }));
@@ -782,7 +786,8 @@ export const findNftsSoldExpensively = (ipfsList: any) => {
     const latestSoldPrice = targetNftPriceHistory[0].price;
     if (latestSoldPrice > 0.19) {
       // priceHistory
-      expensiveNfts.push(nftList[i]);
+      const newNft = { ...nftList[i], soldPrice: latestSoldPrice };
+      expensiveNfts.push(newNft);
     }
   }
   return expensiveNfts;
@@ -806,4 +811,18 @@ export const findTopCollectorNfts = (
   collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
   const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
   return topCollectorNfts;
+};
+
+export const getResizeImageKeyOfAwsS3 = (imageUrl: string) => {
+  const splitUrl = imageUrl.split("/");
+  const ipfsNextIndex = splitUrl.indexOf("ipfs") + 1;
+  const targetAwsS3Key = splitUrl[ipfsNextIndex].split("?")[0];
+  return targetAwsS3Key;
+};
+
+export const removeExtenstion = (s3ObjectKey: string) => {
+  const splitKey = s3ObjectKey.split(".");
+  const keyWithoutExtenstion = splitKey.slice(0, splitKey.length - 1);
+
+  return keyWithoutExtenstion ? keyWithoutExtenstion.join(".") : "";
 };

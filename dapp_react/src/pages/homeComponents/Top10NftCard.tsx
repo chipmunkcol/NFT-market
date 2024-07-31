@@ -1,13 +1,17 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-import { GlobalContextType, NftMetadata } from "../../../type";
+import { GlobalContextType, NftMetadataByJson } from "../../../type";
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import { getResizeImageUrl } from "../../hooks/common";
+import {
+  getResizeImageKeyOfAwsS3,
+  getResizeImageUrl,
+  removeExtenstion,
+} from "../../hooks/common";
 
 interface Top10NftCardProps {
-  nft: NftMetadata;
+  nft: NftMetadataByJson;
   index: number;
 }
 const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
@@ -22,21 +26,8 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
     navigate(`/nft-detail/${tokenUrl}/${nftId}`);
   };
 
-  const getResizeImageKeyOfAwsS3 = (imageUrl: string) => {
-    const splitUrl = imageUrl.split("/");
-    const ipfsNextIndex = splitUrl.indexOf("ipfs") + 1;
-    const targetAwsS3Key = splitUrl[ipfsNextIndex].split("?")[0];
-    return targetAwsS3Key;
-  };
-
-  const removeExtenstion = (s3ObjectKey: string) => {
-    const splitKey = s3ObjectKey.split(".");
-    const keyWithoutExtenstion = splitKey.slice(0, splitKey.length - 1);
-
-    return keyWithoutExtenstion ? keyWithoutExtenstion.join(".") : "";
-  };
-
   useEffect(() => {
+    if (!image) return;
     const resizeImagekey = getResizeImageKeyOfAwsS3(image);
     const targetKey = s3Obects.filter((s3Object) => {
       if (s3Object.Key) {
@@ -63,9 +54,8 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
           </ItemContent>
           <ItemImg onClick={navigateDetailPage}>
             <img
-              src={resizeImageUrl ? `${resizeImageUrl}?w=100` : image}
-              // src={image}
-              // onError={image}
+              src={`${resizeImageUrl}?w=100`}
+              onError={(e) => (e.currentTarget.src = image)}
               alt="test"
             />
           </ItemImg>
