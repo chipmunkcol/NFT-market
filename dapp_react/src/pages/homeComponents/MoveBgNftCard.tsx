@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { DummyNft, GlobalContextType } from "../../../type";
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
+import loadingImg from "../../assets/images/달팽이로딩.png";
 
 interface MoveBgNftCardProps {
   nft: DummyNft;
@@ -25,27 +26,35 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
   };
 
   useEffect(() => {
-    if (!image) return;
+    if (s3Obects.length === 0) return;
     const targetKey = s3Obects.filter((s3Object) => {
       if (s3Object.Key) {
         let keyWithoutExtension = removeExtenstion(s3Object.Key);
-        return keyWithoutExtension === tokenUrl;
+        return keyWithoutExtension === image;
       }
     });
     if (targetKey[0]?.Key) {
       const _resizeImageUrl = getResizeImageUrl(targetKey[0].Key);
       setResizeImageUrl(_resizeImageUrl);
     }
-  }, [image]);
+  }, [s3Obects]);
 
   return (
     <ImgWrap key={`testMovingBg2-${image}`} onClick={navigateDetailPage}>
-      <Img
-        $direction={direction}
-        src={`${resizeImageUrl}?w=100&h=150`}
-        onError={(e) => (e.currentTarget.src = getImageUrl(image))}
-        alt="home-background-nftCard"
-      />
+      {resizeImageUrl ? (
+        <Img
+          $direction={direction}
+          src={`${resizeImageUrl}?w=100&h=150`}
+          onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+          alt="home-background-nftCard"
+        />
+      ) : (
+        <Img
+          $direction={direction}
+          src={loadingImg}
+          alt="home-background-nftCard"
+        />
+      )}
     </ImgWrap>
   );
 };

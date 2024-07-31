@@ -1,66 +1,46 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-import { GlobalContextType, NftMetadataByJson } from "../../../type";
-import { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../../context/GlobalContext";
-import {
-  getResizeImageKeyOfAwsS3,
-  getResizeImageUrl,
-  removeExtenstion,
-} from "../../hooks/common";
+import { NftMetadataByJson } from "../../../type";
+import useGetResizeImageUrl from "../../hooks/useGetResizeImageUrl";
+import loadingImg from "../../assets/images/달팽이로딩.png";
 
 interface Top10NftCardProps {
   nft: NftMetadataByJson;
   index: number;
 }
 const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
-  const { s3Obects } = useContext(GlobalContext) as GlobalContextType;
-  const { nftId, tokenUrl } = nft;
+  const { nftId, tokenUrl, nftPrice } = nft;
   const { name, image } = useGetTokenData(tokenUrl);
-  const { nftPrice } = nft;
+  const resizeImageUrl = useGetResizeImageUrl(image);
   const navigate = useNavigate();
-  const [resizeImageUrl, setResizeImageUrl] = useState("");
 
   const navigateDetailPage = () => {
     navigate(`/nft-detail/${tokenUrl}/${nftId}`);
   };
 
-  useEffect(() => {
-    if (!image) return;
-    const resizeImagekey = getResizeImageKeyOfAwsS3(image);
-    const targetKey = s3Obects.filter((s3Object) => {
-      if (s3Object.Key) {
-        let keyWithoutExtension = removeExtenstion(s3Object.Key);
-        return keyWithoutExtension === resizeImagekey;
-      }
-    });
-    if (targetKey[0]?.Key) {
-      const _resizeImageUrl = getResizeImageUrl(targetKey[0].Key);
-      setResizeImageUrl(_resizeImageUrl);
-    }
-  }, [image]);
-
   return (
     <>
-      {
-        <Item key={`top10Nft-${index}`}>
-          <ItemContent>
-            <ItemRank>{index + 1}</ItemRank>
-            <ItemInfo>
-              <ItemName>{name}</ItemName>
-              <ItemPrice>{nftPrice} ETH ~</ItemPrice>
-            </ItemInfo>
-          </ItemContent>
-          <ItemImg onClick={navigateDetailPage}>
+      <Item key={`top10Nft-${index}`}>
+        <ItemContent>
+          <ItemRank>{index + 1}</ItemRank>
+          <ItemInfo>
+            <ItemName>{name}</ItemName>
+            <ItemPrice>{nftPrice} ETH ~</ItemPrice>
+          </ItemInfo>
+        </ItemContent>
+        <ItemImg onClick={navigateDetailPage}>
+          {resizeImageUrl ? (
             <img
-              src={`${resizeImageUrl}?w=100`}
+              src={`${resizeImageUrl}?w=50`}
               onError={(e) => (e.currentTarget.src = image)}
-              alt="test"
+              alt="top10-nft-card"
             />
-          </ItemImg>
-        </Item>
-      }
+          ) : (
+            <img src={loadingImg} alt="loading..." />
+          )}
+        </ItemImg>
+      </Item>
     </>
   );
 };
