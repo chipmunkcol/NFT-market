@@ -2,6 +2,7 @@ import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { CollectionNft } from "../../../type";
+import { getImageUrl } from "../../hooks/common";
 
 interface TopCollectorNftCardProps {
   nft: CollectionNft;
@@ -11,6 +12,7 @@ const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
   const { nftPrice, nftId, tokenUrl } = nft;
   const _tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
   const tokenData = useGetTokenData(_tokenUrl);
+  const { image } = tokenData;
 
   const navigateDetailPage = () => {
     if (nft?.isCollection === "true") {
@@ -24,7 +26,7 @@ const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          <img src={tokenData?.image} />
+          <img src={getImageUrl(image)} />
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}

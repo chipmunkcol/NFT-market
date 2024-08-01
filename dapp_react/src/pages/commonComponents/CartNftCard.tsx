@@ -1,49 +1,72 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
-import { P_updateMetadataRemoveCart } from "../../hooks/common";
+import {
+  getImageUrl,
+  getResizeImageUrl,
+  P_updateMetadataRemoveCart,
+} from "../../hooks/common";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
 import useAsyncTask from "../../hooks/useAsyncTask";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
+import loadingImg from "../../assets/images/달팽이로딩.png";
+import {
+  CollectionNftByJson,
+  GlobalContextType,
+  NewOnsaleNft,
+} from "../../../type";
 
-const CartNftCard = ({ nft, propsFunction }) => {
-  const { account } = useContext(GlobalContext);
-  const { nftId, nftName, nftPrice, owner, isReveal, isCollection } = nft;
-  const tokenUrl = nft?.isReveal ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
+interface CartNftCardProps {
+  // nft: NewOnsaleNft | CollectionNftByJson;
+  nft: any;
+  propsFunction: {
+    removeCheckdNft: (nft: any) => void;
+    addCheckedNft: (nft: any) => void;
+    R_removeCartHandler: (nft: any) => void;
+  };
+}
+const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
+  const { account } = useContext(GlobalContext) as GlobalContextType;
+  const { nftId, nftName, nftPrice, isCollection, ext } = nft;
+  const tokenUrl = nft?.isReveal
+    ? `${nft.tokenUrl}/${nft.fileName}`
+    : nft.tokenUrl;
 
   const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);
+  const { image } = tokenData;
   // const { handleWithLoading } = useAsyncTask();
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const navigateDetailPage = () => {
-    if (isCollection === 'true') {
+    if (isCollection === "true") {
       navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
-    }
-    else {
+    } else {
       navigate(`/nft-detail/${tokenUrl}/${nftId}`);
     }
-  }
+  };
 
-  const checkToggleHandler = (e) => {
+  const checkToggleHandler = (e: any) => {
     if (e.target.checked) {
       addCheckedNft(nft);
     } else {
       removeCheckdNft(nft);
     }
-  }
+  };
 
-
-  const removeCartHandler = async (nft) => {
+  const removeCartHandler = async (nft: any) => {
     let cartIpfsHash = localStorage.getItem(`cart-${account}`);
     if (!cartIpfsHash) return;
 
     setIsLoading(true);
     try {
       const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataRemoveCart(paredCartIpfsHash, nftId);
+      const updateMetadataResult = await P_updateMetadataRemoveCart(
+        paredCartIpfsHash,
+        nftId
+      );
       if (updateMetadataResult.ok) {
         R_removeCartHandler(nft);
       }
@@ -57,33 +80,47 @@ const CartNftCard = ({ nft, propsFunction }) => {
       {
         <Item>
           <SelectBox>
-            <input type="checkbox" defaultChecked={true} onClick={checkToggleHandler} />
+            <input
+              type="checkbox"
+              defaultChecked={true}
+              onClick={checkToggleHandler}
+            />
           </SelectBox>
           <ImgWrap onClick={navigateDetailPage}>
-            <img src={tokenData.image} alt="nft" />
+            {/* <img src={tokenData.image} alt="nft" /> */}
+            {image ? (
+              <img
+                src={`${getResizeImageUrl(image, ext)}?w=50&h=50`}
+                onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+              />
+            ) : (
+              <img src={loadingImg} />
+            )}
           </ImgWrap>
           <ContentWrap>
             <div>상품명: {nftName}</div>
             <div>가격: {nftPrice} ETH</div>
           </ContentWrap>
           <div>
-            {
-              isLoading ? <Spinner _custom={{
-                color: '#3498db',
-                size: '16px',
-                height: '100%'
-              }} /> :
-                <span onClick={() => removeCartHandler(nft)}>삭제</span>
-            }
+            {isLoading ? (
+              <Spinner
+                _custom={{
+                  color: "#3498db",
+                  size: "16px",
+                  height: "100%",
+                }}
+              />
+            ) : (
+              <span onClick={() => removeCartHandler(nft)}>삭제</span>
+            )}
           </div>
         </Item>
       }
     </>
-  )
-}
+  );
+};
 
 export default CartNftCard;
-
 
 const SelectBox = styled.div`
   width: 17px;
@@ -103,14 +140,14 @@ const ContentWrap = styled.div`
 `;
 
 const ImgWrap = styled.div`
-width: 50px;
-    height: 50px;
-    img {
-      width: 100%;
+  width: 50px;
+  height: 50px;
+  img {
+    width: 100%;
     height: 100%;
     border-radius: 10px;
-    }
-cursor: pointer;
+  }
+  cursor: pointer;
 `;
 
 const Item = styled.li`
@@ -118,16 +155,6 @@ const Item = styled.li`
   /* justify-content: space-between; */
   align-items: center;
   gap: 20px;
-  /* padding: 0px 30px 0 10px; */
-  /* button {
-    background-color: #e25120;
-    border-radius: 8px;
-    padding: 0 12px 0 10px;
-    height: 30px;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-  } */
   span {
     font-size: 11px;
     cursor: pointer;

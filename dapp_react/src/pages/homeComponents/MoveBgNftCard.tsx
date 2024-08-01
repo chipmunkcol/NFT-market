@@ -1,60 +1,29 @@
 import styled from "styled-components";
-import {
-  getImageUrl,
-  getResizeImageUrl,
-  removeExtenstion,
-} from "../../hooks/common";
+import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
 import { useNavigate } from "react-router-dom";
-import { DummyNft, GlobalContextType } from "../../../type";
-import { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../../context/GlobalContext";
-import loadingImg from "../../assets/images/달팽이로딩.png";
+import { DummyNft } from "../../../type";
 
 interface MoveBgNftCardProps {
   nft: DummyNft;
   direction: "up" | "down";
 }
 const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
-  const { image, tokenUrl } = nft;
-  const { s3Obects } = useContext(GlobalContext) as GlobalContextType;
+  const { image, tokenUrl, ext } = nft;
   const navigate = useNavigate();
-  const [resizeImageUrl, setResizeImageUrl] = useState("");
 
   const navigateDetailPage = () => {
     // navigate(`/nft-detail/${tokenUrl}/${nftId}`);
     navigate(`/nft-detail/${tokenUrl}/0`);
   };
 
-  useEffect(() => {
-    if (s3Obects.length === 0) return;
-    const targetKey = s3Obects.filter((s3Object) => {
-      if (s3Object.Key) {
-        let keyWithoutExtension = removeExtenstion(s3Object.Key);
-        return keyWithoutExtension === image;
-      }
-    });
-    if (targetKey[0]?.Key) {
-      const _resizeImageUrl = getResizeImageUrl(targetKey[0].Key);
-      setResizeImageUrl(_resizeImageUrl);
-    }
-  }, [s3Obects]);
-
   return (
     <ImgWrap key={`testMovingBg2-${image}`} onClick={navigateDetailPage}>
-      {resizeImageUrl ? (
-        <Img
-          $direction={direction}
-          src={`${resizeImageUrl}?w=100&h=150`}
-          onError={(e) => (e.currentTarget.src = getImageUrl(image))}
-          alt="home-background-nftCard"
-        />
-      ) : (
-        <Img
-          $direction={direction}
-          src={loadingImg}
-          alt="home-background-nftCard"
-        />
-      )}
+      <Img
+        $direction={direction}
+        src={`${getResizeImageUrl(image, ext)}?w=100&h=150`}
+        onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+        alt="home-background-nftCard"
+      />
     </ImgWrap>
   );
 };

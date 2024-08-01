@@ -2,14 +2,17 @@ import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { nftMetadataAddSoldPrice } from "../../../type";
+import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
+import loadingImg from "../../assets/images/달팽이로딩.png";
 
 interface ExpensiveNftCardProps {
   nft: nftMetadataAddSoldPrice;
 }
 const ExpensiveNftCard = ({ nft }: ExpensiveNftCardProps) => {
   const navigate = useNavigate();
-  const { nftPrice, nftId, tokenUrl } = nft;
+  const { nftPrice, nftId, tokenUrl, ext } = nft;
   const tokenData = useGetTokenData(tokenUrl);
+  const { image } = tokenData;
 
   const soldPrice = nft.soldPrice;
 
@@ -25,7 +28,14 @@ const ExpensiveNftCard = ({ nft }: ExpensiveNftCardProps) => {
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          <img src={tokenData?.image} />
+          {image ? (
+            <img
+              src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+              onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+            />
+          ) : (
+            <img src={loadingImg} />
+          )}
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}

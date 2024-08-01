@@ -15,10 +15,12 @@ import { Confirm } from "../../hooks/swal";
 import Web3 from "web3";
 import { ethers } from "ethers";
 import Swal from "sweetalert2";
+import useS3Upload from "../../hooks/useS3Upload";
 
 function MintNft() {
   const { account, signer } = useContext(GlobalContext);
   const { handleWithLoading } = useAsyncTask();
+  const { uploadImage } = useS3Upload();
   const navigate = useNavigate();
   const onDropHandler = useCallback(e => {
     const file = e[0];
@@ -155,15 +157,16 @@ function MintNft() {
       let imageIpfsHash = jsonData.image;
       if (!imageIpfsHash) {
         imageIpfsHash = await getImageIpfsHash(file);
+        uploadImage(imageIpfsHash, file);
       }
 
       const metaData = JSON.stringify({
         name: jsonData.name,
         keyvalues: {
           owner: account,
-          isOnsale: String(false),
           isCollection: String(false),
-          tags: tags.join('')
+          tags: tags.join(''),
+          ext: file.type.split('/')[1],
         },
       });
 

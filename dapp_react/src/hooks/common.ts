@@ -1,3 +1,4 @@
+import { IpfsData } from "./../../type.d";
 import Swal from "sweetalert2";
 import { web3 } from "../../contracts/index";
 import {
@@ -27,8 +28,8 @@ export const getImageUrl = (imageIpfsHash: string) => {
   }`;
 };
 
-export const getResizeImageUrl = (s3ObectKey: string) => {
-  return `${import.meta.env.VITE_IMAGE_RESIZE_URL}/${s3ObectKey}`;
+export const getResizeImageUrl = (ipfsHash: string, extension: string) => {
+  return `${import.meta.env.VITE_IMAGE_RESIZE_URL}/${ipfsHash}.${extension}`;
 };
 
 export const getIpfsTokenData = async (tokenUrl: string) => {
@@ -60,10 +61,7 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
   };
 };
 
-export const validateAccountAndOnsale = (
-  metadata: NftMetadata,
-  account: string
-) => {
+export const validateAccountAndOnsale = (metadata: any, account: string) => {
   if (!account) {
     toastSwal("메타마스크 지갑을 연결해주세요.", "warning");
     return false;
@@ -100,7 +98,6 @@ export const P_updateMetadataSetOnsale = async (
       nft.nftId === nftId
         ? {
             ...nft,
-            isOnsale: String(true),
             nftPrice: price,
             numberOfSales: numberOfSales + 1,
           }
@@ -130,7 +127,6 @@ export const P_updateMetadataSetOnsale = async (
       keyvalues: {
         ...ipfsData.metadata.keyvalues,
         nftId,
-        isOnsale: String(true),
         nftPrice: price,
         ...checkNumberOfSales,
         ...checkPriceHistory,
@@ -161,7 +157,9 @@ export const getCollectionListToIpfs = async (
   return result.rows;
 };
 
-export const getNftListAndCountToIpfs = async (url: string) => {
+export const getNftListAndCountToIpfs = async (
+  url: string
+): Promise<{ ipfsDatas: IpfsData[]; count: number }> => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   const ipfsDatas = result.rows;
@@ -359,7 +357,6 @@ export const P_updateMetadataPurchase = async (
         ? {
             ...nft,
             owner: account,
-            isOnsale: String(false),
             nftPrice: 0,
             numberOfSales: numberOfSales + 1,
             priceHistory: newPriceHistory,
@@ -383,7 +380,6 @@ export const P_updateMetadataPurchase = async (
         ...ipfsData.metadata.keyvalues,
         nftId,
         owner: account,
-        isOnsale: String(false),
         nftPrice: 0,
         numberOfSales: numberOfSales + 1,
         priceHistory: newPriceHistory,

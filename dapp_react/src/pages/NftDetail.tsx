@@ -34,10 +34,17 @@ function NftDetail() {
     nftPrice: 0,
     owner: "",
     tokenUrl: "",
-    isOnsale: "true",
     isCollection: "false",
     numberOfSales: 0,
-    priceHistory: [],
+    ext: "",
+    tags: "",
+    priceHistory: [
+      {
+        owner: "",
+        price: 0,
+        soldTime: "",
+      },
+    ],
   });
 
   const getNewPriceHistory = (priceHistory: PriceHistoryT[]) => {

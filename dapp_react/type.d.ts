@@ -9,6 +9,7 @@ export type DummyNft = {
   description: string;
   image: string;
   tokenUrl: string;
+  ext: string;
 };
 
 export type Nft = {
@@ -32,10 +33,9 @@ export type NftMetadataBase = {
   nftPrice: number;
   owner: string;
   tokenUrl: string;
-  isOnsale: string;
   isCollection: string;
   numberOfSales: number;
-
+  ext: string;
   // add
   tags: string;
   cart?: string;
@@ -113,11 +113,11 @@ export type IpfsData = {
       tags: string;
       nftId: number;
       owner: string;
-      isOnsale: string;
       nftPrice: number;
       isCollection: string;
       priceHistory: string;
       numberOfSales: number;
+      ext: string;
       cart?: string;
     };
   };
@@ -134,7 +134,6 @@ export type CollectionNftBase = {
   name: string;
   fileName: string;
   owner: string;
-  isOnsale: string;
   isCollection: string;
   nftPrice: number;
   numberOfSales: number;
@@ -160,7 +159,6 @@ export type CollectionIpfsData = {
       tags: string;
       owner: string;
       isHide: string;
-      isOnsale: string;
       isCollection: string;
       numberOfSales: number;
       nftKeyvaluesList: string; // CollectionNft[];
@@ -185,4 +183,10 @@ export type CartIpfsData = {
       cart: string; // CartNft[];
     };
   };
+};
+
+export type NewOnsaleNft = NftMetadataByJson & {
+  nftName: string;
+  tokenUrl: string;
+  previousPrice: number;
 };

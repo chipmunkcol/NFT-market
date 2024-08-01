@@ -438,24 +438,3 @@ const Container = styled.div`
 `;
 
 export default MarketPlace;
-
-// async function getOnsaleNftList() {
-//   if (!account) return;
-
-//   try {
-//     const resultNfts = await MintContract.methods.getOnsaleNfts().call();
-//     if (resultNfts.length < 1) return;
-
-//     const newOnsaleNfts = [];
-//     resultNfts.forEach(onsaleMyNft => {
-//       const { id, name, description, image, isOnsale, price, owner } = onsaleMyNft;
-//       const parsedId = parseInt(id, 10);
-//       const parsedPrice = parseInt(price, 10);
-//       const etherPrice = Number(web3.utils.fromWei(parsedPrice.toString(), 'ether'));
-//       newOnsaleNfts.push({ id: parsedId, name, description, image, isOnsale, price: etherPrice, owner });
-//     });
-
-//     setOnsaleNftList(newOnsaleNfts);
-//     console.log('newMyNfts: ', newOnsaleNfts);
-//   } catch (error) {
-//     console.log(error);

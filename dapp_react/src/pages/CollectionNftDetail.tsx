@@ -20,6 +20,7 @@ import useAsyncTask from "../hooks/useAsyncTask";
 import * as Styled from "./NftDetail";
 import {
   CollectionNft,
+  CollectionNftByJson,
   GlobalContextType,
   Nft,
   NftMetadata,
@@ -44,17 +45,18 @@ function CollectionNftDetail() {
   // const { name, description, image, attributes } = tokenData;
   const { account, signer } = useContext(GlobalContext) as GlobalContextType;
   console.log("tokenData: ", tokenData);
-  const [metadata, setMetadata] = useState({
-    nftPrice: 0,
-    owner: "",
-    tokenUrl: "",
+  const [metadata, setMetadata] = useState<CollectionNft>({
+    name: "",
     fileName: "",
-    nftId: 0,
-    isOnsale: "true",
-    isCollection: "false",
-    isReveal: false,
+    owner: "",
+    isCollection: "",
+    nftPrice: 0,
     numberOfSales: 0,
-    priceHistory: [{ owner: "", price: 0, soldTime: "" }],
+    tags: "",
+    nftId: 0,
+    tokenUrl: "",
+    isReveal: false,
+    priceHistory: [],
   });
 
   const getNewPriceHistory = (priceHistory: PriceHistoryT[]) => {
@@ -71,7 +73,7 @@ function CollectionNftDetail() {
     async function fetchMetadata() {
       if (!ipfsHash) return;
       const res = await getTargetCollectionToIpfsData(ipfsHash);
-      const _metadataList: CollectionNft[] = JSON.parse(
+      const _metadataList: CollectionNftByJson[] = JSON.parse(
         res.metadata?.keyvalues.nftKeyvaluesList
       );
       const targetMetadata = _metadataList.filter(
@@ -137,7 +139,10 @@ function CollectionNftDetail() {
     }
   };
 
-  const addCartController = async (metadata: NftMetadata, account: string) => {
+  const addCartController = async (
+    metadata: CollectionNft,
+    account: string
+  ) => {
     const validateResult = validateAccountAndOnsale(metadata, account);
     if (!validateResult) return;
 
