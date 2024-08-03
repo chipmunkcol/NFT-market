@@ -6,7 +6,7 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getResizeImageUrl, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
 import Swal from "sweetalert2";
@@ -14,12 +14,17 @@ import { Confirm, toastSwal } from "../hooks/swal";
 import Spinner from "./Spinner";
 import { transactWithPurchaseNft } from "../../contracts/interface";
 import Cart from "./onsaleNftCard/Cart";
+import useGetTokenData from "../hooks/useGetTokenData";
+import loadingImg from "../assets/images/달팽이로딩.png"
 
-// const OnsaleNftCard: FC<props> = ({ nft }) => {
-// : OutletContextType
 const OnsaleNftCard = ({ nft, gridCss }) => {
-  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
+  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs, ext } = nft;
 
+  const _tokenUrl = nft?.isReveal
+    ? `${nft.tokenUrl}/${nft.fileName}`
+    : nft.tokenUrl;
+  const tokenData = useGetTokenData(_tokenUrl);
+  const { image } = tokenData;
   const { handleWithLoading } = useAsyncTask();
   const { signer, account } = useContext(GlobalContext);
   const isMyNft = account?.toLowerCase() === owner?.toLowerCase();
@@ -46,38 +51,6 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
     }
   };
 
-  const [ipfsData, setIpfsData] = useState({
-    name: '',
-    description: '',
-    image: '',
-    attributes: []
-  });
-
-
-  const [imageUrl, setImageUrl] = useState('');
-  useEffect(() => {
-    if (!tokenUrl) return;
-
-    async function fetchIpfsData() {
-      try {
-        let tokenData;
-        if (isReveal) {
-          const revealedTokenUrl = `${tokenUrl}/${fileName}`;
-          tokenData = await getIpfsTokenData(revealedTokenUrl);
-        } else {
-          // const revealedTokenUrl = `${tokenUrl}/${fileName}`;
-          // tokenData = await getIpfsTokenData(revealedTokenUrl);
-          tokenData = await getIpfsTokenData(tokenUrl);
-        }
-        setIpfsData(tokenData);
-        setImageUrl(getImageUrl(tokenData.image));
-      } catch (error) {
-        console.error('Error fetching IPFS data:', error);
-      }
-    }
-
-    fetchIpfsData();
-  }, [tokenUrl]);
 
   // Detail page
   const navigateDetailPage = () => {
@@ -93,7 +66,11 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
         {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
-        <BgImg $src={imageUrl} alt="NFT image" />
+        {image ?
+          <Img src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+          : <Img src={loadingImg} alt="loading..." />
+        }
       </ImgWrap>
       <Content>
         <Styled.Name>{nftName}</Styled.Name>
@@ -119,17 +96,19 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
   );
 };
 
-const BgImg = styled.div`
+const Img = styled.img`
   width: 100%;
   height: 100%;
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
   /* object-fit: cover; */
-  background-image: url(${props => props.$src});
+
+
+  /* background-image: url(${props => props.$src});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; */
 
   /* 이거 화면 width 애매할 때 image 보여주는게 애매해져서 일단 보류 */
   /* background-size: 100%; */

@@ -20,7 +20,7 @@ import useS3Upload from "../../hooks/useS3Upload";
 function MintNft() {
   const { account, signer } = useContext(GlobalContext);
   const { handleWithLoading } = useAsyncTask();
-  const { uploadImage } = useS3Upload();
+  const { uploadImageTos3 } = useS3Upload();
   const navigate = useNavigate();
   const onDropHandler = useCallback(e => {
     const file = e[0];
@@ -157,7 +157,7 @@ function MintNft() {
       let imageIpfsHash = jsonData.image;
       if (!imageIpfsHash) {
         imageIpfsHash = await getImageIpfsHash(file);
-        uploadImage(imageIpfsHash, file);
+        uploadImageTos3(imageIpfsHash, file);
       }
 
       const metaData = JSON.stringify({
@@ -212,7 +212,7 @@ function MintNft() {
   // const handleDragOverStyle = e => {
   //   if (isDuplication.current) return;
   //   isDuplication.current = true;
-  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행합니다.
+  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행함
   //   e.stopPropagation();
   //   const $table = document.querySelector('#inputFileBox');
   //   $table.style.boxShadow = '0px 0px 8px 0px #2390FF';

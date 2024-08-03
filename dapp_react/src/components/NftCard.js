@@ -26,17 +26,17 @@ export const Container = styled.div`
   text-align: center;
 `;
 
-export const BgImg = styled.div`
+export const BgImg = styled.img`
   width: 100%;
   height: 100%;
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
-  /* object-fit: cover; */
-  background-image: url(${(props) => props.$src});
+  object-fit: cover;
+  /* background-image: url(${(props) => props.$src});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; */
   /* background-size: 100%;
   &:hover {
     background-size: 110%;

@@ -2,11 +2,12 @@ import styled from "styled-components";
 import * as Styled from '../../components/NftCard'
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-import { formatPrice } from "../../hooks/common";
+import { formatPrice, getImageUrl, getResizeImageUrl } from "../../hooks/common";
 // import { getTruncatedAccount } from "../../hooks/common";
+import loadingImg from "../../assets/images/달팽이로딩.png";
 
 export default function OnsaleNftCard({ nft, account }) {
-  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName } = nft;
+  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName, ext } = nft;
   const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${fileName}` : tokenUrl;
   const tokenData = useGetTokenData(toeknUrlRevealedCheck);
   const { description, image, attributes } = tokenData;
@@ -28,8 +29,11 @@ export default function OnsaleNftCard({ nft, account }) {
     <Styled.Container>
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
       <ImgWrap onClick={navigateDetailPage}>
-        {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
-        <BgImg $src={image} alt="NFT image" />
+        {image ?
+          <Styled.BgImg src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+          : <Styled.BgImg src={loadingImg} alt="loading..." />
+        }
       </ImgWrap>
       <Content>
         <Styled.Name>{nftName}</Styled.Name>

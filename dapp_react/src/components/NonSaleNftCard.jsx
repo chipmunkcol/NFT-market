@@ -5,18 +5,19 @@ import { MintContract, SaleNftAddress } from "../../contracts/index";
 import * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getResizeImageUrl, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 import useAsyncTask from "../hooks/useAsyncTask";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { toastSwal } from "../hooks/swal";
 import { transactWithApprove } from "../../contracts/interface";
+import loadingImg from "../assets/images/달팽이로딩.png";
 
 
 // nftId, nftName, tokenUrl, nftPrice 
 const NonSaleNftCard = ({ nft }) => {
-  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName } = nft;
+  const { nftId, nftName, tokenUrl, nftPrice, collectionIpfs, fileName, ext } = nft;
   const toeknUrlRevealedCheck = (collectionIpfs && tokenUrl !== collectionIpfs) ? `${tokenUrl}/${fileName}` : tokenUrl;
   const tokenData = useGetTokenData(toeknUrlRevealedCheck);
 
@@ -99,8 +100,11 @@ const NonSaleNftCard = ({ nft }) => {
   return (
     <Styled.Container>
       <ImgWrap onClick={navigateDetailPage}>
-        {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
-        <Styled.BgImg $src={image} alt="NFT image" />
+        {image ?
+          <Styled.BgImg src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+          : <Styled.BgImg src={loadingImg} alt="loading..." />
+        }
       </ImgWrap>
       <Content>
         <Styled.Name>{nftName}</Styled.Name>

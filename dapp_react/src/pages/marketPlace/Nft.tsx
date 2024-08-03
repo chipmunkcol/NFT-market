@@ -14,7 +14,7 @@ import {
   marketplaceNftUrl,
 } from "../../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
-import { IpfsData, NewOnsaleNft, NftMetadataByJson } from "../../../type";
+import { IpfsData, NewOnsaleNft } from "../../../type";
 // import {tempNftArray} from "../../../../testJson/nftArray";
 
 export type GridCss = {

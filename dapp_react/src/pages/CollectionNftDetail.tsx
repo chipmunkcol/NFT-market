@@ -23,7 +23,6 @@ import {
   CollectionNftByJson,
   GlobalContextType,
   Nft,
-  NftMetadata,
   PriceHistoryT,
 } from "../../type";
 import { JsonRpcSigner } from "ethers";
@@ -44,7 +43,6 @@ function CollectionNftDetail() {
   });
   // const { name, description, image, attributes } = tokenData;
   const { account, signer } = useContext(GlobalContext) as GlobalContextType;
-  console.log("tokenData: ", tokenData);
   const [metadata, setMetadata] = useState<CollectionNft>({
     name: "",
     fileName: "",
@@ -95,7 +93,7 @@ function CollectionNftDetail() {
   useEffect(() => {
     async function fetchIpfsData() {
       try {
-        if (!ipfsHash) return;
+        if (!ipfsHash || !metadata?.name) return;
         let tokenData;
         if (metadata?.isReveal) {
           const revealedTokenUrl = `${ipfsHash}/${metadata?.fileName}`;
@@ -182,7 +180,12 @@ function CollectionNftDetail() {
                 <div>
                   <div>
                     {/* view original (pinata) */}
-                    <a href={getImageUrl(tokenData?.image)} target="_blank">
+                    <a
+                      href={`${import.meta.env.VITE_IPFS_URL}/${
+                        tokenData?.image
+                      }`}
+                      target="_blank"
+                    >
                       <Styled.ExpandImg>
                         <img src={ExpandIcon} alt="expand-icon" />
                       </Styled.ExpandImg>

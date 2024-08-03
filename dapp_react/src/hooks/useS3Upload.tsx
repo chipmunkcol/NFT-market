@@ -3,8 +3,6 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import { useEffect, useRef } from "react";
 
-const bucketName = "s3-lambda-edge-image-resize-pinata";
-
 const useS3Upload = () => {
   const clientRef = useRef<S3Client | null>(null);
 
@@ -13,12 +11,12 @@ const useS3Upload = () => {
       region: "ap-northeast-2",
       credentials: fromCognitoIdentityPool({
         clientConfig: { region: "ap-northeast-2" },
-        identityPoolId: "ap-northeast-2:35debddd-8838-4170-9e8c-7a6dce0ac813",
+        identityPoolId: import.meta.env.VITE_AWS_S3_COGNITO_POOL_ID,
       }),
     });
   }, []);
 
-  const uploadImage = async (path: string, file: File) => {
+  const uploadImageTos3 = async (path: string, file: File) => {
     // let result = false;
     if (!file) return;
     if (!clientRef.current) {
@@ -28,7 +26,7 @@ const useS3Upload = () => {
     // const encodedName = Buffer.from(file.name).toString("base64");
     const ext = file.type.split("/")[1];
     const bucketParams = {
-      Bucket: bucketName,
+      Bucket: import.meta.env.VITE_AWS_S3_BUCKET_NAME,
       Key: `${path}.${ext}`, // 저장될 이름 ex) ipfsHash.jpg
       Body: file,
       ContentType: `image/${ext}`, // 지정하지 않으면 브라우저창에서 열지않고 다운로드 받는다!
@@ -46,7 +44,7 @@ const useS3Upload = () => {
       // return result;
     }
   };
-  return { uploadImage };
+  return { uploadImageTos3 };
 };
 
 export default useS3Upload;

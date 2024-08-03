@@ -6,6 +6,8 @@ import {
   addCartHandler,
   formatPrice,
   getCurrentYMD,
+  getImageUrl,
+  getResizeImageUrl,
   getTargetNftToIpfsData,
   purchaseNftHandler,
   validateAccountAndOnsale,
@@ -20,6 +22,7 @@ import { Confirm, toastSwal } from "../hooks/swal";
 import useAsyncTask from "../hooks/useAsyncTask";
 import { GlobalContextType, NftMetadata, PriceHistoryT } from "../../type";
 import { JsonRpcSigner } from "ethers";
+import loadingImg from "../assets/images/달팽이로딩.png";
 
 function NftDetail() {
   const params = useParams();
@@ -63,7 +66,10 @@ function NftDetail() {
         const res = await getTargetNftToIpfsData(ipfsHash);
         const _metadata = res.metadata.keyvalues;
 
-        const priceHistory = JSON.parse(_metadata.priceHistory);
+        let priceHistory = [];
+        if (_metadata.priceHistory) {
+          priceHistory = JSON.parse(_metadata.priceHistory);
+        }
         const newPriceHistory = getNewPriceHistory(priceHistory);
         setMetadata({
           ..._metadata,
@@ -142,7 +148,7 @@ function NftDetail() {
                 <div>
                   <div>
                     {/* view original (pinata) */}
-                    <a href={image} target="_blank">
+                    <a href={`${import.meta.env.VITE_IPFS_URL}/${image}`} target="_blank">
                       {/* <ExpandImg /> */}
                       <ExpandImg>
                         <img src={ExpandIcon} alt="expand-icon" />
@@ -156,7 +162,18 @@ function NftDetail() {
                 </div>
               </header>
               <ImgWrap>
-                <img src={image} />
+                {metadata?.ext ? (
+                  <img
+                    src={`${getResizeImageUrl(
+                      image,
+                      metadata?.ext
+                    )}?w=600&h=600`}
+                    onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+                    alt="NFT image"
+                  />
+                ) : (
+                  <img src={loadingImg} alt="loading..." />
+                )}
               </ImgWrap>
             </ImgBox>
 
