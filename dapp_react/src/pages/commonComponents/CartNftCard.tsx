@@ -7,15 +7,10 @@ import {
 } from "../../hooks/common";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../../context/GlobalContext";
-import useAsyncTask from "../../hooks/useAsyncTask";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import loadingImg from "../../assets/images/달팽이로딩.png";
-import {
-  CollectionNftByJson,
-  GlobalContextType,
-  NewOnsaleNft,
-} from "../../../type";
+import { GlobalContextType } from "../../../type";
 
 interface CartNftCardProps {
   // nft: NewOnsaleNft | CollectionNftByJson;
