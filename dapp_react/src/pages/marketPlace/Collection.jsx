@@ -8,7 +8,6 @@ import Spinner from "../../components/Spinner";
 import { pinStart } from "../../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
 
-// const tempNftKeyvalues = [{ "name": "CryptoKitty #123", "fileName": "test.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "jangkal cat", "fileName": "test10.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "borning monkey", "fileName": "test11.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "zeus", "fileName": "test12.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #222", "fileName": "test2.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "CryptoKitty #333", "fileName": "test3.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #111", "fileName": "test4.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #222", "fileName": "test5.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #333", "fileName": "test6.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }, { "name": "Jack's NFT #4444", "fileName": "test7.json", "owner": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", "isOnsale": "true", "nftPrice": "0.888", "numberOfSales": 0, "priceHistory": "[]" }];
 
 const Collection = () => {
   const { account } = useContext(GlobalContext);
@@ -39,9 +38,9 @@ const Collection = () => {
   const { data: onsaleNftList, isPending, isSuccess } = useQuery({
     queryKey: ['marketplace_collection', search],
     queryFn: () => {
-      const url = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`;
-      const queryUrl = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`;
-      const categoryUrl = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"true","op":"eq"}}`;
+      const url = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[keyvalues]={"isCollection":{"value":"true","op":"eq"}}`;
+      const queryUrl = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[name]=${encodedSearchQuery}&metadata[keyvalues]={"isCollection":{"value":"true","op":"eq"}}`;
+      const categoryUrl = `https://api.pinata.cloud/data/pinList?pageLimit=${pageLimit}&pinStart=${pinStart}&metadata[keyvalues]={"tags":{"value":"${encodedCategory}","op":"like"},"isCollection":{"value":"true","op":"eq"}}`;
 
       if (query) {
         return fetchNftList(queryUrl);
@@ -61,7 +60,7 @@ const Collection = () => {
         <MarketWrap $gridCss={gridCss}>
           {onsaleNftList &&
             getNewOnsaleNfts(onsaleNftList).map(onsaleNft => (
-              <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} account={account} gridCss={gridCss} />
+              <OnsaleNftCard key={`marketplace-collection-${onsaleNft.nftId}`} nft={onsaleNft} gridCss={gridCss} />
             ))
           }
         </MarketWrap>

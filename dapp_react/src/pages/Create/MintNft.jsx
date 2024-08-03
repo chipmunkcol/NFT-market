@@ -15,10 +15,12 @@ import { Confirm } from "../../hooks/swal";
 import Web3 from "web3";
 import { ethers } from "ethers";
 import Swal from "sweetalert2";
+import useS3Upload from "../../hooks/useS3Upload";
 
 function MintNft() {
   const { account, signer } = useContext(GlobalContext);
   const { handleWithLoading } = useAsyncTask();
+  const { uploadImageTos3 } = useS3Upload();
   const navigate = useNavigate();
   const onDropHandler = useCallback(e => {
     const file = e[0];
@@ -118,31 +120,6 @@ function MintNft() {
   };
 
 
-
-  // const pinFileToIPFS = async (metaData) => {
-  //   const formData = new FormData();
-  //   const options = JSON.stringify({
-  //     cidVersion: 0,
-  //   });
-
-  //   formData.append("file", file);
-  //   formData.append("pinataMetadata", metaData);
-  //   formData.append("pinataOptions", options);
-
-  //   const res = await fetch(
-  //     "https://api.pinata.cloud/pinning/pinFileToIPFS",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
-  //       },
-  //       body: formData,
-  //     }
-  //   );
-  //   const result = await res.json();
-  //   return result.IpfsHash;
-  // }
-
   const pinJsonToIPFS = async (imageIpfsHash, metaData) => {
     const jsonContent = JSON.stringify({
       name: jsonData.name,
@@ -162,7 +139,6 @@ function MintNft() {
     return result.IpfsHash;
   }
 
-  // 판매등록 함수
   const mintNftController = async () => {
     const res = await handleWithLoading(() => handleSubmission(), 'NFT 발행 중입니다');
     if (res) {
@@ -171,7 +147,6 @@ function MintNft() {
       if (result.isConfirmed) {
         navigate(`/mypage/${account}`)
       }
-      // const result = window.confirm(`NFT 발행 성공 \nMyPage로 확인하러 가기`);
     }
   }
   const handleSubmission = async () => {
@@ -182,15 +157,16 @@ function MintNft() {
       let imageIpfsHash = jsonData.image;
       if (!imageIpfsHash) {
         imageIpfsHash = await getImageIpfsHash(file);
+        uploadImageTos3(imageIpfsHash, file);
       }
 
       const metaData = JSON.stringify({
         name: jsonData.name,
         keyvalues: {
           owner: account,
-          isOnsale: String(false),
           isCollection: String(false),
-          tags: tags.join('')
+          tags: tags.join(''),
+          ext: file.type.split('/')[1],
         },
       });
 
@@ -236,7 +212,7 @@ function MintNft() {
   // const handleDragOverStyle = e => {
   //   if (isDuplication.current) return;
   //   isDuplication.current = true;
-  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행합니다.
+  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행함
   //   e.stopPropagation();
   //   const $table = document.querySelector('#inputFileBox');
   //   $table.style.boxShadow = '0px 0px 8px 0px #2390FF';

@@ -4,7 +4,6 @@ import MainSpinner from "./components/MainSpinner";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 
-// let myFunctionTimer;
 function App() {
 
   return (

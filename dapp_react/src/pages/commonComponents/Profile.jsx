@@ -37,16 +37,16 @@ export default function Profile({ profileModalClose }) {
   return (
     <Overlay onClick={profileModalClose}>
       <Container onClick={stopPropagation}>
-        <NavBtn>
-          <Link to={`/mypage/${account}`} onClick={profileModalClose}>
+        <Link to={`/mypage/${account}`} onClick={profileModalClose}>
+          <NavBtn>
             Mypage
-          </Link>
-        </NavBtn>
-        <NavBtn style={{ borderRadius: '0 0 0 0' }}>
-          <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} onClick={profileModalClose}>
+          </NavBtn>
+        </Link>
+        <Link target="\_blank" to={'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'} onClick={profileModalClose}>
+          <NavBtn style={{ borderRadius: '0 0 0 0' }}>
             Faucet
-          </Link>
-        </NavBtn>
+          </NavBtn>
+        </Link>
         <NavBtn style={{ borderRadius: '0 0 10px 10px' }} onClick={logoutController}>
           Logout
         </NavBtn>

@@ -13,7 +13,7 @@ import {
   CollectionIpfsData,
   CollectionNft,
   IpfsData,
-  NftMetadata,
+  nftMetadataAddSoldPrice,
 } from "../../type";
 import { toastSwal } from "./swal";
 
@@ -23,6 +23,10 @@ export const getImageUrl = (imageIpfsHash: string) => {
   }/ipfs/${imageIpfsHash}?pinataGatewayToken=${
     import.meta.env.VITE_GATEWAY_TOKEN
   }`;
+};
+
+export const getResizeImageUrl = (ipfsHash: string, extension: string) => {
+  return `${import.meta.env.VITE_IMAGE_RESIZE_URL}/${ipfsHash}.${extension}`;
 };
 
 export const getIpfsTokenData = async (tokenUrl: string) => {
@@ -54,10 +58,7 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
   };
 };
 
-export const validateAccountAndOnsale = (
-  metadata: NftMetadata,
-  account: string
-) => {
+export const validateAccountAndOnsale = (metadata: any, account: string) => {
   if (!account) {
     toastSwal("메타마스크 지갑을 연결해주세요.", "warning");
     return false;
@@ -94,7 +95,6 @@ export const P_updateMetadataSetOnsale = async (
       nft.nftId === nftId
         ? {
             ...nft,
-            isOnsale: String(true),
             nftPrice: price,
             numberOfSales: numberOfSales + 1,
           }
@@ -124,7 +124,6 @@ export const P_updateMetadataSetOnsale = async (
       keyvalues: {
         ...ipfsData.metadata.keyvalues,
         nftId,
-        isOnsale: String(true),
         nftPrice: price,
         ...checkNumberOfSales,
         ...checkPriceHistory,
@@ -155,7 +154,9 @@ export const getCollectionListToIpfs = async (
   return result.rows;
 };
 
-export const getNftListAndCountToIpfs = async (url: string) => {
+export const getNftListAndCountToIpfs = async (
+  url: string
+): Promise<{ ipfsDatas: IpfsData[]; count: number }> => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   const ipfsDatas = result.rows;
@@ -353,7 +354,6 @@ export const P_updateMetadataPurchase = async (
         ? {
             ...nft,
             owner: account,
-            isOnsale: String(false),
             nftPrice: 0,
             numberOfSales: numberOfSales + 1,
             priceHistory: newPriceHistory,
@@ -377,7 +377,6 @@ export const P_updateMetadataPurchase = async (
         ...ipfsData.metadata.keyvalues,
         nftId,
         owner: account,
-        isOnsale: String(false),
         nftPrice: 0,
         numberOfSales: numberOfSales + 1,
         priceHistory: newPriceHistory,
@@ -765,8 +764,10 @@ export function isArraysEqual(arr1: any[], arr2: any[]) {
   return true;
 }
 
-export const findNftsSoldExpensively = (ipfsList: any) => {
-  const nftList = ipfsList.map((ipfsData: any) => ({
+export const findNftsSoldExpensively = (
+  ipfsList: IpfsData[]
+): nftMetadataAddSoldPrice[] => {
+  const nftList = ipfsList.map((ipfsData) => ({
     ...ipfsData.metadata.keyvalues,
     tokenUrl: ipfsData.ipfs_pin_hash,
   }));
@@ -778,7 +779,8 @@ export const findNftsSoldExpensively = (ipfsList: any) => {
     const latestSoldPrice = targetNftPriceHistory[0].price;
     if (latestSoldPrice > 0.19) {
       // priceHistory
-      expensiveNfts.push(nftList[i]);
+      const newNft = { ...nftList[i], soldPrice: latestSoldPrice };
+      expensiveNfts.push(newNft);
     }
   }
   return expensiveNfts;
@@ -802,4 +804,18 @@ export const findTopCollectorNfts = (
   collections.sort((a, b) => b.numberOfSales - a.numberOfSales);
   const topCollectorNfts = JSON.parse(collections[0].nftKeyvaluesList);
   return topCollectorNfts;
+};
+
+export const getResizeImageKeyOfAwsS3 = (imageUrl: string) => {
+  const splitUrl = imageUrl.split("/");
+  const ipfsNextIndex = splitUrl.indexOf("ipfs") + 1;
+  const targetAwsS3Key = splitUrl[ipfsNextIndex].split("?")[0];
+  return targetAwsS3Key;
+};
+
+export const removeExtenstion = (s3ObjectKey: string) => {
+  const splitKey = s3ObjectKey.split(".");
+  const keyWithoutExtenstion = splitKey.slice(0, splitKey.length - 1);
+
+  return keyWithoutExtenstion ? keyWithoutExtenstion.join(".") : "";
 };

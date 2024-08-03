@@ -68,7 +68,28 @@ Pinata 관련 내용[https://docs.pinata.cloud/pinning/listing-files]
 (6/25) 당시엔 pinata로 판단해서 구현했는데 get은 tokenUrl 에 대한 json 값만 가져오고 나머지는 sc에서 get 해오는게
 좋아보임 내용은 2-1 (6/24 작성과 유사)
 
-## 2-3.
+## 2-3. cloudflare 로 이미지 리사이징 -> 캐싱해서 가져오기
+누가 ipfs 이미지 아니랄까봐 로딩속도도 느리고 애초에 썸네일을 원본으로 가져와서
+신경쓰여서 안되겠다. 이미지 혼내주자
+cloudfront랑 s3 lamda@edge 조합이랑 고민했는데 aws 설정 너~~무 번거롭고 프로젝트 규모 상 빨리 개발하는게 중요하니까 요새 또 많이 쓰는 신기술 cloudflare 적용    
+
+- cloudflare에 최상위 도메인(.com, .net) 필요해서 어차피 cloudfront랑 s3 사용해서 배포하긴 했음.. (vercel out!)
+근데 배포한 사이트에 새로고침 누르면 아래 에러뜸
+```
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<Error>
+<Code>AccessDenied</Code>
+<Message>Access Denied</Message>
+<RequestId>920T3N8FM5B4JATE</RequestId>
+<HostId>mr6umMUWaHZtet6xICaXMOQjsQ/SKj5nqzlBmqN0xxJYWWtUQnX2iaDsdFnJumjQ3D9e6cikDm8=</HostId>
+</Error>
+```
+보니까 메인 url 에서는 새로고침해도 괜찮은데 route 가 붙은 곳에서는 위 에러가 떠서
+찾아보니까
+s3 접근 권한을 cloudfront 로 한정해놔서 cloundfront 메인 url에서 route로 넘어가는건
+괜찮은데 url/route 에서 바로 새로고침으로 요청하니까 s3가 접근권한 없는거잖아
+하고 403 에러를 뱉어주는거였다. 
+=> 권한에 모든 url/* 추가해주고 cloundfront 에 오류페이지 403 일때 /index.html 설정으로 해결
 
 ## 0. 그냥 이것저것
 

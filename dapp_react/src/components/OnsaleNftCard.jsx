@@ -6,33 +6,28 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart-wh.png";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getResizeImageUrl, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
 import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import Spinner from "./Spinner";
 import { transactWithPurchaseNft } from "../../contracts/interface";
-// interface props {
-//   nft: {
-//     nftId: number;
-//     nftHash: number;
-//     nftPrice: string;
-//   }
-// }
+import Cart from "./onsaleNftCard/Cart";
+import useGetTokenData from "../hooks/useGetTokenData";
+import loadingImg from "../assets/images/달팽이로딩.png"
 
+const OnsaleNftCard = ({ nft, gridCss }) => {
+  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs, ext } = nft;
 
-// const OnsaleNftCard: FC<props> = ({ nft }) => {
-
-// nftId, nftName, tokenUrl, nftPrice 
-const OnsaleNftCard = ({ nft, account, gridCss }) => {
-  const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs } = nft;
-
+  const _tokenUrl = nft?.isReveal
+    ? `${nft.tokenUrl}/${nft.fileName}`
+    : nft.tokenUrl;
+  const tokenData = useGetTokenData(_tokenUrl);
+  const { image } = tokenData;
   const { handleWithLoading } = useAsyncTask();
-  const { signer } = useContext(GlobalContext);
+  const { signer, account } = useContext(GlobalContext);
   const isMyNft = account?.toLowerCase() === owner?.toLowerCase();
-  const [isLoadingCart, setIsLoadingCart] = useState(false);
   const navigate = useNavigate();
 
   const purchaseController = async () => {
@@ -56,66 +51,6 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
     }
   };
 
-  // 장바구니에 담기
-  const addCartHandler = async nft => {
-    if (!signer) {
-      toastSwal('메타마스크 지갑을 연결해주세요');
-      return;
-    }
-    setIsLoadingCart(true);
-
-    try {
-      let cartIpfsHash = localStorage.getItem(`cart-${account}`);
-      if (!cartIpfsHash) {
-        cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
-        cartIpfsHash && localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
-      } else {
-        const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-        const updateMetadataResult = await P_updateMetadataAddCart(paredCartIpfsHash, nft);
-
-        if (!updateMetadataResult.ok) return;
-        // pinata update 된 메타데이타 가져오는 시간이 꽤나 김...
-        setTimeout(() => {
-          toastSwal('장바구니에 담겼습니다.');
-        }, 3000);
-      }
-    } finally {
-      setIsLoadingCart(false);
-    }
-  };
-
-  const [ipfsData, setIpfsData] = useState({
-    name: '',
-    description: '',
-    image: '',
-    attributes: []
-  });
-
-
-  const [imageUrl, setImageUrl] = useState('');
-  useEffect(() => {
-    if (!tokenUrl) return;
-
-    async function fetchIpfsData() {
-      try {
-        let tokenData;
-        if (isReveal) {
-          const revealedTokenUrl = `${tokenUrl}/${fileName}`;
-          tokenData = await getIpfsTokenData(revealedTokenUrl);
-        } else {
-          // const revealedTokenUrl = `${tokenUrl}/${fileName}`;
-          // tokenData = await getIpfsTokenData(revealedTokenUrl);
-          tokenData = await getIpfsTokenData(tokenUrl);
-        }
-        setIpfsData(tokenData);
-        setImageUrl(getImageUrl(tokenData.image));
-      } catch (error) {
-        console.error('Error fetching IPFS data:', error);
-      }
-    }
-
-    fetchIpfsData();
-  }, [tokenUrl]);
 
   // Detail page
   const navigateDetailPage = () => {
@@ -131,7 +66,11 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
       {/* <NonSaleNftCard nftHash={nftHash} /> */}
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
         {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
-        <BgImg $src={imageUrl} alt="NFT image" />
+        {image ?
+          <Img src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+          : <Img src={loadingImg} alt="loading..." />
+        }
       </ImgWrap>
       <Content>
         <Styled.Name>{nftName}</Styled.Name>
@@ -148,16 +87,7 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
         !isMyNft ? (
           <ButtonWrap>
             <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
-            <CartBtn onClick={() => addCartHandler(nft)} >
-              <CartImg>
-                {isLoadingCart ? <Spinner _custom={{
-                  color: '#3498db',
-                  size: '16px',
-                  height: '100%'
-                }} /> :
-                  <img src={iconCart} alt="장바구니" />}
-              </CartImg>
-            </CartBtn>
+            <Cart nft={nft} />
           </ButtonWrap>) : (
           <div style={{ color: '#cccccc' }}>Ownered by: {getTruncatedAccount(account)}</div>
         )
@@ -166,17 +96,19 @@ const OnsaleNftCard = ({ nft, account, gridCss }) => {
   );
 };
 
-const BgImg = styled.div`
+const Img = styled.img`
   width: 100%;
   height: 100%;
   border-top-right-radius: 0.75rem;
   border-top-left-radius: 0.75rem;
   /* object-fit: cover; */
-  background-image: url(${props => props.$src});
+
+
+  /* background-image: url(${props => props.$src});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out; */
 
   /* 이거 화면 width 애매할 때 image 보여주는게 애매해져서 일단 보류 */
   /* background-size: 100%; */
@@ -197,17 +129,8 @@ const Content = styled.div`
   padding-bottom: 20px;
 `;
 
-const CartImg = styled.div`
-  width: 16px;
-  height: 16px;
 
-  img {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const PurchaseBtn = styled.div`
+export const PurchaseBtn = styled.div`
   width: calc(100% - 41px);
     height: 30px;
     background-color: rgba(32, 129, 226, 1);
@@ -221,12 +144,6 @@ const PurchaseBtn = styled.div`
     &:hover {
       background-color: rgba(32, 129, 226, 0.8);
     }
-`;
-
-const CartBtn = styled(PurchaseBtn)`
-  width: 40px;
-  border-radius: 0 0 10px 0;
-  height: 30px;
 `;
 
 const ImgWrap = styled.div`

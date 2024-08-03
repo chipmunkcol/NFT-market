@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getImageUrl, getIpfsTokenData } from "./common";
+import { getIpfsTokenData } from "./common";
 
 const useGetTokenData = (tokenUrl: string) => {
   const [tokenData, setTokenData] = useState({
@@ -13,8 +13,7 @@ const useGetTokenData = (tokenUrl: string) => {
     async function fetchImageUrl() {
       if (tokenUrl) {
         const result = await getIpfsTokenData(tokenUrl);
-        const imageUrl = getImageUrl(result.image);
-        setTokenData({ ...result, image: imageUrl });
+        setTokenData(result);
       }
     }
 

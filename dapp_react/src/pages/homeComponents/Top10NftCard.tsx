@@ -1,20 +1,25 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
+import { NftMetadataByJson } from "../../../type";
+import loadingImg from "../../assets/images/달팽이로딩.png";
+import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
 
-const Top10NftCard = ({ nft, index }) => {
-  const { nftId, tokenUrl } = nft;
+interface Top10NftCardProps {
+  nft: NftMetadataByJson;
+  index: number;
+}
+const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
+  const { nftId, tokenUrl, nftPrice, ext } = nft;
   const { name, image } = useGetTokenData(tokenUrl);
-  const { nftPrice } = nft;
   const navigate = useNavigate();
 
   const navigateDetailPage = () => {
     navigate(`/nft-detail/${tokenUrl}/${nftId}`);
-  }
-
+  };
 
   return (
-    <>{
+    <>
       <Item key={`top10Nft-${index}`}>
         <ItemContent>
           <ItemRank>{index + 1}</ItemRank>
@@ -24,18 +29,25 @@ const Top10NftCard = ({ nft, index }) => {
           </ItemInfo>
         </ItemContent>
         <ItemImg onClick={navigateDetailPage}>
-          <img src={image} alt="test" />
+          {image ? (
+            <img
+              src={`${getResizeImageUrl(image, ext)}?w=50`}
+              onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+              alt="top10-nft-card"
+            />
+          ) : (
+            <img src={loadingImg} alt="loading..." />
+          )}
         </ItemImg>
       </Item>
-    }</>
-  )
-}
+    </>
+  );
+};
 
 export default Top10NftCard;
 
-
 const Item = styled.li`
-  ${props => props.theme.variables.flexBetween};
+  ${(props) => props.theme.variables.flexBetween};
   padding: 8px 10px;
   border-radius: 5px;
   background-color: #2c2d31;

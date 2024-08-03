@@ -1,43 +1,43 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
+import { CollectionNft } from "../../../type";
+import { getImageUrl } from "../../hooks/common";
 
-const TopCollectorNftCard = ({ nft }) => {
-
+interface TopCollectorNftCardProps {
+  nft: CollectionNft;
+}
+const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
   const navigate = useNavigate();
-  const tokenUrl = nft?.isCollection === 'true' ? `${nft.tokenUrl}/${nft.fileName}` : nft.tokenUrl;
-  // const tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
-  const tokenData = useGetTokenData(tokenUrl);
-  const { nftPrice, nftId } = nft;
-
-  const soldPrice = nft.soldPrice;
-
+  const { nftPrice, nftId, tokenUrl } = nft;
+  const _tokenUrl = `${nft.tokenUrl}/${nft.fileName}`;
+  const tokenData = useGetTokenData(_tokenUrl);
+  const { image } = tokenData;
 
   const navigateDetailPage = () => {
-    if (nft?.isCollection === 'true') {
-      navigate(`/nft-detail/collection/${nft.tokenUrl}/${nftId}`);
+    if (nft?.isCollection === "true") {
+      navigate(`/nft-detail/collection/${tokenUrl}/${nftId}`);
     } else {
       navigate(`/nft-detail/${nft.tokenUrl}/${nftId}`);
     }
-  }
+  };
 
   return (
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          <img src={tokenData?.image} />
+          <img src={getImageUrl(image)} />
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}
-          <p>{soldPrice ? soldPrice : nftPrice} ETH</p>
+          <p>{nftPrice} ETH</p>
         </TopContent>
       </TopItemBox>
     </>
-  )
-}
+  );
+};
 
 export default TopCollectorNftCard;
-
 
 const TopItemBox = styled.li`
   width: 184px;
@@ -54,7 +54,7 @@ const TopImgWrap = styled.div`
   cursor: pointer;
 `;
 const TopContent = styled.div`
-  ${props => props.theme.variables.flexColumn};
+  ${(props) => props.theme.variables.flexColumn};
   padding-top: 1rem;
   gap: 0.5rem;
   h3 {

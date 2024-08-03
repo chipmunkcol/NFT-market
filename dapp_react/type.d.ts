@@ -1,6 +1,16 @@
+import { NftMetadata } from "./type.d";
+import { ListObjectsCommandOutput } from "@aws-sdk/client-s3";
 import { PriceHistory } from "./src/pages/NftDetail";
 import { JsonRpcSigner } from "ethers";
 import { MyNft } from "./types/contract";
+
+export type DummyNft = {
+  name: string;
+  description: string;
+  image: string;
+  tokenUrl: string;
+  ext: string;
+};
 
 export type Nft = {
   name: string;
@@ -18,15 +28,29 @@ export type PriceHistoryT = {
   soldTime: string;
 };
 
-export type NftMetadata = {
+export type NftMetadataBase = {
   nftId: number;
   nftPrice: number;
   owner: string;
   tokenUrl: string;
-  isOnsale: string;
   isCollection: string;
   numberOfSales: number;
+  ext: string;
+  // add
+  tags: string;
+  cart?: string;
+};
+
+export type NftMetadata = NftMetadataBase & {
   priceHistory: PriceHistoryT[];
+};
+
+export type NftMetadataByJson = NftMetadataBase & {
+  priceHistory: string;
+};
+
+export type nftMetadataAddSoldPrice = NftMetadataBase & {
+  soldPrice: number;
 };
 
 export type Collection = {
@@ -42,7 +66,11 @@ export type Collection = {
   };
 };
 
+type S3Obects = Required<ListObjectsCommandOutput>["Contents"];
+
 export type GlobalContextType = {
+  s3Obects: S3Obects;
+  setS3Objects: React.Dispatch<React.SetStateAction<S3Obects>>;
   account: string | null;
   setAccount: React.Dispatch<React.SetStateAction<string | null>>;
   signer: JsonRpcSigner | null;
@@ -85,11 +113,11 @@ export type IpfsData = {
       tags: string;
       nftId: number;
       owner: string;
-      isOnsale: string;
       nftPrice: number;
       isCollection: string;
       priceHistory: string;
       numberOfSales: number;
+      ext: string;
       cart?: string;
     };
   };
@@ -102,19 +130,25 @@ export type IpfsData = {
   // number_of_files: number;
 };
 
-export type CollectionNft = {
+export type CollectionNftBase = {
   name: string;
   fileName: string;
   owner: string;
-  isOnsale: string;
   isCollection: string;
   nftPrice: number;
   numberOfSales: number;
-  priceHistory: string; // PriceHistoryT[];
   tags: string;
   nftId: number;
   tokenUrl: string;
   isReveal: boolean;
+};
+
+export type CollectionNftByJson = CollectionNftBase & {
+  priceHistory: string;
+};
+
+export type CollectionNft = CollectionNftBase & {
+  priceHistory: PriceHistoryT[];
 };
 
 export type CollectionIpfsData = {
@@ -125,7 +159,6 @@ export type CollectionIpfsData = {
       tags: string;
       owner: string;
       isHide: string;
-      isOnsale: string;
       isCollection: string;
       numberOfSales: number;
       nftKeyvaluesList: string; // CollectionNft[];
@@ -144,14 +177,16 @@ export type CartNft = {
 
 export type CartIpfsData = {
   ipfs_pin_hash: string;
-  // size: number;
-  // user_id: string;
-  // date_pinned: string;
-  // date_unpinned: string | null;
   metadata: {
     name: string;
     keyvalues: {
       cart: string; // CartNft[];
     };
   };
+};
+
+export type NewOnsaleNft = NftMetadataByJson & {
+  nftName: string;
+  tokenUrl: string;
+  previousPrice: number;
 };

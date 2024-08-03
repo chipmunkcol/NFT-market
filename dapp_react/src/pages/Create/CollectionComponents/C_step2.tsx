@@ -94,7 +94,6 @@ function C_step2() {
           name: collection.nfts[index].name,
           fileName,
           owner: account,
-          isOnsale: String(true),
           isCollection: String(true),
           nftPrice: collection.perPrice,
           numberOfSales: 0,
@@ -108,7 +107,6 @@ function C_step2() {
         name: collection.name,
         keyvalues: {
           owner: account,
-          isOnsale: String(true),
           nftKeyvaluesList: JSON.stringify(nftKeyvaluesList),
           isCollection: String(true),
           numberOfSales: 0,

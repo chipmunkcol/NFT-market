@@ -27,7 +27,7 @@ const getOnsaleNftList = () => {
   if (query) {
     url += `&metadata[name]=${encodedSearchQuery}`;
   }
-  url += `&metadata[keyvalues]={"isOnsale":{"value":"true","op":"eq"},"isCollection":{"value":"false","op":"eq"}}`;
+  url += `&metadata[keyvalues]={"nftPrice":{"value":"0","op":"gt"},"isCollection":{"value":"false","op":"eq"}}`;
   getIpfsNftList(url);
 }
 
