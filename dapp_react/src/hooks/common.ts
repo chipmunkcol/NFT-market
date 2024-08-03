@@ -1,4 +1,3 @@
-import { IpfsData } from "./../../type.d";
 import Swal from "sweetalert2";
 import { web3 } from "../../contracts/index";
 import {
@@ -14,9 +13,7 @@ import {
   CollectionIpfsData,
   CollectionNft,
   IpfsData,
-  NftMetadata,
   nftMetadataAddSoldPrice,
-  NftMetadataBase,
 } from "../../type";
 import { toastSwal } from "./swal";
 

@@ -10,7 +10,6 @@ import {
 import { JsonRpcSigner } from "ethers";
 import Spinner from "../Spinner";
 import iconCart from "../../assets/images/icon-cart-wh.png";
-import { PurchaseBtn } from "../OnsaleNftCard";
 
 type Nft = {
   nftId: number;
