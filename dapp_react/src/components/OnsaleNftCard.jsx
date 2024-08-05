@@ -16,6 +16,7 @@ import { transactWithPurchaseNft } from "../../contracts/interface";
 import Cart from "./onsaleNftCard/Cart";
 import useGetTokenData from "../hooks/useGetTokenData";
 import loadingImg from "../assets/images/달팽이로딩.png"
+import LazyloadComponent from "../hooks/LazyloadComponent";
 
 const OnsaleNftCard = ({ nft, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs, ext } = nft;
@@ -67,8 +68,12 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
         {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
         {image ?
-          <Img src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+          // <LazyloadComponent>
+          <Img
+            src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+            // src={getImageUrl(image)}
             onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+          // </LazyloadComponent>
           : <Img src={loadingImg} alt="loading..." />
         }
       </ImgWrap>

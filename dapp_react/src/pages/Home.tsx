@@ -22,6 +22,7 @@ import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
 import { homeCollectionUrl, homeNftUrl } from "../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
 import ExpensiveNftCard from "./homeComponents/ExpensiveNftCard";
+import LazyloadComponent from "../hooks/LazyloadComponent";
 
 // Detect the MetaMask Ethereum provider
 function Home() {
@@ -178,7 +179,9 @@ function Home() {
               </BgTitle>
               <MainTitle>
                 <TopPickImgWrap>
-                  <img src={goodHand} alt="good-hand" />
+                  <LazyloadComponent>
+                    <img src={goodHand} alt="good-hand" />
+                  </LazyloadComponent>
                 </TopPickImgWrap>
                 <h2>TOP 컬렉터의 NFT</h2>
                 <p>가장 인기있는 컬렉터의 NFT를 만나보세요</p>
@@ -220,7 +223,9 @@ function Home() {
               </HighBgTitle>
               <MainTitle>
                 <TopPickImgWrap>
-                  <img src={premiumCrown} alt="premiun-crown" />
+                  <LazyloadComponent>
+                    <img src={premiumCrown} alt="premiun-crown" />
+                  </LazyloadComponent>
                 </TopPickImgWrap>
                 <h2>100만원 이상으로 거래됐어요</h2>
                 <p>우린 이걸 프리미엄이라고 불러요</p>
@@ -330,7 +335,8 @@ const RankingArea = styled.div`
 `;
 const RankingBox = styled.div`
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
+  height: 692px;
   background-color: #212226;
   border-radius: 8px;
   padding: 1rem;

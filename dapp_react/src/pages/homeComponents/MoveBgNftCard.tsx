@@ -21,6 +21,7 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
       <Img
         $direction={direction}
         src={`${getResizeImageUrl(image, ext)}?w=100&h=150`}
+        // src={getImageUrl(image)}
         onError={(e) => (e.currentTarget.src = getImageUrl(image))}
         alt="home-background-nftCard"
       />

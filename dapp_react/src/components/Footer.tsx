@@ -11,6 +11,7 @@ import Discord from "../assets/images/discord.png";
 import Youtube from "../assets/images/youtube.png";
 // import Tictoc from "../assets/images/tictok.png";
 import Swal from "sweetalert2";
+import LazyloadComponent from "../hooks/LazyloadComponent";
 
 export default function Footer() {
   const singupHandle = () => {
@@ -42,7 +43,9 @@ export default function Footer() {
                     <TwitterSvg />
                   </SvgWrap> */}
                   <SymbolImg>
-                    <img src={Twitter} alt="twitter" />
+                    <LazyloadComponent>
+                      <img src={Twitter} alt="twitter" />
+                    </LazyloadComponent>
                   </SymbolImg>
                 </a>
               </li>
@@ -52,7 +55,9 @@ export default function Footer() {
                     <InstagramSvg />
                   </SvgWrap> */}
                   <SymbolImg>
-                    <img src={Instagram} alt="Instagram" />
+                    <LazyloadComponent>
+                      <img src={Instagram} alt="Instagram" />
+                    </LazyloadComponent>
                   </SymbolImg>
                 </a>
               </li>
@@ -62,7 +67,9 @@ export default function Footer() {
                     <DiscordSvg />
                   </SvgWrap> */}
                   <SymbolImg>
-                    <img src={Discord} alt="Discord" />
+                    <LazyloadComponent>
+                      <img src={Discord} alt="Discord" />
+                    </LazyloadComponent>
                   </SymbolImg>
                 </a>
               </li>
@@ -72,7 +79,9 @@ export default function Footer() {
                     <YoutubeSvg />
                   </SvgWrap> */}
                   <SymbolImg>
-                    <img src={Youtube} alt="Youtube" />
+                    <LazyloadComponent>
+                      <img src={Youtube} alt="Youtube" />
+                    </LazyloadComponent>
                   </SymbolImg>
                 </a>
               </li>
@@ -98,10 +107,12 @@ export default function Footer() {
         <IntroductionPart>
           <div>
             <LogoWrap>
-              <img
-                src="https://opensea.io/static/images/logos/opensea-logo.svg?react"
-                alt="logo"
-              />
+              <LazyloadComponent>
+                <img
+                  src="https://opensea.io/static/images/logos/opensea-logo.svg?react"
+                  alt="logo"
+                />
+              </LazyloadComponent>
             </LogoWrap>
           </div>
           <h2>OpenSea</h2>
