@@ -1,32 +1,56 @@
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 // import router from "./route/Router.js";
-import GlobalProvider from "./context/GlobalContext.jsx";
+import GlobalProvider from "./context/GlobalContext";
 import GlobalStyle from "./styles/global.js";
 import theme from "./styles/theme.js";
 import { ThemeProvider } from "styled-components";
 
-// import router from "./route/Router.jsx";
+// import router from "./route/Router";
 
 import App from "./App";
 import Home from "./pages/Home";
-import MarketPlace from "./pages/MarketPlace.jsx";
-import MarketPlaceCollection from "./pages/marketPlace/Collection.jsx";
-import MarketPlacenNft from "./pages/marketPlace/Nft.jsx";
-import Create from "./pages/Create.jsx";
-import MyPage from "./pages/MyPage";
-import MintNft from "./pages/Create/MintNft.jsx";
-import Collection from "./pages/Create/Collection.jsx";
-import C_step1 from "./pages/Create/CollectionComponents/C_step1.jsx";
-import C_step2 from "./pages/Create/CollectionComponents/C_step2.js";
-import All from "./pages/mypageComponents/All.jsx";
-import Nonsale from "./pages/mypageComponents/Nonsale.jsx";
-import Onsale from "./pages/mypageComponents/Onsale.jsx";
-import Sold from "./pages/mypageComponents/Sold.jsx";
-import NftDetail from "./pages/NftDetail";
+// import MarketPlace from "./pages/MarketPlace";
+// import MarketPlaceCollection from "./pages/marketPlace/Collection";
+// import MarketPlacenNft from "./pages/marketPlace/Nft";
+// import Create from "./pages/Create";
+// import MyPage from "./pages/MyPage";
+// import MintNft from "./pages/Create/MintNft";
+// import Collection from "./pages/Create/Collection";
+// import C_step1 from "./pages/Create/CollectionComponents/C_step1";
+// import C_step2 from "./pages/Create/CollectionComponents/C_step2.js";
+// import All from "./pages/mypageComponents/All";
+// import Nonsale from "./pages/mypageComponents/Nonsale";
+// import Onsale from "./pages/mypageComponents/Onsale";
+// import Sold from "./pages/mypageComponents/Sold";
+// import NftDetail from "./pages/NftDetail";
+// import CollectionNftDetail from "./pages/CollectionNftDetail";
 import { createBrowserRouter } from "react-router-dom";
-import CollectionNftDetail from "./pages/CollectionNftDetail.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
+
+// lazy
+const MarketPlace = lazy(() => import("./pages/MarketPlace"));
+const MarketPlaceCollection = lazy(
+  () => import("./pages/marketPlace/Collection")
+);
+const MarketPlacenNft = lazy(() => import("./pages/marketPlace/Nft"));
+const Create = lazy(() => import("./pages/Create"));
+const MyPage = lazy(() => import("./pages/MyPage"));
+const MintNft = lazy(() => import("./pages/Create/MintNft"));
+const Collection = lazy(() => import("./pages/Create/Collection"));
+const C_step1 = lazy(
+  () => import("./pages/Create/CollectionComponents/C_step1")
+);
+const C_step2 = lazy(
+  () => import("./pages/Create/CollectionComponents/C_step2.js")
+);
+const All = lazy(() => import("./pages/mypageComponents/All"));
+const Nonsale = lazy(() => import("./pages/mypageComponents/Nonsale"));
+const Onsale = lazy(() => import("./pages/mypageComponents/Onsale"));
+const Sold = lazy(() => import("./pages/mypageComponents/Sold"));
+const NftDetail = lazy(() => import("./pages/NftDetail"));
+const CollectionNftDetail = lazy(() => import("./pages/CollectionNftDetail"));
 
 const queryClient = new QueryClient();
 
@@ -35,7 +59,9 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <QueryClientProvider client={queryClient}>
-        <App />
+        <Suspense fallback={<div>Loading...</div>}>
+          <App />
+        </Suspense>
       </QueryClientProvider>
     ),
     children: [

@@ -3,6 +3,7 @@ import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { CollectionNft } from "../../../type";
 import { getImageUrl } from "../../hooks/common";
+import LazyloadComponent from "../../hooks/LazyloadComponent";
 
 interface TopCollectorNftCardProps {
   nft: CollectionNft;
@@ -26,7 +27,9 @@ const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          <img src={getImageUrl(image)} />
+          <LazyloadComponent>
+            <img src={getImageUrl(image)} />
+          </LazyloadComponent>
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}

@@ -32,6 +32,7 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
           {image ? (
             <img
               src={`${getResizeImageUrl(image, ext)}?w=50`}
+              // src={getImageUrl(image)}
               onError={(e) => (e.currentTarget.src = getImageUrl(image))}
               alt="top10-nft-card"
             />
