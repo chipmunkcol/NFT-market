@@ -30,7 +30,8 @@ function Cart({ cartModalClose }) {
 
     const parsedCart = JSON.parse(cart);
     if (typeof (parsedCart) === 'object' && parsedCart?.length > 0) {
-      setNftsInCart(parsedCart);
+      const newCartList = parsedCart.map(nft => ({ ...nft, checked: true }));
+      setNftsInCart(newCartList);
     }
   }, [account]);
   // useEffect(() => {
@@ -104,20 +105,28 @@ function Cart({ cartModalClose }) {
     R_removeCartHandler
   };
 
-  const removeAllCartHandler = async () => {
-    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
-    if (!cartIpfsHash) return;
-
-    setIsLoading(true);
-    try {
-      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
-      if (updateMetadataResult.ok) {
-        R_removeAllCartHandler();
-      }
-    } finally {
-      setIsLoading(false);
+  const getParesdCart = () => {
+    const cart = localStorage.getItem(`cart-${account}`);
+    if (!cart) return;
+    const parsedCart = JSON.parse(cart);
+    if (typeof (parsedCart) !== 'object') {
+      localStorage.setItem(`cart-${account}`, JSON.stringify([]));
+      return [];
     }
+    return parsedCart;
+  }
+
+  const removeAllCartHandler = () => {
+    const parsedCart = getParesdCart();
+    localStorage.setItem(`cart-${account}`, JSON.stringify([]));
+    R_removeAllCartHandler();
+  }
+
+  const removeCheckedNftHandler = () => {
+    const parsedCart = getParesdCart();
+    const removedCart = parsedCart.filter(nft => !checkedList.some(checkedNft => checkedNft.nftId === nft.nftId));
+    localStorage.setItem(`cart-${account}`, JSON.stringify(removedCart));
+    setNftsInCart(removedCart);
   }
 
   const purchaseNftListHandler = async (nftList) => {
@@ -146,9 +155,12 @@ function Cart({ cartModalClose }) {
   }
 
   const purchaseController = async () => {
+
+    // 확인 메세지 추가하기
+
     const res = await handleWithLoading(() => purchaseNftListHandler(checkedList), 'NFT 구매 중입니다');
     if (res) {
-      await removeAllCartHandler();
+      removeCheckedNftHandler();
       const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
       if (result.isConfirmed) {
         cartModalClose();
@@ -177,10 +189,16 @@ function Cart({ cartModalClose }) {
             <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
               {checkedList.length} items
             </div>
-            {nftsInCart?.length > 0 &&
-              <DeleteAll onClick={removeAllCartHandler}>
-                <span>전체 삭제</span>
-              </DeleteAll>
+            {nftsInCart?.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Delete onClick={removeCheckedNftHandler}>
+                  선택 삭제
+                </Delete>
+                <Delete onClick={removeAllCartHandler}>
+                  <span>전체 삭제</span>
+                </Delete>
+              </div>
+            )
             }
           </div>
           {isLoading ? <Spinner _custom={{
@@ -211,7 +229,7 @@ function Cart({ cartModalClose }) {
   )
 }
 
-const DeleteAll = styled.div`
+const Delete = styled.div`
 font-size: 11px;
   cursor: pointer;
     &:hover {

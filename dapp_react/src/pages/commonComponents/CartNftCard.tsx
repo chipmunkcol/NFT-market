@@ -23,7 +23,7 @@ interface CartNftCardProps {
 }
 const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
   const { account } = useContext(GlobalContext) as GlobalContextType;
-  const { nftId, nftName, nftPrice, isCollection, ext } = nft;
+  const { nftId, nftName, nftPrice, isCollection, ext, name } = nft;
   const tokenUrl = nft?.isReveal
     ? `${nft.tokenUrl}/${nft.fileName}`
     : nft.tokenUrl;
@@ -93,22 +93,9 @@ const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
             )}
           </ImgWrap>
           <ContentWrap>
-            <div>상품명: {nftName}</div>
+            <div>상품명: {nftName ? nftName : name}</div>
             <div>가격: {nftPrice} ETH</div>
           </ContentWrap>
-          <div>
-            {isLoading ? (
-              <Spinner
-                _custom={{
-                  color: "#3498db",
-                  size: "16px",
-                  height: "100%",
-                }}
-              />
-            ) : (
-              <span onClick={() => removeCartHandler(nft)}>삭제</span>
-            )}
-          </div>
         </Item>
       }
     </>
