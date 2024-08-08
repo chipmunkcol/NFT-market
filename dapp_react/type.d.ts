@@ -190,3 +190,8 @@ export type NewOnsaleNft = NftMetadataByJson & {
   tokenUrl: string;
   previousPrice: number;
 };
+
+export type NewOnsaleNftByDetailPage = NftMetadata & {
+  nftName: string;
+  tokenUrl: string;
+};

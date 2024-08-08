@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": true
     // "types": ["vite-plugin-svgr/client"]
   },
-  "include": ["src", "type.d.ts", "svg.d.ts"],
+  "include": ["src", "type.d.ts", "svg.d.ts", "../Temp.jsx"],
   // "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

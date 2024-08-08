@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 function Cart({ cartModalClose }) {
   const { account, signer } = useContext(GlobalContext);
-  const cartIpfsHash = localStorage.getItem(`cart-${account}`);
+  // const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -25,19 +25,30 @@ function Cart({ cartModalClose }) {
   }
 
   useEffect(() => {
-    const getCartData = async () => {
-      if (!cartIpfsHash) return;
-      setIsLoading(true);
-      const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
-      const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
-      const cartList = JSON.parse(res.metadata.keyvalues.cart);
-      const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
-      setNftsInCart(newCartList);
-      console.log('newCartList: ', newCartList);
-      setIsLoading(false);
+    const cart = localStorage.getItem(`cart-${account}`);
+    if (!cart) return;
+
+    const parsedCart = JSON.parse(cart);
+    if (typeof (parsedCart) === 'object' && parsedCart?.length > 0) {
+      setNftsInCart(parsedCart);
     }
-    getCartData();
   }, [account]);
+  // useEffect(() => {
+  //   if (!account) return;
+  //   장바구니 pinata 보류
+  //   const getCartData = async () => {
+  //     if (!cartIpfsHash) return;
+  //     setIsLoading(true);
+  //     const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
+  //     const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
+  //     const cartList = JSON.parse(res.metadata.keyvalues.cart);
+  //     const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
+  //     setNftsInCart(newCartList);
+  //     console.log('newCartList: ', newCartList);
+  //     setIsLoading(false);
+  //   }
+  //   getCartData();
+  // }, [account]);
 
   // cart price
   const [cartPrice, setCartPrice] = useState(0);
@@ -166,7 +177,7 @@ function Cart({ cartModalClose }) {
             <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
               {checkedList.length} items
             </div>
-            {nftsInCart.length > 0 &&
+            {nftsInCart?.length > 0 &&
               <DeleteAll onClick={removeAllCartHandler}>
                 <span>전체 삭제</span>
               </DeleteAll>
@@ -177,9 +188,9 @@ function Cart({ cartModalClose }) {
             size: '20px',
             height: '150px'
           }} /> :
-            nftsInCart.length > 0 &&
+            nftsInCart?.length > 0 &&
             <ItemWrap>
-              {nftsInCart.map((nft) => {
+              {nftsInCart?.map((nft) => {
                 return (
                   <CartNftCard key={`cart-${nft.nftId}`} nft={nft} propsFunction={propsFunction} />
                 )
@@ -187,7 +198,7 @@ function Cart({ cartModalClose }) {
             </ItemWrap>
           }
           {
-            !isLoading && nftsInCart.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
+            !isLoading && nftsInCart?.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
         <CartBottom onClick={purchaseController}>

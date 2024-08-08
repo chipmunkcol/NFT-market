@@ -678,31 +678,49 @@ export async function purchaseNftHandler(
 }
 
 // 장바구니에 담기
+// 장바구니 pinata api 너무 느려서 잠시 보류
+// 당분간 localStorage에 저장
 export const addCartHandler = async (nft: any, account: string) => {
   let cartIpfsHash = localStorage.getItem(`cart-${account}`);
+  const localCart = [];
+  localCart.push(nft);
 
   try {
     if (!cartIpfsHash) {
-      cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
-      cartIpfsHash &&
-        localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
+      localStorage.setItem(`cart-${account}`, JSON.stringify(localCart));
     } else {
-      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataAddCart(
-        paredCartIpfsHash,
-        nft
-      );
-
-      if (updateMetadataResult?.ok) {
-        return true;
-      }
+      const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
+      const isDuplicated = checkDuplicattion(parsedCartIpfsHash, nft);
+      if (isDuplicated) return "already exist";
+      localCart.push(...parsedCartIpfsHash);
+      localStorage.setItem(`cart-${account}`, JSON.stringify(localCart));
     }
+    return true;
   } catch (err) {
-    console.log("err: ", err);
-    return false;
-  } finally {
     return false;
   }
+  // try {
+  //   if (!cartIpfsHash) {
+  //     cartIpfsHash = await pinJsonToIPFSForCart(account, nft);
+  //     cartIpfsHash &&
+  //       localStorage.setItem(`cart-${account}`, JSON.stringify(cartIpfsHash));
+  //   } else {
+  //     const paredCartIpfsHash = JSON.parse(cartIpfsHash);
+  //     const updateMetadataResult = await P_updateMetadataAddCart(
+  //       paredCartIpfsHash,
+  //       nft
+  //     );
+
+  //     if (updateMetadataResult?.ok) {
+  //       return true;
+  //     }
+  //   }
+  // } catch (err) {
+  //   console.log("err: ", err);
+  //   return false;
+  // } finally {
+  //   return false;
+  // }
 };
 
 export const getTruncatedAccount = (account: string) => {

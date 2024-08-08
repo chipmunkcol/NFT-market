@@ -1,38 +1,36 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
 import {
-  addCartHandler,
   formatPrice,
   getCurrentYMD,
   getImageUrl,
   getResizeImageUrl,
   getTargetNftToIpfsData,
-  purchaseNftHandler,
-  validateAccountAndOnsale,
 } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
 // import ExpandIcon from "../assets/images/icon-expand.svg?react";
 import ExpandIcon from "../assets/images/icon-expand.png";
-import { Confirm, toastSwal } from "../hooks/swal";
-import useAsyncTask from "../hooks/useAsyncTask";
-import { GlobalContextType, NftMetadata, PriceHistoryT } from "../../type";
-import { JsonRpcSigner } from "ethers";
+import {
+  GlobalContextType,
+  NewOnsaleNftByDetailPage,
+  PriceHistoryT,
+} from "../../type";
 import loadingImg from "../assets/images/달팽이로딩.png";
+import Cart from "../components/button/Cart";
+import Purchase from "../components/button/Purchase";
 
 function NftDetail() {
   const params = useParams();
-  const navigate = useNavigate();
-  const { handleWithLoading } = useAsyncTask();
   const { ipfsHash, nftId } = params;
   const tokenData = useGetTokenData(ipfsHash || "");
   const { name, description, image, attributes } = tokenData;
   const { account, signer } = useContext(GlobalContext) as GlobalContextType;
-  const [metadata, setMetadata] = useState<NftMetadata>({
+  const [metadata, setMetadata] = useState<NewOnsaleNftByDetailPage>({
+    nftName: "",
     nftId: 0,
     nftPrice: 0,
     owner: "",
@@ -62,7 +60,7 @@ function NftDetail() {
 
   useEffect(() => {
     async function fetchMetadata() {
-      if (ipfsHash) {
+      if (ipfsHash && name) {
         const res = await getTargetNftToIpfsData(ipfsHash);
         const _metadata = res.metadata.keyvalues;
 
@@ -73,53 +71,14 @@ function NftDetail() {
         const newPriceHistory = getNewPriceHistory(priceHistory);
         setMetadata({
           ..._metadata,
+          nftName: name,
           tokenUrl: ipfsHash,
           priceHistory: newPriceHistory,
         });
       }
     }
     fetchMetadata();
-  }, []);
-
-  const purchaseController = async (
-    nftId: number,
-    tokenUrl: string,
-    nftPrice: number,
-    signer: JsonRpcSigner,
-    account: string
-  ) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer),
-      "NFT 구매중입니다"
-    );
-    if (!result) return;
-
-    const confirmResult = await Confirm(
-      "NFT 구매 성공",
-      "MyPage로 확인하러 가기"
-    );
-    if (confirmResult.isConfirmed) {
-      navigate(`/mypage/${account}`);
-    } else {
-      window.location.reload();
-    }
-  };
-
-  const addCartController = async (metadata: NftMetadata, account: string) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => addCartHandler(metadata, account),
-      "장바구니에 추가중입니다"
-    );
-    if (result) {
-      toastSwal("장바구니에 추가되었습니다.");
-    }
-  };
+  }, [name]);
 
   // chart mobie CSS
   const [mobileSize, setMobileSize] = useState(false);
@@ -131,6 +90,15 @@ function NftDetail() {
       setMobileSize(false);
     }
   }, []);
+
+  const purchaseProps = {
+    nftId: Number(nftId),
+    tokenUrl: ipfsHash,
+    metadata,
+    nftPrice: metadata.nftPrice,
+    signer,
+    account,
+  };
 
   return (
     <Background>
@@ -148,7 +116,10 @@ function NftDetail() {
                 <div>
                   <div>
                     {/* view original (pinata) */}
-                    <a href={`${import.meta.env.VITE_IPFS_URL}/${image}`} target="_blank">
+                    <a
+                      href={`${import.meta.env.VITE_IPFS_URL}/${image}`}
+                      target="_blank"
+                    >
                       {/* <ExpandImg /> */}
                       <ExpandImg>
                         <img src={ExpandIcon} alt="expand-icon" />
@@ -238,30 +209,17 @@ function NftDetail() {
                   </div>
                   <div>
                     <ButtonWrap>
-                      <PurchaseBtn
-                        onClick={() => {
-                          if (nftId && ipfsHash && signer && account) {
-                            purchaseController(
-                              Number(nftId),
-                              ipfsHash,
-                              metadata.nftPrice,
-                              signer,
-                              account
-                            );
-                          }
-                        }}
-                      >
-                        지금 구매하기
-                      </PurchaseBtn>
-                      <CartBtn
-                        onClick={() =>
-                          account && addCartController(metadata, account)
-                        }
-                      >
-                        <CartImg>
-                          <img src={iconCart} alt="장바구니" />
-                        </CartImg>
-                      </CartBtn>
+                      <Purchase
+                        {...purchaseProps}
+                        tokenUrl={purchaseProps.tokenUrl ?? ""}
+                        signer={purchaseProps.signer ?? null}
+                        account={purchaseProps.account ?? ""}
+                      />
+                      <Cart
+                        css={{ btnWidth: "55px", imgWidth: "20px" }}
+                        metadata={metadata}
+                        account={account ?? ""}
+                      />
                     </ButtonWrap>
                   </div>
                 </PaddingWrap>
@@ -274,17 +232,21 @@ function NftDetail() {
 
                   {/* 그래프 라이브러리 */}
                   {/* 그래프 라이브러리 */}
-                  <LineChart
-                    width={mobileSize ? 300 : 600}
-                    height={200}
-                    data={metadata.priceHistory}
-                  >
-                    <Line type="monotone" dataKey="price" stroke="#8884d8" />
-                    {/* <CartesianGrid stroke="#ccc" /> */}
-                    <XAxis dataKey="soldTime" />
-                    <YAxis />
-                    <Tooltip />
-                  </LineChart>
+                  {metadata.priceHistory.length > 0 ? (
+                    <LineChart
+                      width={mobileSize ? 300 : 600}
+                      height={200}
+                      data={metadata.priceHistory}
+                    >
+                      <Line type="monotone" dataKey="price" stroke="#8884d8" />
+                      {/* <CartesianGrid stroke="#ccc" /> */}
+                      <XAxis dataKey="soldTime" />
+                      <YAxis />
+                      <Tooltip />
+                    </LineChart>
+                  ) : (
+                    <NoSold>판매된 기록이 없습니다</NoSold>
+                  )}
                   {/* </div> */}
                 </div>
               </PriceHistory>
@@ -304,6 +266,21 @@ function NftDetail() {
     </Background>
   );
 }
+
+export const ButtonWrap = styled.div`
+  width: 300px;
+  height: 45px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+`;
+
+export const NoSold = styled.div`
+  height: 200px;
+  font-size: 24px;
+  ${(props) => props.theme.variables.flex}
+`;
 
 export const DescriptionBox = styled.div`
   ${(props) => props.theme.variables.flexGap("column", "0px")}
@@ -475,18 +452,6 @@ export const CartBtn = styled(PurchaseBtn)`
   width: 55px;
   border-radius: 0 10px 10px 0;
   height: 100%;
-`;
-
-export const ButtonWrap = styled.div`
-  /* position: absolute;
-  bottom: 0; */
-  /* width: 100%; */
-  width: 300px;
-  height: 45px;
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  color: white;
 `;
 
 export default NftDetail;

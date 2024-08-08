@@ -13,10 +13,11 @@ import Swal from "sweetalert2";
 import { Confirm, toastSwal } from "../hooks/swal";
 import Spinner from "./Spinner";
 import { transactWithPurchaseNft } from "../../contracts/interface";
-import Cart from "./onsaleNftCard/Cart";
+// import Cart from "./onsaleNftCard/Cart";
 import useGetTokenData from "../hooks/useGetTokenData";
 import loadingImg from "../assets/images/달팽이로딩.png"
 import LazyloadComponent from "../hooks/LazyloadComponent";
+import Cart from "./button/Cart";
 
 const OnsaleNftCard = ({ nft, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs, ext } = nft;
@@ -92,7 +93,11 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
         !isMyNft ? (
           <ButtonWrap>
             <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
-            <Cart nft={nft} />
+            {/* <Cart nft={nft} /> */}
+            <Cart css={{ btnWidth: '40px', imgWidth: '16px' }}
+              metadata={nft}
+              account={account}
+            />
           </ButtonWrap>) : (
           <div style={{ color: '#cccccc' }}>Ownered by: {getTruncatedAccount(account)}</div>
         )
@@ -165,6 +170,7 @@ const ButtonWrap = styled.div`
   position: absolute;
   bottom: 0;
   width: 100%;
+  height: 30px;
   display: flex;
   justify-content: space-between;
   color: white;
