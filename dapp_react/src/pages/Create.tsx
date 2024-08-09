@@ -24,45 +24,13 @@ function Create() {
               <TitleWrap>
                 <div>
                   {/* <OpenseaSymbol /> */}
-                  <SymbolImg >
+                  <SymbolImg>
                     <img src={openseaSymbol} alt="openseaSymbol" />
                   </SymbolImg>
                 </div>
                 <h1>Create</h1>
               </TitleWrap>
             </TitlwBox>
-            <div style={{ width: "100%" }}>
-              {/* <Link to={'collection'}> */}
-              <Link to={"/create-collection/step-1"}>
-                <CollectionBox>
-                  <div style={{ display: "flex" }}>
-                    <CollectionWrap>
-                      <CollectionTitle>
-                        <div>
-                          {/* <GridSymbol /> */}
-                          <SymbolImg style={{ width: '20px' }}>
-                            <img src={gridSymbol} alt="openseaSymbol" />
-                          </SymbolImg>
-                        </div>
-                        <h2>Collection 드롭</h2>
-                      </CollectionTitle>
-                      <p>컬렉션을 생성하고 지갑에 직접 NFT를 mint하세요.</p>
-                    </CollectionWrap>
-                    <div
-                      style={{
-                        width: "6%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontSize: "24px",
-                      }}
-                    >
-                      {">"}
-                    </div>
-                  </div>
-                </CollectionBox>
-              </Link>
-            </div>
             <div style={{ width: "100%" }}>
               <Link to={"/create-mint-nft"}>
                 <ImageBox>
@@ -71,15 +39,13 @@ function Create() {
                       <ImageTitle>
                         <div>
                           {/* <ImageSymbol /> */}
-                          <SymbolImg style={{ width: '25px' }}>
+                          <SymbolImg style={{ width: "25px" }}>
                             <img src={imageSymbol} alt="openseaSymbol" />
                           </SymbolImg>
                         </div>
                         <h2>NFT mint 하기</h2>
                       </ImageTitle>
-                      <p>
-                        다른 사람들이 mint할 수 있도록 NFT 컬렉션을 출시하세요.
-                      </p>
+                      <p>이미지 파일만 있으면 누구나 NFT를 만들 수 있습니다</p>
                     </NftWrap>
                     <div
                       style={{
@@ -94,6 +60,38 @@ function Create() {
                     </div>
                   </div>
                 </ImageBox>
+              </Link>
+            </div>
+            <div style={{ width: "100%" }}>
+              {/* <Link to={'collection'}> */}
+              <Link to={"/create-collection/step-1"}>
+                <CollectionBox>
+                  <div style={{ display: "flex" }}>
+                    <CollectionWrap>
+                      <CollectionTitle>
+                        <div>
+                          {/* <GridSymbol /> */}
+                          <SymbolImg style={{ width: "20px" }}>
+                            <img src={gridSymbol} alt="openseaSymbol" />
+                          </SymbolImg>
+                        </div>
+                        <h2>Collection 드롭</h2>
+                      </CollectionTitle>
+                      <p>컬렉션 NFT를 생성하고 에어드랍 하세요</p>
+                    </CollectionWrap>
+                    <div
+                      style={{
+                        width: "6%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontSize: "24px",
+                      }}
+                    >
+                      {">"}
+                    </div>
+                  </div>
+                </CollectionBox>
               </Link>
             </div>
           </NavPart>
@@ -145,6 +143,9 @@ const CollectionBox = styled.div`
   border-radius: 20px;
   padding: 24px 32px 24px 24px;
   box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 16px;
+  &:hover {
+    background-color: #f8f8f8;
+  }
 `;
 const ImageBox = styled(CollectionBox)``;
 

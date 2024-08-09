@@ -6,25 +6,8 @@ import GlobalStyle from "./styles/global.js";
 import theme from "./styles/theme.js";
 import { ThemeProvider } from "styled-components";
 
-// import router from "./route/Router";
-
 import App from "./App";
 import Home from "./pages/Home";
-// import MarketPlace from "./pages/MarketPlace";
-// import MarketPlaceCollection from "./pages/marketPlace/Collection";
-// import MarketPlacenNft from "./pages/marketPlace/Nft";
-// import Create from "./pages/Create";
-// import MyPage from "./pages/MyPage";
-// import MintNft from "./pages/Create/MintNft";
-// import Collection from "./pages/Create/Collection";
-// import C_step1 from "./pages/Create/CollectionComponents/C_step1";
-// import C_step2 from "./pages/Create/CollectionComponents/C_step2.js";
-// import All from "./pages/mypageComponents/All";
-// import Nonsale from "./pages/mypageComponents/Nonsale";
-// import Onsale from "./pages/mypageComponents/Onsale";
-// import Sold from "./pages/mypageComponents/Sold";
-// import NftDetail from "./pages/NftDetail";
-// import CollectionNftDetail from "./pages/CollectionNftDetail";
 import { createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";

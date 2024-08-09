@@ -16,6 +16,7 @@ import Web3 from "web3";
 import { ethers } from "ethers";
 import Swal from "sweetalert2";
 import useS3Upload from "../../hooks/useS3Upload";
+import exclamationMark from "../../assets/images/exclamation-mark.png"
 
 function MintNft() {
   const { account, signer } = useContext(GlobalContext);
@@ -207,34 +208,41 @@ function MintNft() {
     setTags(prev => prev.filter(item => item !== tag));
   }
 
-  // const isDuplication = useRef(false);
+  const helpText = `
+JSON 파일로 업로드 시, 
+아래 형식 준수
 
-  // const handleDragOverStyle = e => {
-  //   if (isDuplication.current) return;
-  //   isDuplication.current = true;
-  //   e.preventDefault(); // 이 부분이 없으면 브라우저가 기본 동작(파일 열기 등)을 수행함
-  //   e.stopPropagation();
-  //   const $table = document.querySelector('#inputFileBox');
-  //   $table.style.boxShadow = '0px 0px 8px 0px #2390FF';
-  //   $table.style.border = '1px solid #1D8DFF';
-  // }
-
-  // const handleDragEndStyle = e => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   const $table = document.querySelector('#inputFileBox');
-  //   $table.style.boxShadow = 'none';
-  //   $table.style.border = '1px dashed rgba(18, 18, 18, 0.32)';
-  //   isDuplication.current = false;
-  // };
-
+※image: only ipfsHash cid (string)
+아래 예시 ipfsHash cid
+{
+  "name": string,
+  "description": string,
+  "image": "QmZEPe3V5hB6SiJ3Nc2ECcKVQCXZbsUEba3rRbVse6MgXy",
+  "attributes": [
+    {
+      "trait_type": string,
+      "value": string
+    }
+  ]
+}
+  `;
 
   return (
     <Background>
       <Container>
         <TitleBox>
           <h1>NFT 생성</h1>
-          <p>아이템이 발행된 후에는 해당 정보를 변경할 수 없습니다.</p>
+          <Flex style={{ position: 'relative' }}>
+            <p>아이템이 발행된 후에는 해당 정보를 변경할 수 없습니다.</p>
+            <HelpMark>
+              <img src={exclamationMark} width={30} height={30} alt="느낌표" />
+            </HelpMark>
+            <HelpBox>
+              <pre>
+                {helpText}
+              </pre>
+            </HelpBox>
+          </Flex>
         </TitleBox>
         <FlexBox>
           <LeftPart>
@@ -249,10 +257,10 @@ function MintNft() {
                 <div style={{ width: "40px", height: "40px" }} >
                   <IconUpload />
                 </div>
-                <h2>미디어 파일 끌어다 놓기</h2>
+                <h2>이미지 파일 끌어다 놓기</h2>
                 <h3>파일 찾아보기</h3>
                 <h4>최대 크기: 5MB</h4>
-                <h4>JPG, PNG, GIF, SVG, MP4</h4>
+                <h4>JPG, JPEG, PNG or JSON</h4>
               </InputFileBox>
             ) : (
               <PreviewFile>
@@ -267,7 +275,7 @@ function MintNft() {
               ref={inputFileRef}
               style={{ display: "none" }}
               onChange={onchangeHandler}
-              accept="image/*"
+              accept="image/jpg, image/jpeg, image/png, application/json"
               {...getInputProps()}
             />
           </LeftPart>
@@ -317,6 +325,56 @@ function MintNft() {
     </Background >
   );
 }
+
+export const HelpBox = styled.div`
+position: absolute;
+display: none;
+/* display: block; */
+
+top: 50px;
+left: 24%;
+background-color: #f7f7f7;
+border-radius: 10px;
+border: #2081e2cc solid 3px;
+padding: 0 10px;
+@media (max-width: ${({ theme }) => theme.size.mobile}) {
+  left: 0;
+}
+
+  /* pre::after {
+    content: '';
+position: absolute;
+border-style: solid;
+border-width: 0 15px 15px;
+border-color: #f7f7f7 transparent;
+display: block;
+width: 0;
+z-index: 1;
+top: -14px;
+left: 374px;
+  }
+  pre::before {
+    content: '';
+position: absolute;
+border-style: solid;
+border-width: 0 17px 17px;
+border-color: #2081e2cc transparent;
+display: block;
+width: 0;
+z-index: 0;
+top: -19px;
+left: 372px;
+  } */
+`;
+
+export const HelpMark = styled.div`
+display: inline-block;
+cursor: pointer;
+
+&:hover + ${HelpBox} {
+  display: block;
+}
+`;
 
 const Tag = styled.div`
     background-color: darkgray;
@@ -371,6 +429,16 @@ const FlexBox = styled.div`
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     flex-direction: column;
     gap: 20px;
+  }
+`;
+
+export const Flex = styled.div`
+  width: 47%;
+  ${(props) => props.theme.variables.flexBetween}
+  padding-right: 20px;
+  
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    width: 100%;
   }
 `;
 

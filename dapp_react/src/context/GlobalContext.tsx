@@ -8,6 +8,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [s3Obects, setS3Objects] = useState([]);
   const [account, setAccount] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [balance, setBalance] = useState(0);
   const [loadingState, setLoadingState] = useState({
     isLoading: false,
     message: "",
@@ -103,6 +104,8 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
       onsaleCollectionRef,
       s3Obects,
       setS3Objects,
+      balance,
+      setBalance,
     }),
     [
       onsaleCollectionRef,
@@ -121,6 +124,7 @@ const GlobalProvider = ({ children }: { children: ReactNode }) => {
       loadingState,
       onsaleNftListLength,
       s3Obects,
+      balance,
     ]
   );
   return (

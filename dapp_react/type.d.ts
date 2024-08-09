@@ -75,6 +75,8 @@ export type GlobalContextType = {
   setAccount: React.Dispatch<React.SetStateAction<string | null>>;
   signer: JsonRpcSigner | null;
   setSigner: React.Dispatch<React.SetStateAction<JsonRpcSigner>>;
+  balance: number;
+  setBalance: React.Dispatch<React.SetStateAction<number>>;
   loadingState: {
     isLoading: boolean;
     message: string;
@@ -189,4 +191,9 @@ export type NewOnsaleNft = NftMetadataByJson & {
   nftName: string;
   tokenUrl: string;
   previousPrice: number;
+};
+
+export type NewOnsaleNftByDetailPage = NftMetadata & {
+  nftName: string;
+  tokenUrl: string;
 };

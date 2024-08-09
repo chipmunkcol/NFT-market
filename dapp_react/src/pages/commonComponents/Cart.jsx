@@ -14,8 +14,8 @@ import { transactWithPurchaseNft, transactWithPurchaseNftList } from "../../../c
 import { useNavigate } from "react-router-dom";
 
 function Cart({ cartModalClose }) {
-  const { account, signer } = useContext(GlobalContext);
-  const cartIpfsHash = localStorage.getItem(`cart-${account}`);
+  const { account, signer, balance } = useContext(GlobalContext);
+  // const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -25,18 +25,14 @@ function Cart({ cartModalClose }) {
   }
 
   useEffect(() => {
-    const getCartData = async () => {
-      if (!cartIpfsHash) return;
-      setIsLoading(true);
-      const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
-      const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
-      const cartList = JSON.parse(res.metadata.keyvalues.cart);
-      const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
+    const cart = localStorage.getItem(`cart-${account}`);
+    if (!cart) return;
+
+    const parsedCart = JSON.parse(cart);
+    if (typeof (parsedCart) === 'object' && parsedCart?.length > 0) {
+      const newCartList = parsedCart.map(nft => ({ ...nft, checked: true }));
       setNftsInCart(newCartList);
-      console.log('newCartList: ', newCartList);
-      setIsLoading(false);
     }
-    getCartData();
   }, [account]);
 
   // cart price
@@ -93,20 +89,28 @@ function Cart({ cartModalClose }) {
     R_removeCartHandler
   };
 
-  const removeAllCartHandler = async () => {
-    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
-    if (!cartIpfsHash) return;
-
-    setIsLoading(true);
-    try {
-      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataRemoveAllCart(paredCartIpfsHash);
-      if (updateMetadataResult.ok) {
-        R_removeAllCartHandler();
-      }
-    } finally {
-      setIsLoading(false);
+  const getParesdCart = () => {
+    const cart = localStorage.getItem(`cart-${account}`);
+    if (!cart) return;
+    const parsedCart = JSON.parse(cart);
+    if (typeof (parsedCart) !== 'object') {
+      localStorage.setItem(`cart-${account}`, JSON.stringify([]));
+      return [];
     }
+    return parsedCart;
+  }
+
+  const removeAllCartHandler = () => {
+    const parsedCart = getParesdCart();
+    localStorage.setItem(`cart-${account}`, JSON.stringify([]));
+    R_removeAllCartHandler();
+  }
+
+  const removeCheckedNftHandler = () => {
+    const parsedCart = getParesdCart();
+    const removedCart = parsedCart.filter(nft => !checkedList.some(checkedNft => checkedNft.nftId === nft.nftId));
+    localStorage.setItem(`cart-${account}`, JSON.stringify(removedCart));
+    setNftsInCart(removedCart);
   }
 
   const purchaseNftListHandler = async (nftList) => {
@@ -135,9 +139,16 @@ function Cart({ cartModalClose }) {
   }
 
   const purchaseController = async () => {
+    const result = await Confirm('NFT를 구매하시겠습니까?', '구매 후에는 취소할 수 없습니다.');
+    if (!result.isConfirmed) return;
+    if (balance < cartPrice) {
+      Swal.fire('잔액이 부족합니다.', 'Faucet에서 충전 후 다시 시도해주세요.', 'error');
+      return;
+    }
+
     const res = await handleWithLoading(() => purchaseNftListHandler(checkedList), 'NFT 구매 중입니다');
     if (res) {
-      await removeAllCartHandler();
+      removeCheckedNftHandler();
       const result = await Confirm('NFT 구매 성공', 'MyPage로 확인하러 가기');
       if (result.isConfirmed) {
         cartModalClose();
@@ -153,7 +164,7 @@ function Cart({ cartModalClose }) {
       <Container onClick={stopPropagation}>
         <div style={{ width: '100%', padding: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #cccccc' }}>
           <h2>Your cart</h2>
-          <h4>Price : {cartPrice} ETH</h4>
+          <h4>Price : {cartPrice.toFixed(3)} ETH</h4>
           <CloseBtnWrap onClick={cartModalClose}>
             <button>x</button>
           </CloseBtnWrap>
@@ -166,10 +177,16 @@ function Cart({ cartModalClose }) {
             <div style={{ marginLeft: '8px', fontSize: '14px', fontWeight: '600' }}>
               {checkedList.length} items
             </div>
-            {nftsInCart.length > 0 &&
-              <DeleteAll onClick={removeAllCartHandler}>
-                <span>전체 삭제</span>
-              </DeleteAll>
+            {nftsInCart?.length > 0 && (
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <Delete onClick={removeCheckedNftHandler}>
+                  선택 삭제
+                </Delete>
+                <Delete onClick={removeAllCartHandler}>
+                  <span>전체 삭제</span>
+                </Delete>
+              </div>
+            )
             }
           </div>
           {isLoading ? <Spinner _custom={{
@@ -177,9 +194,9 @@ function Cart({ cartModalClose }) {
             size: '20px',
             height: '150px'
           }} /> :
-            nftsInCart.length > 0 &&
+            nftsInCart?.length > 0 &&
             <ItemWrap>
-              {nftsInCart.map((nft) => {
+              {nftsInCart?.map((nft) => {
                 return (
                   <CartNftCard key={`cart-${nft.nftId}`} nft={nft} propsFunction={propsFunction} />
                 )
@@ -187,7 +204,7 @@ function Cart({ cartModalClose }) {
             </ItemWrap>
           }
           {
-            !isLoading && nftsInCart.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
+            !isLoading && nftsInCart?.length === 0 && <div style={{ textAlign: 'center' }}>장바구니가 비어있습니다.</div>
           }
         </ItemBox>
         <CartBottom onClick={purchaseController}>
@@ -200,7 +217,7 @@ function Cart({ cartModalClose }) {
   )
 }
 
-const DeleteAll = styled.div`
+const Delete = styled.div`
 font-size: 11px;
   cursor: pointer;
     &:hover {

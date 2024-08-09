@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import Slider from "./CollectionComponents/Slider";
 import { Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
+import * as Styled from "./MintNft";
+import exclamationMark from "../../assets/images/exclamation-mark.png"
 
 function Collection() {
   const { account, collection, setCollection, resetCollection } = useContext(GlobalContext);
@@ -69,12 +71,41 @@ function Collection() {
     inputFileRef.current.value = "";
   };
 
+
+  const helpText = `
+JSON 파일 아래 형식 준수
+
+※image: only ipfsHash cid (string)
+아래 예시 ipfsHash cid
+{
+  "name": string,
+  "description": string,
+  "image": "QmZEPe3V5hB6SiJ3Nc2ECcKVQCXZbsUEba3rRbVse6MgXy",
+  "attributes": [
+    {
+      "trait_type": string,
+      "value": string
+    }
+  ]
+}
+  `;
+
   return (
     <Background>
       <Container>
         <TitleBox>
-          <h1>Collection 업로드</h1>
-          <p>아이템이 발행된 후에는 해당 정보를 변경할 수 없습니다.</p>
+          <h1>Collection NFT 생성</h1>
+          <Styled.Flex style={{ position: 'relative' }}>
+            <p>아이템이 발행된 후에는 해당 정보를 변경할 수 없습니다.</p>
+            <Styled.HelpMark>
+              <img src={exclamationMark} width={30} height={30} alt="느낌표" />
+            </Styled.HelpMark>
+            <Styled.HelpBox>
+              <pre>
+                {helpText}
+              </pre>
+            </Styled.HelpBox>
+          </Styled.Flex>
         </TitleBox>
         <FlexBox>
           <LeftPart>

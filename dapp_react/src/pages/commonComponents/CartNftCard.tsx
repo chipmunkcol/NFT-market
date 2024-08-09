@@ -1,16 +1,8 @@
 import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
-import {
-  getImageUrl,
-  getResizeImageUrl,
-  P_updateMetadataRemoveCart,
-} from "../../hooks/common";
-import { useContext, useState } from "react";
-import { GlobalContext } from "../../context/GlobalContext";
-import Spinner from "../../components/Spinner";
+import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
 import { useNavigate } from "react-router-dom";
 import loadingImg from "../../assets/images/달팽이로딩.png";
-import { GlobalContextType } from "../../../type";
 
 interface CartNftCardProps {
   // nft: NewOnsaleNft | CollectionNftByJson;
@@ -22,17 +14,14 @@ interface CartNftCardProps {
   };
 }
 const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
-  const { account } = useContext(GlobalContext) as GlobalContextType;
-  const { nftId, nftName, nftPrice, isCollection, ext } = nft;
+  const { nftId, nftName, nftPrice, isCollection, ext, name } = nft;
   const tokenUrl = nft?.isReveal
     ? `${nft.tokenUrl}/${nft.fileName}`
     : nft.tokenUrl;
 
-  const { removeCheckdNft, addCheckedNft, R_removeCartHandler } = propsFunction;
+  const { removeCheckdNft, addCheckedNft } = propsFunction;
   const tokenData = useGetTokenData(tokenUrl);
   const { image } = tokenData;
-  // const { handleWithLoading } = useAsyncTask();
-  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const navigateDetailPage = () => {
@@ -48,25 +37,6 @@ const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
       addCheckedNft(nft);
     } else {
       removeCheckdNft(nft);
-    }
-  };
-
-  const removeCartHandler = async (nft: any) => {
-    let cartIpfsHash = localStorage.getItem(`cart-${account}`);
-    if (!cartIpfsHash) return;
-
-    setIsLoading(true);
-    try {
-      const paredCartIpfsHash = JSON.parse(cartIpfsHash);
-      const updateMetadataResult = await P_updateMetadataRemoveCart(
-        paredCartIpfsHash,
-        nftId
-      );
-      if (updateMetadataResult.ok) {
-        R_removeCartHandler(nft);
-      }
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,22 +63,9 @@ const CartNftCard = ({ nft, propsFunction }: CartNftCardProps) => {
             )}
           </ImgWrap>
           <ContentWrap>
-            <div>상품명: {nftName}</div>
+            <div>상품명: {nftName ? nftName : name}</div>
             <div>가격: {nftPrice} ETH</div>
           </ContentWrap>
-          <div>
-            {isLoading ? (
-              <Spinner
-                _custom={{
-                  color: "#3498db",
-                  size: "16px",
-                  height: "100%",
-                }}
-              />
-            ) : (
-              <span onClick={() => removeCartHandler(nft)}>삭제</span>
-            )}
-          </div>
         </Item>
       }
     </>

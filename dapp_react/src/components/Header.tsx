@@ -18,10 +18,9 @@ import iconCartWh from "../assets/images/icon-cart-wh.png";
 import { GlobalContextType } from "../../type";
 
 export default function Header() {
-  const { account, setAccount, setSigner } = useContext(
+  const { account, setAccount, setSigner, balance, setBalance } = useContext(
     GlobalContext
   ) as GlobalContextType;
-  const [balance, setBalance] = useState(0);
   const location = useLocation();
   // console.log('location: ', location);
 

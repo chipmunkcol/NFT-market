@@ -1,22 +1,16 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import {
-  addCartHandler,
   formatPrice,
   getCurrentYMD,
   getImageUrl,
   getIpfsTokenData,
   getTargetCollectionToIpfsData,
-  purchaseNftHandler,
-  validateAccountAndOnsale,
 } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
 import ExpandIcon from "../assets/images/icon-expand.png";
-import { Confirm, toastSwal } from "../hooks/swal";
-import useAsyncTask from "../hooks/useAsyncTask";
 import * as Styled from "./NftDetail";
 import {
   CollectionNft,
@@ -25,16 +19,14 @@ import {
   Nft,
   PriceHistoryT,
 } from "../../type";
-import { JsonRpcSigner } from "ethers";
+import Purchase from "../components/button/Purchase";
+import Cart from "../components/button/Cart";
 
 function CollectionNftDetail() {
   const params = useParams();
   const { ipfsHash, nftId } = params;
   const nftIdByParam = Number(nftId);
 
-  // const tokenData = useGetTokenData(ipfsHash);
-  const { handleWithLoading } = useAsyncTask();
-  const navigate = useNavigate();
   const [tokenData, setTokenData] = useState<Nft>({
     name: "",
     description: "",
@@ -54,7 +46,13 @@ function CollectionNftDetail() {
     nftId: 0,
     tokenUrl: "",
     isReveal: false,
-    priceHistory: [],
+    priceHistory: [
+      {
+        owner: "",
+        price: 0,
+        soldTime: "",
+      },
+    ],
   });
 
   const getNewPriceHistory = (priceHistory: PriceHistoryT[]) => {
@@ -109,49 +107,6 @@ function CollectionNftDetail() {
 
     fetchIpfsData();
   }, [metadata]);
-
-  const purchaseController = async (
-    nftId: number,
-    tokenUrl: string,
-    nftPrice: number,
-    signer: JsonRpcSigner,
-    account: string
-  ) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer),
-      "NFT 구매중입니다"
-    );
-    if (!result) return;
-
-    const confirmResult = await Confirm(
-      "NFT 구매 성공",
-      "MyPage로 확인하러 가기"
-    );
-    if (confirmResult.isConfirmed) {
-      navigate(`/mypage/${account}`);
-    } else {
-      window.location.reload();
-    }
-  };
-
-  const addCartController = async (
-    metadata: CollectionNft,
-    account: string
-  ) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => addCartHandler(metadata, account),
-      "장바구니에 추가중입니다"
-    );
-    if (result) {
-      toastSwal("장바구니에 추가되었습니다.");
-    }
-  };
 
   // chart mobie CSS
   const [mobileSize, setMobileSize] = useState(false);
@@ -266,30 +221,24 @@ function CollectionNftDetail() {
                   </div>
                   <div>
                     <Styled.ButtonWrap>
-                      <Styled.PurchaseBtn
-                        onClick={() => {
-                          if (ipfsHash && nftId && signer && account) {
-                            purchaseController(
-                              Number(nftId),
-                              ipfsHash,
-                              metadata?.nftPrice,
-                              signer,
-                              account
-                            );
-                          }
+                      <Purchase
+                        css={{
+                          btnWidth: "56px",
+                          borderRadius: "10px 0 0 10px",
                         }}
-                      >
-                        지금 구매하기
-                      </Styled.PurchaseBtn>
-                      <Styled.CartBtn
-                        onClick={() =>
-                          account && addCartController(metadata, account)
-                        }
-                      >
-                        <Styled.CartImg>
-                          <img src={iconCart} alt="장바구니" />
-                        </Styled.CartImg>
-                      </Styled.CartBtn>
+                        metadata={metadata}
+                        signer={signer}
+                        account={account}
+                      />
+                      <Cart
+                        css={{
+                          btnWidth: "55px",
+                          imgWidth: "20px",
+                          borderRadius: "0 10px 10px 0",
+                        }}
+                        metadata={metadata}
+                        account={account}
+                      />
                     </Styled.ButtonWrap>
                   </div>
                 </Styled.PaddingWrap>
