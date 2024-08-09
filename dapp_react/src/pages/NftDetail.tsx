@@ -91,15 +91,6 @@ function NftDetail() {
     }
   }, []);
 
-  const purchaseProps = {
-    nftId: Number(nftId),
-    tokenUrl: ipfsHash,
-    metadata,
-    nftPrice: metadata.nftPrice,
-    signer,
-    account,
-  };
-
   return (
     <Background>
       <Container>
@@ -210,15 +201,22 @@ function NftDetail() {
                   <div>
                     <ButtonWrap>
                       <Purchase
-                        {...purchaseProps}
-                        tokenUrl={purchaseProps.tokenUrl ?? ""}
-                        signer={purchaseProps.signer ?? null}
-                        account={purchaseProps.account ?? ""}
+                        css={{
+                          btnWidth: "56px",
+                          borderRadius: "10px 0 0 10px",
+                        }}
+                        metadata={metadata}
+                        signer={signer}
+                        account={account}
                       />
                       <Cart
-                        css={{ btnWidth: "55px", imgWidth: "20px" }}
+                        css={{
+                          btnWidth: "55px",
+                          imgWidth: "20px",
+                          borderRadius: "0 10px 10px 0",
+                        }}
                         metadata={metadata}
-                        account={account ?? ""}
+                        account={account}
                       />
                     </ButtonWrap>
                   </div>

@@ -58,18 +58,22 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
   };
 };
 
-export const validateAccountAndOnsale = (metadata: any, account: string) => {
+export const validateAccountAndOnsale = (
+  nftPrice: number,
+  owner: string,
+  account: string
+) => {
   if (!account) {
     toastSwal("메타마스크 지갑을 연결해주세요.", "warning");
     return false;
   }
 
-  if (metadata.owner.toLowerCase() === account.toLowerCase()) {
+  if (owner.toLowerCase() === account.toLowerCase()) {
     toastSwal("자신의 NFT는 구매할 수 없습니다.", "warning");
     return false;
   }
 
-  if (metadata.nftPrice === 0) {
+  if (nftPrice === 0) {
     toastSwal("판매등록 되지 않은 NFT입니다", "warning");
     return false;
   }

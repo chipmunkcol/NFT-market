@@ -14,7 +14,7 @@ import { transactWithPurchaseNft, transactWithPurchaseNftList } from "../../../c
 import { useNavigate } from "react-router-dom";
 
 function Cart({ cartModalClose }) {
-  const { account, signer } = useContext(GlobalContext);
+  const { account, signer, balance } = useContext(GlobalContext);
   // const cartIpfsHash = localStorage.getItem(`cart-${account}`);
   const [nftsInCart, setNftsInCart] = useState([]);
   const navigate = useNavigate();
@@ -34,22 +34,6 @@ function Cart({ cartModalClose }) {
       setNftsInCart(newCartList);
     }
   }, [account]);
-  // useEffect(() => {
-  //   if (!account) return;
-  //   장바구니 pinata 보류
-  //   const getCartData = async () => {
-  //     if (!cartIpfsHash) return;
-  //     setIsLoading(true);
-  //     const parsedCartIpfsHash = JSON.parse(cartIpfsHash);
-  //     const res = await getTargetNftToIpfsData(parsedCartIpfsHash);
-  //     const cartList = JSON.parse(res.metadata.keyvalues.cart);
-  //     const newCartList = cartList.map(nft => ({ ...nft, checked: true }));
-  //     setNftsInCart(newCartList);
-  //     console.log('newCartList: ', newCartList);
-  //     setIsLoading(false);
-  //   }
-  //   getCartData();
-  // }, [account]);
 
   // cart price
   const [cartPrice, setCartPrice] = useState(0);
@@ -155,8 +139,12 @@ function Cart({ cartModalClose }) {
   }
 
   const purchaseController = async () => {
-
-    // 확인 메세지 추가하기
+    const result = await Confirm('NFT를 구매하시겠습니까?', '구매 후에는 취소할 수 없습니다.');
+    if (!result.isConfirmed) return;
+    if (balance < cartPrice) {
+      Swal.fire('잔액이 부족합니다.', 'Faucet에서 충전 후 다시 시도해주세요.', 'error');
+      return;
+    }
 
     const res = await handleWithLoading(() => purchaseNftListHandler(checkedList), 'NFT 구매 중입니다');
     if (res) {
@@ -176,7 +164,7 @@ function Cart({ cartModalClose }) {
       <Container onClick={stopPropagation}>
         <div style={{ width: '100%', padding: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #cccccc' }}>
           <h2>Your cart</h2>
-          <h4>Price : {cartPrice} ETH</h4>
+          <h4>Price : {cartPrice.toFixed(3)} ETH</h4>
           <CloseBtnWrap onClick={cartModalClose}>
             <button>x</button>
           </CloseBtnWrap>

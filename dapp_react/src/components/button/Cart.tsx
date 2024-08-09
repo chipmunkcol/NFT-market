@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import IconCart from "../../assets/images/icon-cart-wh.png";
-import { NftMetadata, NewOnsaleNft } from "../../../type";
+import { NftMetadata, NewOnsaleNft, CollectionNft } from "../../../type";
 import { addCartHandler, validateAccountAndOnsale } from "../../hooks/common";
 import { toastSwal } from "../../hooks/swal";
 import useAsyncTask from "../../hooks/useAsyncTask";
@@ -8,18 +8,22 @@ import useAsyncTask from "../../hooks/useAsyncTask";
 type Css = {
   btnWidth: string;
   imgWidth: string;
+  borderRadius: string;
 };
 
 interface CartProps {
   css: Css;
-  metadata: NftMetadata | NewOnsaleNft;
-  account: string;
+  metadata: NftMetadata | NewOnsaleNft | CollectionNft;
+  account: string | null;
 }
 
 const Cart = ({ css, metadata, account }: CartProps) => {
   const { handleWithLoading } = useAsyncTask();
+  const { nftPrice, owner } = metadata;
+
   const addCartController = async () => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
+    const validateResult =
+      account && validateAccountAndOnsale(nftPrice, owner, account);
     if (!validateResult) return;
 
     const result = await handleWithLoading(
@@ -47,7 +51,7 @@ const Cart = ({ css, metadata, account }: CartProps) => {
 const Container = styled.div<{ $css: Css }>`
   width: ${({ $css }) => $css.btnWidth};
   height: 100%;
-  border-radius: 0 10px 10px 0;
+  border-radius: ${({ $css }) => $css.borderRadius};
   background-color: rgba(32, 129, 226, 1);
   font-size: 14px;
   font-weight: 700;

@@ -75,6 +75,8 @@ export type GlobalContextType = {
   setAccount: React.Dispatch<React.SetStateAction<string | null>>;
   signer: JsonRpcSigner | null;
   setSigner: React.Dispatch<React.SetStateAction<JsonRpcSigner>>;
+  balance: number;
+  setBalance: React.Dispatch<React.SetStateAction<number>>;
   loadingState: {
     isLoading: boolean;
     message: string;

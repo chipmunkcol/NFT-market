@@ -18,6 +18,7 @@ import useGetTokenData from "../hooks/useGetTokenData";
 import loadingImg from "../assets/images/달팽이로딩.png"
 import LazyloadComponent from "../hooks/LazyloadComponent";
 import Cart from "./button/Cart";
+import Purchase from "./button/Purchase";
 
 const OnsaleNftCard = ({ nft, gridCss }) => {
   const { nftId, nftName, tokenUrl, nftPrice, previousPrice, owner, isReveal, fileName, collectionIpfs, ext } = nft;
@@ -65,9 +66,7 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
 
   return (
     <Styled.Container>
-      {/* <NonSaleNftCard nftHash={nftHash} /> */}
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
-        {/* <Styled.Img src={imageUrl} alt="NFT image" /> */}
         {image ?
           // <LazyloadComponent>
           <Img
@@ -92,9 +91,13 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
       {
         !isMyNft ? (
           <ButtonWrap>
-            <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn>
-            {/* <Cart nft={nft} /> */}
-            <Cart css={{ btnWidth: '40px', imgWidth: '16px' }}
+            {/* <PurchaseBtn $gridCss={gridCss} onClick={purchaseController}>{gridCss === 5 ? '지금 구매하기' : '구매하기'}</PurchaseBtn> */}
+            <Purchase css={{ btnWidth: '41px', borderRadius: '0 0 0 10px' }}
+              metadata={nft}
+              signer={signer}
+              account={account}
+            />
+            <Cart css={{ btnWidth: '40px', imgWidth: '16px', borderRadius: '0 0 10px 0' }}
               metadata={nft}
               account={account}
             />

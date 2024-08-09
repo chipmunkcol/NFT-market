@@ -26,6 +26,8 @@ import {
   PriceHistoryT,
 } from "../../type";
 import { JsonRpcSigner } from "ethers";
+import Purchase from "../components/button/Purchase";
+import Cart from "../components/button/Cart";
 
 function CollectionNftDetail() {
   const params = useParams();
@@ -111,13 +113,12 @@ function CollectionNftDetail() {
   }, [metadata]);
 
   const purchaseController = async (
-    nftId: number,
-    tokenUrl: string,
-    nftPrice: number,
+    metadata: CollectionNft,
     signer: JsonRpcSigner,
     account: string
   ) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
+    const { nftPrice, owner, tokenUrl, nftId } = metadata;
+    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
     if (!validateResult) return;
 
     const result = await handleWithLoading(
@@ -141,7 +142,8 @@ function CollectionNftDetail() {
     metadata: CollectionNft,
     account: string
   ) => {
-    const validateResult = validateAccountAndOnsale(metadata, account);
+    const { nftPrice, owner } = metadata;
+    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
     if (!validateResult) return;
 
     const result = await handleWithLoading(
@@ -266,30 +268,24 @@ function CollectionNftDetail() {
                   </div>
                   <div>
                     <Styled.ButtonWrap>
-                      <Styled.PurchaseBtn
-                        onClick={() => {
-                          if (ipfsHash && nftId && signer && account) {
-                            purchaseController(
-                              Number(nftId),
-                              ipfsHash,
-                              metadata?.nftPrice,
-                              signer,
-                              account
-                            );
-                          }
+                      <Purchase
+                        css={{
+                          btnWidth: "56px",
+                          borderRadius: "10px 0 0 10px",
                         }}
-                      >
-                        지금 구매하기
-                      </Styled.PurchaseBtn>
-                      <Styled.CartBtn
-                        onClick={() =>
-                          account && addCartController(metadata, account)
-                        }
-                      >
-                        <Styled.CartImg>
-                          <img src={iconCart} alt="장바구니" />
-                        </Styled.CartImg>
-                      </Styled.CartBtn>
+                        metadata={metadata}
+                        signer={signer}
+                        account={account}
+                      />
+                      <Cart
+                        css={{
+                          btnWidth: "55px",
+                          imgWidth: "20px",
+                          borderRadius: "0 10px 10px 0",
+                        }}
+                        metadata={metadata}
+                        account={account}
+                      />
                     </Styled.ButtonWrap>
                   </div>
                 </Styled.PaddingWrap>
