@@ -3,7 +3,11 @@ import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { NftMetadataByJson } from "../../../type";
 import loadingImg from "../../assets/images/달팽이로딩.png";
-import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
+import {
+  copyHandler,
+  getImageUrl,
+  getResizeImageUrl,
+} from "../../hooks/common";
 
 interface Top10NftCardProps {
   nft: NftMetadataByJson;
@@ -24,7 +28,7 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
         <ItemContent>
           <ItemRank>{index + 1}</ItemRank>
           <ItemInfo>
-            <ItemName>{name}</ItemName>
+            <ItemName onClick={() => copyHandler(name)}>{name}</ItemName>
             <ItemPrice>{nftPrice} ETH ~</ItemPrice>
           </ItemInfo>
         </ItemContent>

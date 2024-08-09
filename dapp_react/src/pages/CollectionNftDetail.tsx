@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import {
+  copyHandler,
   formatPrice,
   getCurrentYMD,
   getImageUrl,
@@ -190,7 +191,9 @@ function CollectionNftDetail() {
                     gap: "10px",
                   }}
                 >
-                  <h1>{tokenData?.name}</h1>
+                  <Styled.NftName onClick={() => copyHandler(tokenData?.name)}>
+                    {tokenData?.name}
+                  </Styled.NftName>
                   <div>
                     Owned by{" "}
                     <span style={{ color: "#2081e2cc" }}>

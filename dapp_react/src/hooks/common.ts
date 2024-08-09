@@ -841,3 +841,8 @@ export const removeExtenstion = (s3ObjectKey: string) => {
 
   return keyWithoutExtenstion ? keyWithoutExtenstion.join(".") : "";
 };
+
+export const copyHandler = async (text: string) => {
+  await navigator.clipboard.writeText(text);
+  toastSwal("Copied to clipboard");
+};

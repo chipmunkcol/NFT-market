@@ -10,7 +10,7 @@ import Profile from "../pages/commonComponents/Profile";
 import Cart from "../pages/commonComponents/Cart";
 import Menubar from "../pages/commonComponents/Menubar";
 import { S_Button } from "../styles/styledComponent";
-import { getTruncatedAccount } from "../hooks/common";
+import { copyHandler, getTruncatedAccount } from "../hooks/common";
 import iconProfile from "../assets/images/icon-profile-bk.png";
 import iconCart from "../assets/images/icon-cart.png";
 import iconProfileWh from "../assets/images/icon-profile-wh.png";
@@ -168,11 +168,6 @@ export default function Header() {
     setCartModal(false);
   };
 
-  const copyHandler = async (account: string) => {
-    await navigator.clipboard.writeText(account);
-    toastSwal("Copied to clipboard");
-  };
-
   // Profile 컴포넌트 (mypage & faucet)
   const [profileModal, setProfileModal] = useState(false);
   const profileModalOpen = () => {
@@ -234,7 +229,7 @@ export default function Header() {
                 <MyAccount onClick={() => copyHandler(account)}>
                   {getTruncatedAccount(account)}
                 </MyAccount>
-                <div>ETH {balance}</div>
+                <div style={{ userSelect: "none" }}>ETH {balance}</div>
               </div>
               {/* <Link to={`/mypage/${account}`}> */}
               <ProfileWrap onClick={profileModalOpen}>
@@ -308,6 +303,7 @@ export const Container = styled.div<{ $headertheme: string }>`
 `;
 export const CartWrap = styled.div`
   cursor: pointer;
+  user-select: none;
   display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     display: none;
@@ -315,6 +311,7 @@ export const CartWrap = styled.div`
 `;
 export const ProfileWrap = styled.div`
   cursor: pointer;
+  user-select: none;
   display: block;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     display: none;
@@ -360,12 +357,14 @@ export const IconWrap = styled.div<{ $headertheme: string }>`
 export const MyAccount = styled.div`
   /* font-size: 11px; */
   cursor: pointer;
+  user-select: none;
 `;
 
 export const MenubarBtn = styled.div`
   display: none;
   font-size: 24px;
   cursor: pointer;
+  user-select: none;
 
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     display: block;
@@ -406,6 +405,7 @@ export const Nav = styled.div`
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  user-select: none;
 
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     font-size: 13px;
