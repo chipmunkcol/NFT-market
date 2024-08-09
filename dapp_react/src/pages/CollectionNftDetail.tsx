@@ -1,21 +1,16 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import {
-  addCartHandler,
   formatPrice,
   getCurrentYMD,
   getImageUrl,
   getIpfsTokenData,
   getTargetCollectionToIpfsData,
-  purchaseNftHandler,
-  validateAccountAndOnsale,
 } from "../hooks/common";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
 import ExpandIcon from "../assets/images/icon-expand.png";
-import { Confirm, toastSwal } from "../hooks/swal";
-import useAsyncTask from "../hooks/useAsyncTask";
 import * as Styled from "./NftDetail";
 import {
   CollectionNft,
@@ -24,7 +19,6 @@ import {
   Nft,
   PriceHistoryT,
 } from "../../type";
-import { JsonRpcSigner } from "ethers";
 import Purchase from "../components/button/Purchase";
 import Cart from "../components/button/Cart";
 
@@ -33,9 +27,6 @@ function CollectionNftDetail() {
   const { ipfsHash, nftId } = params;
   const nftIdByParam = Number(nftId);
 
-  // const tokenData = useGetTokenData(ipfsHash);
-  const { handleWithLoading } = useAsyncTask();
-  const navigate = useNavigate();
   const [tokenData, setTokenData] = useState<Nft>({
     name: "",
     description: "",
@@ -55,7 +46,13 @@ function CollectionNftDetail() {
     nftId: 0,
     tokenUrl: "",
     isReveal: false,
-    priceHistory: [],
+    priceHistory: [
+      {
+        owner: "",
+        price: 0,
+        soldTime: "",
+      },
+    ],
   });
 
   const getNewPriceHistory = (priceHistory: PriceHistoryT[]) => {
