@@ -10,7 +10,6 @@ import {
   purchaseNftHandler,
   validateAccountAndOnsale,
 } from "../hooks/common";
-import iconCart from "../assets/images/icon-cart-wh.png";
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
@@ -111,49 +110,6 @@ function CollectionNftDetail() {
 
     fetchIpfsData();
   }, [metadata]);
-
-  const purchaseController = async (
-    metadata: CollectionNft,
-    signer: JsonRpcSigner,
-    account: string
-  ) => {
-    const { nftPrice, owner, tokenUrl, nftId } = metadata;
-    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer),
-      "NFT 구매중입니다"
-    );
-    if (!result) return;
-
-    const confirmResult = await Confirm(
-      "NFT 구매 성공",
-      "MyPage로 확인하러 가기"
-    );
-    if (confirmResult.isConfirmed) {
-      navigate(`/mypage/${account}`);
-    } else {
-      window.location.reload();
-    }
-  };
-
-  const addCartController = async (
-    metadata: CollectionNft,
-    account: string
-  ) => {
-    const { nftPrice, owner } = metadata;
-    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
-    if (!validateResult) return;
-
-    const result = await handleWithLoading(
-      () => addCartHandler(metadata, account),
-      "장바구니에 추가중입니다"
-    );
-    if (result) {
-      toastSwal("장바구니에 추가되었습니다.");
-    }
-  };
 
   // chart mobie CSS
   const [mobileSize, setMobileSize] = useState(false);

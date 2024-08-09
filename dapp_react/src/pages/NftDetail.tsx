@@ -12,7 +12,6 @@ import {
 import sepoliaSymbol from "../assets/images/sepolia-symbol.png";
 import { GlobalContext } from "../context/GlobalContext";
 import { LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-// import ExpandIcon from "../assets/images/icon-expand.svg?react";
 import ExpandIcon from "../assets/images/icon-expand.png";
 import {
   GlobalContextType,
