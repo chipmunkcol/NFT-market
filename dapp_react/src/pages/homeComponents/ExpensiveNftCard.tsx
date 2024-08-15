@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { nftMetadataAddSoldPrice } from "../../../type";
 import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
 import loadingImg from "../../assets/images/달팽이로딩.png";
+import LazyLoadFlipedComponet from "../../hooks/LazyLoadFlipedComponet";
 
 interface ExpensiveNftCardProps {
   nft: nftMetadataAddSoldPrice;
@@ -28,14 +29,20 @@ const ExpensiveNftCard = ({ nft }: ExpensiveNftCardProps) => {
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          {image ? (
+          <LazyLoadFlipedComponet css={{ color: "#F6F9F0" }}>
+            <img
+              src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+              onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+            />
+          </LazyLoadFlipedComponet>
+          {/* {image ? (
             <img
               src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
               onError={(e) => (e.currentTarget.src = getImageUrl(image))}
             />
           ) : (
             <img src={loadingImg} />
-          )}
+          )} */}
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}

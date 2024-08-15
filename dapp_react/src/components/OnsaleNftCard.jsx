@@ -67,15 +67,16 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
   return (
     <Styled.Container>
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
-        {image ?
-          // <LazyloadComponent>
-          <Img
-            src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
-            // src={getImageUrl(image)}
-            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
-          // </LazyloadComponent>
-          : <Img src={loadingImg} alt="loading..." />
-        }
+        <LazyloadComponent>
+          {
+            image ?
+              <Img
+                // src={getImageUrl(image)}
+                src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+                onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+              : <Img src={loadingImg} alt="loading..." />
+          }
+        </LazyloadComponent>
       </ImgWrap>
       <Content>
         <Styled.Name onClick={() => copyHandler(nftName)}>{nftName}</Styled.Name>

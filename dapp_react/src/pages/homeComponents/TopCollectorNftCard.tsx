@@ -3,7 +3,7 @@ import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { CollectionNft } from "../../../type";
 import { getImageUrl } from "../../hooks/common";
-import LazyloadComponent from "../../hooks/LazyloadComponent";
+import LazyLoadFlipedComponet from "../../hooks/LazyLoadFlipedComponet";
 
 interface TopCollectorNftCardProps {
   nft: CollectionNft;
@@ -27,9 +27,9 @@ const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
     <>
       <TopItemBox key={`top3-${nftId}`}>
         <TopImgWrap onClick={navigateDetailPage}>
-          <LazyloadComponent>
+          <LazyLoadFlipedComponet css={{ color: "#F6F9F0" }}>
             <img src={getImageUrl(image)} />
-          </LazyloadComponent>
+          </LazyLoadFlipedComponet>
         </TopImgWrap>
         <TopContent>
           {/* <h3>{item} name</h3> */}
@@ -41,6 +41,16 @@ const TopCollectorNftCard = ({ nft }: TopCollectorNftCardProps) => {
 };
 
 export default TopCollectorNftCard;
+
+// const FlipedBox = styled.div`
+//   width: 100%;
+//   height: 100%;
+//   display: inline-grid; /* 추가 */
+//   /* color: white; */
+//   transition: transform 0.3s;
+//   transform: perspective(800px) rotateY(0deg);
+//   transform-style: preserve-3d;
+// `;
 
 const TopItemBox = styled.li`
   width: 184px;

@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { Confirm, toastSwal } from "../hooks/swal";
+import { Confirm } from "../hooks/swal";
 import Profile from "../pages/commonComponents/Profile";
 import Cart from "../pages/commonComponents/Cart";
 import Menubar from "../pages/commonComponents/Menubar";

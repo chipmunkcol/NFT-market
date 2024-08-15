@@ -23,6 +23,7 @@ import { homeCollectionUrl, homeNftUrl } from "../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
 import ExpensiveNftCard from "./homeComponents/ExpensiveNftCard";
 import LazyloadComponent from "../hooks/LazyloadComponent";
+import SkeletonUI from "../components/skeletonUI/Top10NftCard";
 
 // Detect the MetaMask Ethereum provider
 function Home() {
@@ -122,16 +123,7 @@ function Home() {
                   <FilterItem>30일</FilterItem>
                 </FilterWrap>
                 <ItemWrap>
-                  {/* <Spinner _custom={{ color: '#6c707b33', size: '30px', height: '100px' }} /> */}
-                  {isPending && (
-                    <Spinner
-                      _custom={{
-                        color: "#6c707b33",
-                        size: "30px",
-                        height: "100px",
-                      }}
-                    />
-                  )}
+                  {isPending && <SkeletonUI />}
                   {isSuccess &&
                     nfts.length > 0 &&
                     findTop10NumberOfSales(nfts).map((nft, index) => (

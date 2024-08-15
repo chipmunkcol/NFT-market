@@ -8,6 +8,7 @@ import {
   getImageUrl,
   getResizeImageUrl,
 } from "../../hooks/common";
+import LazyLoadFlipedComponet from "../../hooks/LazyLoadFlipedComponet";
 
 interface Top10NftCardProps {
   nft: NftMetadataByJson;
@@ -33,16 +34,17 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
           </ItemInfo>
         </ItemContent>
         <ItemImg onClick={navigateDetailPage}>
-          {image ? (
+          <LazyLoadFlipedComponet css={{ color: "#6c707b33" }}>
             <img
               src={`${getResizeImageUrl(image, ext)}?w=50`}
               // src={getImageUrl(image)}
               onError={(e) => (e.currentTarget.src = getImageUrl(image))}
               alt="top10-nft-card"
+              width={40}
+              height={40}
+              style={{ height: "40px" }}
             />
-          ) : (
-            <img src={loadingImg} alt="loading..." />
-          )}
+          </LazyLoadFlipedComponet>
         </ItemImg>
       </Item>
     </>
@@ -51,20 +53,20 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
 
 export default Top10NftCard;
 
-const Item = styled.li`
+export const Item = styled.li`
   ${(props) => props.theme.variables.flexBetween};
   padding: 8px 10px;
   border-radius: 5px;
   background-color: #2c2d31;
 `;
-const ItemContent = styled.div`
+export const ItemContent = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 20px;
 `;
-const ItemRank = styled.div``;
-const ItemImg = styled.div`
+export const ItemRank = styled.div``;
+export const ItemImg = styled.div`
   width: 40px;
   height: 40px;
   img {
@@ -75,14 +77,14 @@ const ItemImg = styled.div`
   }
   cursor: pointer;
 `;
-const ItemInfo = styled.div`
+export const ItemInfo = styled.div`
   display: flex;
   flex-direction: column;
   /* align-items: center; */
   gap: 3px;
 `;
-const ItemName = styled.div``;
-const ItemPrice = styled.div`
+export const ItemName = styled.div``;
+export const ItemPrice = styled.div`
   font-size: 12px;
   color: #ffffff4d;
 `;
