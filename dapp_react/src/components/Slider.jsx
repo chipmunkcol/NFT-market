@@ -87,6 +87,7 @@ width: 100%;
 `;
 const Container = styled.div`
   padding: 2rem 0 0 0;
+  user-select: none;
 `;
 const Box = styled.div`
   width: 858px;

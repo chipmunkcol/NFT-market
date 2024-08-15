@@ -64,6 +64,7 @@ const NavBtn = styled.div`
     align-items: center;
     font-size: 13px;
     cursor: pointer;
+    user-select: none;
     &:hover {
         background-color: #e9e9e9;
     }

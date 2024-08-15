@@ -22,10 +22,9 @@ const Cart = ({ css, metadata, account }: CartProps) => {
   const { nftPrice, owner } = metadata;
 
   const addCartController = async () => {
-    const validateResult =
-      account && validateAccountAndOnsale(nftPrice, owner, account);
+    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
     if (!validateResult) return;
-
+    if (!account) return;
     const result = await handleWithLoading(
       () => addCartHandler(metadata, account),
       "장바구니에 추가중입니다"

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import * as Styled from '../../components/NftCard'
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
-import { formatPrice, getImageUrl, getResizeImageUrl } from "../../hooks/common";
+import { copyHandler, formatPrice, getImageUrl, getResizeImageUrl } from "../../hooks/common";
 // import { getTruncatedAccount } from "../../hooks/common";
 import loadingImg from "../../assets/images/달팽이로딩.png";
 
@@ -36,7 +36,7 @@ export default function OnsaleNftCard({ nft, account }) {
         }
       </ImgWrap>
       <Content>
-        <Styled.Name>{nftName}</Styled.Name>
+        <Styled.Name onClick={() => copyHandler(nftName)}>{nftName}</Styled.Name>
         <OnsalePriceWrap>
           Price : {nftPrice} ETH ($
           {formatPrice(Number(nftPrice) * 2928)}

@@ -35,6 +35,8 @@ const Purchase = ({ css, metadata, signer, account }: PurchaseProps) => {
   const { handleWithLoading } = useAsyncTask();
   const { nftPrice, owner, tokenUrl, nftId } = metadata;
   const purchaseController = async () => {
+    const validateResult = validateAccountAndOnsale(nftPrice, owner, account);
+    if (!validateResult) return;
     if (!signer) return;
     const res = await Confirm(
       "NFT를 구매하시겠습니까?",
@@ -49,9 +51,6 @@ const Purchase = ({ css, metadata, signer, account }: PurchaseProps) => {
       );
       return;
     }
-    const validateResult =
-      account && validateAccountAndOnsale(nftPrice, owner, account);
-    if (!validateResult) return;
 
     const result = await handleWithLoading(
       () => purchaseNftHandler(nftId, tokenUrl, nftPrice, signer),

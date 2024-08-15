@@ -3,6 +3,7 @@ import styled from "styled-components";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useContext, useEffect, useState } from "react";
 import {
+  copyHandler,
   formatPrice,
   getCurrentYMD,
   getImageUrl,
@@ -170,7 +171,7 @@ function NftDetail() {
                     gap: "10px",
                   }}
                 >
-                  <h1>{name}</h1>
+                  <NftName onClick={() => copyHandler(name)}>{name}</NftName>
                   <div>
                     Owned by{" "}
                     <span style={{ color: "#2081e2cc" }}>{metadata.owner}</span>
@@ -263,6 +264,10 @@ function NftDetail() {
     </Background>
   );
 }
+
+export const NftName = styled.h1`
+  cursor: pointer;
+`;
 
 export const ButtonWrap = styled.div`
   width: 300px;

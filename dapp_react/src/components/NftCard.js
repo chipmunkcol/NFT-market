@@ -6,6 +6,7 @@ export const NftInfo = styled.div`
 `;
 export const Name = styled.div`
   font-weight: bold;
+  cursor: pointer;
 `;
 export const Img = styled.img`
   width: 100%;

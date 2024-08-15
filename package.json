@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.1",
-    "@svgr/rollup": "^8.1.0"
+    "@svgr/rollup": "^8.1.0",
+    "framer-motion": "^11.3.27"
   }
 }

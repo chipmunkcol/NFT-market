@@ -5,7 +5,7 @@ import { MintContract, SaleNftAddress } from "../../contracts/index";
 import * as Styled from "./NftCard";
 import { GlobalContext } from "../context/GlobalContext";
 import { S_Button } from "../styles/styledComponent";
-import { C_setOnsaleNft, P_updateMetadataSetOnsale, getImageUrl, getResizeImageUrl, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
+import { C_setOnsaleNft, P_updateMetadataSetOnsale, copyHandler, getImageUrl, getResizeImageUrl, getTargetNftToIpfsData, ipfsGetOptions, ipfsPutOptions } from "../hooks/common";
 import useAsyncTask from "../hooks/useAsyncTask";
 import useGetTokenData from "../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
@@ -107,7 +107,7 @@ const NonSaleNftCard = ({ nft }) => {
         }
       </ImgWrap>
       <Content>
-        <Styled.Name>{nftName}</Styled.Name>
+        <Styled.Name onClick={() => copyHandler(nftName)}>{nftName}</Styled.Name>
         <div style={{ marginTop: '5px' }}>{truncatedDes}</div>
       </Content>
       <SaleRegistrationWrap>

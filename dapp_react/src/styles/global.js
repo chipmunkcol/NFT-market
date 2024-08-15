@@ -2,6 +2,10 @@ import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
     // 적용시킬 css 입력
+    :root {
+        user-select: none;
+    }
+    
     a{
         text-decoration: none;
         color: inherit;

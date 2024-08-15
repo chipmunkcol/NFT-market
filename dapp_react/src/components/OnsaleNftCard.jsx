@@ -6,7 +6,7 @@ import * as Styled from './NftCard'
 import { GlobalContext } from "../context/GlobalContext";
 import { MintContract, web3, SaleNftContract } from "../../contracts/index";
 import { S_Button } from "../styles/styledComponent";
-import { P_updateMetadataAddCart, P_updateMetadataPurchase, formatPrice, getImageUrl, getIpfsTokenData, getResizeImageUrl, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
+import { P_updateMetadataAddCart, P_updateMetadataPurchase, copyHandler, formatPrice, getImageUrl, getIpfsTokenData, getResizeImageUrl, getTargetNftToIpfsData, getTruncatedAccount, pinJsonToIPFSForCart, purchaseNftHandler } from "../hooks/common";
 import { useNavigate } from "react-router-dom";
 import useAsyncTask from "../hooks/useAsyncTask";
 import Swal from "sweetalert2";
@@ -67,18 +67,19 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
   return (
     <Styled.Container>
       <ImgWrap $gridCss={gridCss} onClick={navigateDetailPage}>
-        {image ?
-          // <LazyloadComponent>
-          <Img
-            src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
-            // src={getImageUrl(image)}
-            onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
-          // </LazyloadComponent>
-          : <Img src={loadingImg} alt="loading..." />
-        }
+        <LazyloadComponent>
+          {
+            image ?
+              <Img
+                // src={getImageUrl(image)}
+                src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
+                onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
+              : <Img src={loadingImg} alt="loading..." />
+          }
+        </LazyloadComponent>
       </ImgWrap>
       <Content>
-        <Styled.Name>{nftName}</Styled.Name>
+        <Styled.Name onClick={() => copyHandler(nftName)}>{nftName}</Styled.Name>
         <OnsalePriceWrap>
           {nftPrice} ETH ($
           {formatPrice(Number(nftPrice) * 2928)}
