@@ -2,7 +2,6 @@ import styled from "styled-components";
 import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { NftMetadataByJson } from "../../../type";
-import loadingImg from "../../assets/images/달팽이로딩.png";
 import {
   copyHandler,
   getImageUrl,

@@ -3,7 +3,6 @@ import useGetTokenData from "../../hooks/useGetTokenData";
 import { useNavigate } from "react-router-dom";
 import { nftMetadataAddSoldPrice } from "../../../type";
 import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
-import loadingImg from "../../assets/images/달팽이로딩.png";
 import LazyLoadFlipedComponet from "../../hooks/LazyLoadFlipedComponet";
 
 interface ExpensiveNftCardProps {

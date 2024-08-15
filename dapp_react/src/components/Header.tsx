@@ -207,6 +207,9 @@ export default function Header() {
               />
             </div>
           </Link>
+          <Link to={"/"} id="nav-home">
+            <Nav>Home</Nav>
+          </Link>
           <Link to={"/market-place/nft"} id="nav-marketplace">
             <Nav>Marketplace</Nav>
           </Link>
@@ -387,12 +390,8 @@ export const Navbar = styled.div`
   align-items: center;
   gap: 50px;
 
-  #nav-marketplace {
-    @media (max-width: ${({ theme }) => theme.size.mobile}) {
-      display: none;
-      gap: 30px;
-    }
-  }
+  #nav-home,
+  #nav-marketplace,
   #nav-create {
     @media (max-width: ${({ theme }) => theme.size.mobile}) {
       display: none;

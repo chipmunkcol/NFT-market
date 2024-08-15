@@ -61,7 +61,7 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
 export const validateAccountAndOnsale = (
   nftPrice: number,
   owner: string,
-  account: string
+  account: string | null
 ) => {
   if (!account) {
     toastSwal("메타마스크 지갑을 연결해주세요.", "warning");
