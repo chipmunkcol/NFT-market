@@ -3,12 +3,10 @@ import loadingImg from "../assets/images/달팽이로딩.png";
 
 /**
  * LazyloadComponent
- * @description LazyloadComponent
- * @param {LazyloadComponentProps} props
- * @returns {JSX.Element} // img 태그
+ * @param {LazyloadComponentProps} // img 태그
  */
 interface LazyloadComponentProps {
-  children: JSX.Element;
+  children: JSX.Element; // img 태그
 }
 const LazyloadComponent = ({ children }: LazyloadComponentProps) => {
   const targetRef = useRef(null);
@@ -34,6 +32,7 @@ const LazyloadComponent = ({ children }: LazyloadComponentProps) => {
   }, []);
 
   return (
+    // loading img 대신 스켈레톤 UI가 더 좋을듯
     <div ref={targetRef}>{!inView ? <img src={loadingImg} /> : children}</div>
   );
 };
