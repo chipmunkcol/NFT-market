@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: install npm dependencies
-        run: npm install
+        run: cd dapp_react && npm install
 
       - name: react build
         run: npm run build
