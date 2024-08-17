@@ -72,6 +72,8 @@ jobs:
         # echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> $GITHUB_ENV
         # echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> $GITHUB_ENV
         # echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> $GITHUB_ENV
+      - name: Check .env file
+        run: cat dapp_react/.env
 
       - name: react build
         run: cd dapp_react && npm run build
