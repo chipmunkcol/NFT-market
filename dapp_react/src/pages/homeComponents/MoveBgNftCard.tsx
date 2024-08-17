@@ -15,10 +15,14 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
     `${getResizeImageUrl(image, ext)}?w=100&h=150`
   );
 
+  const [errorOccurred, setErrorOccurred] = useState(false);
+
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     // 이미 대체 URL로 변경했는지 확인하여 재호출 방지
     e.currentTarget.onerror = null;
-    if (src !== getImageUrl(image)) {
+    if (!errorOccurred) {
+      // 에러가 발생하지 않았을 경우에만 대체 URL로 변경
+      setErrorOccurred(true); // 에러 발생 상태로 변경
       setSrc(getImageUrl(image));
     }
   };
@@ -34,7 +38,7 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
         $direction={direction}
         src={src}
         // src={getImageUrl(image)}
-        onError={(e) => handleError(e)}
+        onError={handleError}
         alt="home-background-nftCard"
       />
     </ImgWrap>
