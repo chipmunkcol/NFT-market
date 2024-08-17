@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { getImageUrl, getResizeImageUrl } from "../../hooks/common";
 import { useNavigate } from "react-router-dom";
 import { DummyNft } from "../../../type";
+import { useState } from "react";
 
 interface MoveBgNftCardProps {
   nft: DummyNft;
@@ -9,10 +10,20 @@ interface MoveBgNftCardProps {
 }
 const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
   const { image, tokenUrl, ext } = nft;
+
+  const [src, setSrc] = useState(
+    `${getResizeImageUrl(image, ext)}?w=100&h=150`
+  );
+
+  const handleError = () => {
+    // 이미 대체 URL로 변경했는지 확인하여 재호출 방지
+    if (src !== getImageUrl(image)) {
+      setSrc(getImageUrl(image));
+    }
+  };
   const navigate = useNavigate();
 
   const navigateDetailPage = () => {
-    // navigate(`/nft-detail/${tokenUrl}/${nftId}`);
     navigate(`/nft-detail/${tokenUrl}/0`);
   };
 
@@ -20,9 +31,9 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
     <ImgWrap key={`testMovingBg2-${image}`} onClick={navigateDetailPage}>
       <Img
         $direction={direction}
-        src={`${getResizeImageUrl(image, ext)}?w=100&h=150`}
+        src={src}
         // src={getImageUrl(image)}
-        onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+        onError={handleError}
         alt="home-background-nftCard"
       />
     </ImgWrap>

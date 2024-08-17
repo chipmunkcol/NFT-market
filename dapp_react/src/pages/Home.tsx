@@ -10,16 +10,15 @@ import {
   findNftsSoldExpensively,
   findTop10NumberOfSales,
   findTopCollectorNfts,
-  getCollectionListToIpfs,
+  getCollectionListToIpfsToHome,
   getCurrentDate,
-  getNftListToIpfs,
+  getNftListToIpfsToHome,
 } from "../hooks/common";
 import Top10NftCard from "./homeComponents/Top10NftCard";
 import TopCollectorNftCard from "./homeComponents/TopCollectorNftCard";
 import Spinner from "../components/Spinner";
 import { dummyNfts } from "../components/dummyNfts";
 import MoveBgNftCard from "./homeComponents/MoveBgNftCard";
-import { homeCollectionUrl, homeNftUrl } from "../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
 import ExpensiveNftCard from "./homeComponents/ExpensiveNftCard";
 import LazyloadComponent from "../hooks/LazyloadComponent";
@@ -33,7 +32,8 @@ function Home() {
     isSuccess,
   } = useQuery({
     queryKey: ["home-nfts"],
-    queryFn: () => getNftListToIpfs(homeNftUrl),
+    queryFn: getNftListToIpfsToHome,
+    retry: 3,
   });
 
   const {
@@ -42,7 +42,8 @@ function Home() {
     isSuccess: isSuccessCollection,
   } = useQuery({
     queryKey: ["home-collections"],
-    queryFn: () => getCollectionListToIpfs(homeCollectionUrl),
+    queryFn: getCollectionListToIpfsToHome,
+    retry: 3,
   });
 
   const sliderRef = useRef(null);

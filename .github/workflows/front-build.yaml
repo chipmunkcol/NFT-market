@@ -40,16 +40,39 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> dapp_react/.env
-          echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> dapp_react/.env
-          echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> dapp_react/.env
-          echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> dapp_react/.env
-          echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> dapp_react/.env
-          echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> dapp_react/.env
-          echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> dapp_react/.env
-          echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> dapp_react/.env
-          echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> dapp_react/.env
-          echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> dapp_react/.env
+          echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> $GITHUB_ENV
+          echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> $GITHUB_ENV
+          echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> $GITHUB_ENV
+          echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> $GITHUB_ENV
+          echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> $GITHUB_ENV
+
+        # env:
+        #   VITE_IPFS_URL: ${{ secrets.VITE_IPFS_URL }}
+        #   VITE_GATEWAY_URL: ${{ secrets.VITE_GATEWAY_URL }}
+        #   VITE_GATEWAY_TOKEN: ${{ secrets.VITE_GATEWAY_TOKEN }}
+        #   VITE_IPFS_API_KEY: ${{ secrets.VITE_IPFS_API_KEY }}
+        #   VITE_IPFS_API_SECRET: ${{ secrets.VITE_IPFS_API_SECRET }}
+        #   VITE_IPFS_JWT: ${{ secrets.VITE_IPFS_JWT }}
+        #   VITE_DEFAULT_ACCOUNT: ${{ secrets.VITE_DEFAULT_ACCOUNT }}
+        #   VITE_IMAGE_RESIZE_URL: ${{ secrets.VITE_IMAGE_RESIZE_URL }}
+        #   VITE_AWS_S3_BUCKET_NAME: ${{ secrets.VITE_AWS_S3_BUCKET_NAME }}
+        #   VITE_AWS_S3_COGNITO_POOL_ID: ${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}
+        # run: |
+        #   echo "VITE_IPFS_URL=$VITE_IPFS_URL" >> dapp_react/.env
+        #   echo "VITE_GATEWAY_URL=$VITE_GATEWAY_URL" >> dapp_react/.env
+        #   echo "VITE_GATEWAY_TOKEN=$VITE_GATEWAY_TOKEN" >> dapp_react/.env
+        #   echo "VITE_IPFS_API_KEY=$VITE_IPFS_API_KEY" >> dapp_react/.env
+        #   echo "VITE_IPFS_API_SECRET=$VITE_IPFS_API_SECRET" >> dapp_react/.env
+        #   echo "VITE_IPFS_JWT=$VITE_IPFS_JWT" >> dapp_react/.env
+        #   echo "VITE_DEFAULT_ACCOUNT=$VITE_DEFAULT_ACCOUNT" >> dapp_react/.env
+        #   echo "VITE_IMAGE_RESIZE_URL=$VITE_IMAGE_RESIZE_URL" >> dapp_react/.env
+        #   echo "VITE_AWS_S3_BUCKET_NAME=$VITE_AWS_S3_BUCKET_NAME" >> dapp_react/.env
+        #   echo "VITE_AWS_S3_COGNITO_POOL_ID=$VITE_AWS_S3_COGNITO_POOL_ID" >> dapp_react/.env
 
       - name: react build
         run: cd dapp_react && npm run build

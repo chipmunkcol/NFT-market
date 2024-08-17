@@ -16,6 +16,7 @@ import {
   nftMetadataAddSoldPrice,
 } from "../../type";
 import { toastSwal } from "./swal";
+import { homeCollectionUrl, homeNftUrl } from "./variables.";
 
 export const getImageUrl = (imageIpfsHash: string) => {
   return `${
@@ -150,12 +151,22 @@ export const getNftListToIpfs = async (url: string): Promise<IpfsData[]> => {
   return result.rows;
 };
 
+export const getNftListToIpfsToHome = async (): Promise<IpfsData[]> => {
+  return getNftListToIpfs(homeNftUrl);
+};
+
 export const getCollectionListToIpfs = async (
   url: string
 ): Promise<CollectionIpfsData[]> => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   return result.rows;
+};
+
+export const getCollectionListToIpfsToHome = async (): Promise<
+  CollectionIpfsData[]
+> => {
+  return getCollectionListToIpfs(homeCollectionUrl);
 };
 
 export const getNftListAndCountToIpfs = async (
