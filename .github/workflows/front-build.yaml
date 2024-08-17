@@ -73,8 +73,8 @@ jobs:
       #   echo "VITE_IMAGE_RESIZE_URL=$VITE_IMAGE_RESIZE_URL" >> dapp_react/.env
       #   echo "VITE_AWS_S3_BUCKET_NAME=$VITE_AWS_S3_BUCKET_NAME" >> dapp_react/.env
       #   echo "VITE_AWS_S3_COGNITO_POOL_ID=$VITE_AWS_S3_COGNITO_POOL_ID" >> dapp_react/.env
-      - name: Check .env file
-        run: cat dapp_react/.env
+      # - name: Check .env file
+      #   run: cat dapp_react/.env
 
       - name: react build
         run: cd dapp_react && npm run build
