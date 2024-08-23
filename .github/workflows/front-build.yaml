@@ -52,18 +52,6 @@ jobs:
           echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> $GITHUB_ENV
           echo "VITE_INFURA_ID=${{ secrets.VITE_INFURA_ID }}" >> $GITHUB_ENV
 
-      # echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> dapp_react/.env
-      # echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> dapp_react/.env
-      # echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> dapp_react/.env
-      # echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> dapp_react/.env
-      # echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> dapp_react/.env
-      # echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> dapp_react/.env
-      # echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> dapp_react/.env
-      # echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> dapp_react/.env
-      # echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> dapp_react/.env
-      # echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> dapp_react/.env
-      # echo "VITE_INFURA_ID=${{ secrets.VITE_INFURA_ID }}" >> dapp_react/.env
-
       #  - name: Create .env file
       # run: |
       #   jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' <<< "$SECRETS_CONTEXT" > .env
