@@ -1,7 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { SkeletonLoader } from "../../hooks/LazyloadComponent";
 import OnsaleNftCard from "../../components/skeletonUI/OnsaleNftCard";
-// 
+
 const Marketplace = () => {
   const dummyList = Array.from({ length: 10 }, (_, i) => i + 1);
 
