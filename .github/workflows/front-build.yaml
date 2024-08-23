@@ -36,22 +36,33 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: install npm dependencies
-        run: npm install
-        # run: cd dapp_react && npm install
+        run: cd dapp_react && npm install
 
       - name: Create .env file
         run: |
-          echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> .env
-          echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> .env
-          echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> .env
-          echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> .env
-          echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> .env
-          echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> .env
-          echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> .env
-          echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> .env
-          echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> .env
-          echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> .env
-          echo "VITE_INFURA_ID=${{ secrets.VITE_INFURA_ID }}" >> .env
+          echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> $GITHUB_ENV
+          echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> $GITHUB_ENV
+          echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> $GITHUB_ENV
+          echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> $GITHUB_ENV
+          echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> $GITHUB_ENV
+          echo "VITE_INFURA_ID=${{ secrets.VITE_INFURA_ID }}" >> $GITHUB_ENV
+
+      # echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> dapp_react/.env
+      # echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> dapp_react/.env
+      # echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> dapp_react/.env
+      # echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> dapp_react/.env
+      # echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> dapp_react/.env
+      # echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> dapp_react/.env
+      # echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> dapp_react/.env
+      # echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> dapp_react/.env
+      # echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> dapp_react/.env
+      # echo "VITE_AWS_S3_COGNITO_POOL_ID=${{ secrets.VITE_AWS_S3_COGNITO_POOL_ID }}" >> dapp_react/.env
+      # echo "VITE_INFURA_ID=${{ secrets.VITE_INFURA_ID }}" >> dapp_react/.env
 
       #  - name: Create .env file
       # run: |
@@ -60,7 +71,7 @@ jobs:
       #   SECRETS_CONTEXT: ${{ toJson(secrets) }}
 
       - name: react build
-        run: npm run build
+        run: cd dapp_react && npm run build
 
       # aws에 접근하기 위한 권한을 받아옵니다.
       - name: Configure AWS credentials
@@ -76,7 +87,7 @@ jobs:
           BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME}}
         run: |
           aws s3 sync \
-            dist s3://$BUCKET_NAME
+            dapp_react/dist s3://$BUCKET_NAME
 
       # cloudfront로 배포되는 파일은 기본설정 상 24시간동안 캐시가 유지됩니다.
       # 배포 후 S3에는 최신 정적리소스가 올라가있지만 엣지로케이션엔 이전 파일이 올라가있는 상태라는 의미입니다.
