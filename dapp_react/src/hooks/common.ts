@@ -43,7 +43,7 @@ export const getIpfsTokenData = async (tokenUrl: string) => {
 export const ipfsGetOptions = {
   method: "GET",
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+    Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
   },
 };
 
@@ -51,7 +51,7 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
   return {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: jsonKeyvalues,
@@ -421,7 +421,7 @@ export const getImageIpfsHash = async (file: File): Promise<string> => {
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
     },
     body: formData,
   });
@@ -446,7 +446,7 @@ export const pinJsonToIPFS = async (
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: `{"pinataMetadata":${metaData}, "pinataContent":${jsonContent}}`,
@@ -478,7 +478,7 @@ export const pinFileToIPFS = async (
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
     },
     body: formData,
   });
@@ -567,7 +567,7 @@ export const pinJsonToIPFSForCart = async (owner: string, nft: any) => {
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`,
