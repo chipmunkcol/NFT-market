@@ -7,6 +7,7 @@ import { getNewOnsaleNfts, getNftListAndCountToIpfs, isArraysEqual } from "../..
 import Spinner from "../../components/Spinner";
 import { pinStart } from "../../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
+import Marketplace from "../../components/skeletonUI/Marketplace";
 
 
 const Collection = () => {
@@ -54,7 +55,7 @@ const Collection = () => {
   return (
     <Container>
       {/* {onsaleNftList.length < 1 && isLoadingApi && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />} */}
-      {isPending && <Spinner _custom={{ color: '#3498db', size: '30px', height: '100px' }} />}
+      {isPending && <Marketplace />}
       {isSuccess && onsaleNftList &&
         getNewOnsaleNfts(onsaleNftList)?.length < 1 ? (<div style={{ padding: '30px' }}>판매중인 NFT가 없습니다.</div>) : (
         <MarketWrap $gridCss={gridCss}>

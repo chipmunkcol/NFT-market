@@ -1,8 +1,0 @@
-import{r as v,G as L,b as S,d as j,a as k,e as q,j as a,S as b,g as m,p as g,f as N,h as c}from"./index-V15z69l1.js";import{O as w}from"./OnsaleNftCard-tG1CS4Un.js";import"./NftCard-UAIVIqnu.js";import"./Purchase-dsmIk5N6.js";const z=()=>{var u;v.useContext(L);const[t,C]=S(),n=100,[p]=j(),{search:h}=k(),l=p.get("query"),d=p.get("category"),y=encodeURIComponent(l),x=encodeURIComponent(`%${d}%`),o=async e=>{const{ipfsDatas:i,count:r}=await N(e);return C(r*10),i},{data:s,isPending:f,isSuccess:$}=q({queryKey:["marketplace_collection",h],queryFn:()=>{const e=`https://api.pinata.cloud/data/pinList?pageLimit=${n}&pinStart=${c}&metadata[keyvalues]={"isCollection":{"value":"true","op":"eq"}}`,i=`https://api.pinata.cloud/data/pinList?pageLimit=${n}&pinStart=${c}&metadata[name]=${y}&metadata[keyvalues]={"isCollection":{"value":"true","op":"eq"}}`,r=`https://api.pinata.cloud/data/pinList?pageLimit=${n}&pinStart=${c}&metadata[keyvalues]={"tags":{"value":"${x}","op":"like"},"isCollection":{"value":"true","op":"eq"}}`;return o(l?i:d?r:e)}});return a.jsxs(I,{children:[f&&a.jsx(b,{_custom:{color:"#3498db",size:"30px",height:"100px"}}),$&&s&&((u=m(s))==null?void 0:u.length)<1?a.jsx("div",{style:{padding:"30px"},children:"판매중인 NFT가 없습니다."}):a.jsx(O,{$gridCss:t,children:s&&m(s).map(e=>a.jsx(w,{nft:e,gridCss:t},`marketplace-collection-${e.nftId}`))}),a.jsx("div",{id:"observer-target",style:{width:"100%",height:"1px",backgroundColor:"transparent"}})]})},I=g.div``,O=g.div`
-  display: grid;
-  grid-template-columns: ${t=>t.$gridCss.gridTemplateColumns};
-  gap: ${t=>t.$gridCss.gap};
-  @media (max-width: ${({theme:t})=>t.size.mobile}) {
-    grid-template-columns: repeat(1, 1fr);
-  }
-`;export{z as default};

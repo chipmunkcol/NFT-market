@@ -13,6 +13,7 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
 
   const [src, setSrc] = useState(
     `${getResizeImageUrl(image, ext)}?w=100&h=150`
+    // getImageUrl(image)
   );
 
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -37,7 +38,6 @@ const MoveBgNftCard = ({ nft, direction }: MoveBgNftCardProps) => {
       <Img
         $direction={direction}
         src={src}
-        // src={getImageUrl(image)}
         onError={handleError}
         alt="home-background-nftCard"
       />
