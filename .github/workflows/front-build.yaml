@@ -45,7 +45,7 @@ jobs:
           echo "VITE_GATEWAY_TOKEN=${{ secrets.VITE_GATEWAY_TOKEN }}" >> $GITHUB_ENV
           echo "VITE_IPFS_API_KEY=${{ secrets.VITE_IPFS_API_KEY }}" >> $GITHUB_ENV
           echo "VITE_IPFS_API_SECRET=${{ secrets.VITE_IPFS_API_SECRET }}" >> $GITHUB_ENV
-          echo "VITE_IPFS_JWT=${{ secrets.VITE_IPFS_JWT }}" >> $GITHUB_ENV
+          echo "VITE_IPFS_JWT2=${{ secrets.VITE_IPFS_JWT2 }}" >> $GITHUB_ENV
           echo "VITE_DEFAULT_ACCOUNT=${{ secrets.VITE_DEFAULT_ACCOUNT }}" >> $GITHUB_ENV
           echo "VITE_IMAGE_RESIZE_URL=${{ secrets.VITE_IMAGE_RESIZE_URL }}" >> $GITHUB_ENV
           echo "VITE_AWS_S3_BUCKET_NAME=${{ secrets.VITE_AWS_S3_BUCKET_NAME }}" >> $GITHUB_ENV

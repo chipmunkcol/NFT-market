@@ -131,7 +131,7 @@ function MintNft() {
 
     const options = {
       method: 'POST',
-      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`, 'Content-Type': 'application/json' },
       body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`
     };
 
