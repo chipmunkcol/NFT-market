@@ -37,11 +37,8 @@ const useS3Upload = () => {
       const command = new PutObjectCommand(bucketParams);
       const response = await clientRef.current.send(command);
       console.log("response: ", response);
-      // result = true;
     } catch (err) {
       console.log("Error", err);
-    } finally {
-      // return result;
     }
   };
   return { uploadImageTos3 };

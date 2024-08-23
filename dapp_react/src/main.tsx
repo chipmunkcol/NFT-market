@@ -1,5 +1,10 @@
 import ReactDOM from "react-dom/client";
+
 import { RouterProvider } from "react-router-dom";
+// inter font
+import "@fontsource/inter"; // Defaults to weight 400
+import "@fontsource/inter/400.css"; // Specify weight
+import "@fontsource/inter/400-italic.css"; // Specify weight and style
 // import router from "./route/Router.js";
 import GlobalProvider from "./context/GlobalContext";
 import GlobalStyle from "./styles/global.js";

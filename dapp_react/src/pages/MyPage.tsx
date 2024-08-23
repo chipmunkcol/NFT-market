@@ -341,7 +341,7 @@ export default MyPage;
 // const getMyNftByIpfs = async () => {
 //   if (!account) return;
 
-//   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
+//   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}` } };
 //   const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
 //   fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
 //     // fetch('https://api.pinata.cloud/data/pinList', options)
@@ -356,7 +356,7 @@ export default MyPage;
 // const getMyNftByIpfs = async () => {
 //   if (!account) return;
 
-//   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}` } };
+//   const options = { method: 'GET', headers: { Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}` } };
 //   const metadataQuery = encodeURIComponent(`{"value":"${account}", "op":"iLike"}`);
 //   fetch(`https://api.pinata.cloud/data/pinList?metadata[keyvalues][owner]=${metadataQuery}`, options)
 //     // fetch('https://api.pinata.cloud/data/pinList', options)

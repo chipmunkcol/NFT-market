@@ -7,7 +7,6 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { getNftListAndCountToIpfs } from "../../hooks/common";
-import Spinner from "../../components/Spinner";
 import {
   marketplaceNftCategoryUrl,
   marketplaceNftqueryUrl,
@@ -15,6 +14,7 @@ import {
 } from "../../hooks/variables.";
 import { useQuery } from "@tanstack/react-query";
 import { IpfsData, NewOnsaleNft } from "../../../type";
+import Marketplace from "../../components/skeletonUI/Marketplace";
 // import {tempNftArray} from "../../../../testJson/nftArray";
 
 export type GridCss = {
@@ -94,11 +94,7 @@ const Nft = () => {
 
   return (
     <Container>
-      {isPending && (
-        <Spinner
-          _custom={{ color: "#3498db", size: "30px", height: "100px" }}
-        />
-      )}
+      {isPending && <Marketplace />}
       {isSuccess &&
       onsaleNftList &&
       getNewOnsaleNfts(onsaleNftList)?.length < 1 ? (

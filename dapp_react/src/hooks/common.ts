@@ -16,6 +16,7 @@ import {
   nftMetadataAddSoldPrice,
 } from "../../type";
 import { toastSwal } from "./swal";
+import { homeCollectionUrl, homeNftUrl } from "./variables.";
 
 export const getImageUrl = (imageIpfsHash: string) => {
   return `${
@@ -43,7 +44,7 @@ export const getIpfsTokenData = async (tokenUrl: string) => {
 export const ipfsGetOptions = {
   method: "GET",
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+    Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
   },
 };
 
@@ -51,7 +52,7 @@ export const ipfsPutOptions = (jsonKeyvalues: string) => {
   return {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: jsonKeyvalues,
@@ -150,12 +151,22 @@ export const getNftListToIpfs = async (url: string): Promise<IpfsData[]> => {
   return result.rows;
 };
 
+export const getNftListToIpfsToHome = async (): Promise<IpfsData[]> => {
+  return getNftListToIpfs(homeNftUrl);
+};
+
 export const getCollectionListToIpfs = async (
   url: string
 ): Promise<CollectionIpfsData[]> => {
   const res = await fetch(url, ipfsGetOptions);
   const result = await res.json();
   return result.rows;
+};
+
+export const getCollectionListToIpfsToHome = async (): Promise<
+  CollectionIpfsData[]
+> => {
+  return getCollectionListToIpfs(homeCollectionUrl);
 };
 
 export const getNftListAndCountToIpfs = async (
@@ -421,7 +432,7 @@ export const getImageIpfsHash = async (file: File): Promise<string> => {
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
     },
     body: formData,
   });
@@ -446,7 +457,7 @@ export const pinJsonToIPFS = async (
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: `{"pinataMetadata":${metaData}, "pinataContent":${jsonContent}}`,
@@ -478,7 +489,7 @@ export const pinFileToIPFS = async (
   const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
     },
     body: formData,
   });
@@ -567,7 +578,7 @@ export const pinJsonToIPFSForCart = async (owner: string, nft: any) => {
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT}`,
+      Authorization: `Bearer ${import.meta.env.VITE_IPFS_JWT2}`,
       "Content-Type": "application/json",
     },
     body: `{"pinataContent":${jsonContent},"pinataMetadata":${metaData}}`,

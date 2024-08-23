@@ -16,7 +16,7 @@ import { transactWithPurchaseNft } from "../../contracts/interface";
 // import Cart from "./onsaleNftCard/Cart";
 import useGetTokenData from "../hooks/useGetTokenData";
 import loadingImg from "../assets/images/달팽이로딩.png"
-import LazyloadComponent from "../hooks/LazyloadComponent";
+import LazyloadComponent, { SkeletonLoader } from "../hooks/LazyloadComponent";
 import Cart from "./button/Cart";
 import Purchase from "./button/Purchase";
 
@@ -74,7 +74,7 @@ const OnsaleNftCard = ({ nft, gridCss }) => {
                 // src={getImageUrl(image)}
                 src={`${getResizeImageUrl(image, ext)}?w=200&h=200`}
                 onError={(e) => (e.currentTarget.src = getImageUrl(image))} alt="NFT image" />
-              : <Img src={loadingImg} alt="loading..." />
+              : <SkeletonLoader $css={{ height: '193px' }} />
           }
         </LazyloadComponent>
       </ImgWrap>

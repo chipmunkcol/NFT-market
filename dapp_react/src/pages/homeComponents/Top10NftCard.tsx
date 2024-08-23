@@ -33,17 +33,19 @@ const Top10NftCard = ({ nft, index }: Top10NftCardProps) => {
           </ItemInfo>
         </ItemContent>
         <ItemImg onClick={navigateDetailPage}>
-          <LazyLoadFlipedComponet css={{ color: "#6c707b33" }}>
-            <img
-              src={`${getResizeImageUrl(image, ext)}?w=50`}
-              // src={getImageUrl(image)}
-              onError={(e) => (e.currentTarget.src = getImageUrl(image))}
-              alt="top10-nft-card"
-              width={40}
-              height={40}
-              style={{ height: "40px" }}
-            />
-          </LazyLoadFlipedComponet>
+          {image && (
+            <LazyLoadFlipedComponet css={{ color: "#6c707b33" }}>
+              <img
+                src={`${getResizeImageUrl(image, ext)}?w=50`}
+                // src={getImageUrl(image)}
+                onError={(e) => (e.currentTarget.src = getImageUrl(image))}
+                alt="top10-nft-card"
+                width={40}
+                height={40}
+                style={{ height: "40px" }}
+              />
+            </LazyLoadFlipedComponet>
+          )}
         </ItemImg>
       </Item>
     </>

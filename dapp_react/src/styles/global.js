@@ -1,6 +1,10 @@
 import { createGlobalStyle } from "styled-components";
-
+// import {} from ''
 const GlobalStyles = createGlobalStyle`
+    @font-face {
+        font-family: 'inter';
+        src: url('./assets/fonts/Inter-Regular.ttf');
+    }
     // 적용시킬 css 입력
     :root {
         user-select: none;
@@ -23,7 +27,7 @@ const GlobalStyles = createGlobalStyle`
     }
     body{
         line-height: 1;
-        font-family: 'Noto Sans KR', sans-serif;
+        font-family: 'Inter';
         background-color: #F6F9F0;
         color: ${({ theme }) => theme.color.font.main};
     }
@@ -35,6 +39,7 @@ const GlobalStyles = createGlobalStyle`
         background: transparent;
         cursor: pointer;
     }
+    
 `;
 
 export default GlobalStyles;
