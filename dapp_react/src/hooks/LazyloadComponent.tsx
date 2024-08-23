@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import loadingImg from "../assets/images/달팽이로딩.png";
 import styled, { keyframes } from "styled-components";
 
 type Css = {

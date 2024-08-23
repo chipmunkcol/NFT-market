@@ -7,7 +7,6 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { getNftListAndCountToIpfs } from "../../hooks/common";
-import Spinner from "../../components/Spinner";
 import {
   marketplaceNftCategoryUrl,
   marketplaceNftqueryUrl,
