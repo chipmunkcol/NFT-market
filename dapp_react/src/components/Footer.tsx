@@ -115,7 +115,7 @@ export default function Footer() {
               </LazyloadComponent>
             </LogoWrap>
           </div>
-          <h2>OpenSea</h2>
+          <h2>NFT Sea</h2>
           <p>
             The world’s first and largest digital <br />
             marketplace for crypto collectibles and <br />

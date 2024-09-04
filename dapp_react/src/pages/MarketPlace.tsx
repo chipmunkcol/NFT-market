@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import bgMain from "../assets/images/bg-main.png";
 // import iconFind from "../assets/images/icon-find.svg";
 import iconFind from "../assets/images/icon-find.png";
 import iconGrid4 from "../assets/images/icon-grid4.png";
@@ -402,10 +401,6 @@ const Background = styled.div`
   padding-top: 72px;
   width: 100%;
   background-color: #ffffff;
-  /* background-image: url(${bgMain});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover; */
 `;
 
 const LeftPart = styled.div`

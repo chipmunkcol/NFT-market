@@ -46,8 +46,6 @@ function Home() {
     retry: 3,
   });
 
-  const sliderRef = useRef(null);
-
   const [nftsSoldExpensivelyIndex, setNftsSoldExpensivelyIndex] = useState(0);
 
   const [topCollectorNftsIndex, setTopCollectorNftsIndex] = useState(0);
@@ -77,7 +75,7 @@ function Home() {
     <Background>
       <Container>
         <S_Background $bgColor="#161618">
-          <Slider sliderRef={sliderRef} />
+          <Slider />
           <div
             style={{
               display: "flex",
