@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import styled from "styled-components";
 import goodHand from "../assets/images/good-hand.png";
