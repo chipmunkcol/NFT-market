@@ -288,6 +288,7 @@ const FlexBox = styled.div`
   flex-direction: row;
   justify-content: center;
   gap: 2rem;
+  margin-bottom: 2rem;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     flex-direction: column;
     gap: 0;
@@ -345,7 +346,7 @@ const RankingTitle = styled.div`
     margin-left: 10px;
     font-size: 14px;
     font-weight: 500;
-    color: #6c707b;
+    color: #a1a2aa;
   }
 `;
 

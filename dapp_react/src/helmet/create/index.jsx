@@ -9,6 +9,7 @@ export default function Index() {
       <meta property="og:title" content="NFT 생성 페이지" />
       <meta property="og:description" content="이미지 파일을 통해 NFT를 쉽게 생성하고, 컬렉션 NFT를 드롭할 수 있습니다." />
       <meta property="og:image" content="https://opensea.io/static/images/logos/opensea-logo.svg?react" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta property="og:url" content="https://dztwi6z9vov5x.cloudfront.net/create" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="NFT 생성 페이지" />

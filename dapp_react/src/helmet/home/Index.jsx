@@ -9,11 +9,13 @@ export default function Index() {
       <meta property="og:title" content="NFT home-page" />
       <meta property="og:description" content="최고의 NFT를 만나보세요. 실시간 NFT 랭킹과 인기 컬렉터의 NFT를 확인할 수 있습니다." />
       <meta property="og:image" content="https://opensea.io/static/images/logos/opensea-logo.svg?react" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta property="og:url" content="https://dztwi6z9vov5x.cloudfront.net/" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="NFT home-page" />
       <meta name="twitter:description" content="최고의 NFT를 만나보세요. 실시간 NFT 랭킹과 인기 컬렉터의 NFT를 확인할 수 있습니다." />
       <meta name="twitter:image" content="https://opensea.io/static/images/logos/opensea-logo.svg?react" />
+      <meta name="viewport"></meta>
     </Helmet>
   )
 }   

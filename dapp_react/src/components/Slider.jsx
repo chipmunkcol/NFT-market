@@ -22,7 +22,7 @@ const Slider = () => {
           modules={[Autoplay]}
           // effect="cube"
           style={{ height: '100%' }}
-          spaceBetween={50}
+          // spaceBetween={50}
           slidesPerView={1}
           loop={true}
           speed={2000}
