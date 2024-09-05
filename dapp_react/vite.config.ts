@@ -6,6 +6,7 @@ import prerender from "@prerenderer/rollup-plugin";
 // import svgr from "vite-plugin-svgr";
 // import { nodePolyfills } from "vite-plugin-node-polyfills";
 
+// 기존 s3 삭제
 export default defineConfig({
   plugins: [
     react(),
