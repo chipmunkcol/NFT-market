@@ -19,7 +19,8 @@ const Slider = () => {
       <Box>
         <Swiper
           // modules={[Navigation, Pagination, Scrollbar, A11y]}
-          modules={[EffectCube, Autoplay]}
+          modules={[Autoplay]}
+          // effect="cube"
           style={{ height: '100%' }}
           spaceBetween={50}
           slidesPerView={1}

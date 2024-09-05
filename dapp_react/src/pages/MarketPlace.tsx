@@ -7,6 +7,7 @@ import iconGrid9 from "../assets/images/icon-grid9.png";
 import iconList from "../assets/images/icon-list.png";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { commingSoon } from "../hooks/common";
+import Index from "../helmet/marketPlace";
 
 const MarketPlace = () => {
   const navigate = useNavigate();
@@ -88,6 +89,8 @@ const MarketPlace = () => {
   // }
 
   return (
+    <>
+    <Index /> 
     <Background>
       <Container>
         <FixArea>
@@ -201,6 +204,7 @@ const MarketPlace = () => {
         </div>
       </Container>
     </Background>
+    </>
   );
 };
 
