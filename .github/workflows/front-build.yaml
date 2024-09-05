@@ -23,22 +23,22 @@ jobs:
 
       # workflow가 실행될 때 필요한 파일 중에서 거의 바뀌지 않는 파일들을 GitHub의 캐시에 올려놓고 CI 서버로 내려받습니다.
       # 프로젝트에서 자주 바뀌지 않는 수많은 패키지를 매번 다운받아 올리면 시간도 오래걸리고 네트워크 대역폭을 많이 사용하게됩니다.
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - name: Get npm cache directory
+      #   id: npm-cache-dir
+      #   run: |
+      #     echo "::set-output name=dir::$(npm config get cache)"
+      # - uses: actions/cache@v3
+      #   id: npm-cache
+      #   with:
+      #     path: ${{ steps.npm-cache-dir.outputs.dir }}
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: install npm dependencies
         run: cd dapp_react && npm install
 
-      - name: Create .env file
+      - name: set .env file
         run: |
           echo "VITE_IPFS_URL=${{ secrets.VITE_IPFS_URL }}" >> $GITHUB_ENV
           echo "VITE_GATEWAY_URL=${{ secrets.VITE_GATEWAY_URL }}" >> $GITHUB_ENV
@@ -86,4 +86,4 @@ jobs:
           CLOUD_FRONT_ID: ${{ secrets.AWS_CLOUDFRONT_ID}}
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id $CLOUD_FRONT_ID --paths /*
+            --distribution-id $CLOUD_FRONT_ID --paths "/*"

@@ -87,5 +87,5 @@ export const ItemInfo = styled.div`
 export const ItemName = styled.div``;
 export const ItemPrice = styled.div`
   font-size: 12px;
-  color: #ffffff4d;
+  color: #b9bac0;
 `;

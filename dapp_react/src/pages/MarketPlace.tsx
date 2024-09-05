@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import bgMain from "../assets/images/bg-main.png";
 // import iconFind from "../assets/images/icon-find.svg";
 import iconFind from "../assets/images/icon-find.png";
 import iconGrid4 from "../assets/images/icon-grid4.png";
@@ -8,6 +7,7 @@ import iconGrid9 from "../assets/images/icon-grid9.png";
 import iconList from "../assets/images/icon-list.png";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { commingSoon } from "../hooks/common";
+import Index from "../helmet/marketPlace";
 
 const MarketPlace = () => {
   const navigate = useNavigate();
@@ -89,6 +89,8 @@ const MarketPlace = () => {
   // }
 
   return (
+    <>
+    <Index /> 
     <Background>
       <Container>
         <FixArea>
@@ -202,6 +204,7 @@ const MarketPlace = () => {
         </div>
       </Container>
     </Background>
+    </>
   );
 };
 
@@ -402,10 +405,6 @@ const Background = styled.div`
   padding-top: 72px;
   width: 100%;
   background-color: #ffffff;
-  /* background-image: url(${bgMain});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover; */
 `;
 
 const LeftPart = styled.div`

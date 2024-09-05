@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 
 import { RouterProvider } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 // inter font
 import "@fontsource/inter"; // Defaults to weight 400
 import "@fontsource/inter/400.css"; // Specify weight
@@ -140,7 +141,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <GlobalProvider>
-        <RouterProvider router={router} />
+        <HelmetProvider>
+          <RouterProvider router={router} />
+        </HelmetProvider>
       </GlobalProvider>
     </ThemeProvider>
   </>

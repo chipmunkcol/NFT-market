@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Scrollbar, A11y, EffectCube } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar, A11y, EffectCube, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
 import 'swiper/css/effect-cube';
 import Banner1 from "../assets/images/banner-main1.png";
 import Banner2 from "../assets/images/banner-main2.png";
@@ -14,33 +12,21 @@ import { useEffect } from "react";
 import { useRef } from "react";
 
 
-const Slider = ({ sliderRef }) => {
-  // const [slider, setSlider] = useState(null);
-  // const sliderRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (slider) {
-
-  //   }
-  // }, [slider])
+const Slider = () => {
 
   return (
     <Container>
       <Box>
         <Swiper
           // modules={[Navigation, Pagination, Scrollbar, A11y]}
-          modules={[EffectCube]}
-          effect="cube"
+          modules={[Autoplay]}
+          // effect="cube"
           style={{ height: '100%' }}
-          spaceBetween={50}
+          // spaceBetween={50}
           slidesPerView={1}
-          // onActiveIndexChange={(e) => console.log(e.realIndex)}
-          onSwiper={(swiper) => sliderRef.current = swiper}
           loop={true}
-          speed={1000}
-          autoplay={{ delay: 3000 }}
-          pagination={{ clickable: true }}
-          scrollbar={{ draggable: true }}
+          speed={2000}
+          autoplay={{ delay: 5000 }}
         >
           <SwiperSlide>
             <BannerWrap>
@@ -52,11 +38,6 @@ const Slider = ({ sliderRef }) => {
               <BannerImg2 />
             </BannerWrap>
           </SwiperSlide>
-          {/* <SwiperSlide>
-          <BannerWrap>
-            <BannerImg3 />
-          </BannerWrap>
-        </SwiperSlide> */}
         </Swiper>
       </Box>
     </Container>

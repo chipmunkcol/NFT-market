@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import mainImage from "../../assets/images/create-main-image.png"
-import mainImage2 from "../../assets/images/create-main-image2.png"
-import mainImage3 from "../../assets/images/create-main-image3.png"
+import mainImage from "../../assets/images/create-main-image.webp"
+import mainImage2 from "../../assets/images/create-main-image2.webp"
+import mainImage3 from "../../assets/images/create-main-image3.webp"
 
 
 const Slider = () => {

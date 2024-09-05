@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import styled from "styled-components";
 import goodHand from "../assets/images/good-hand.png";
@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import ExpensiveNftCard from "./homeComponents/ExpensiveNftCard";
 import LazyloadComponent from "../hooks/LazyloadComponent";
 import SkeletonUI from "../components/skeletonUI/Top10NftCard";
+import Index from "../helmet/home/Index";
 
 // Detect the MetaMask Ethereum provider
 function Home() {
@@ -45,8 +46,6 @@ function Home() {
     queryFn: getCollectionListToIpfsToHome,
     retry: 3,
   });
-
-  const sliderRef = useRef(null);
 
   const [nftsSoldExpensivelyIndex, setNftsSoldExpensivelyIndex] = useState(0);
 
@@ -74,193 +73,196 @@ function Home() {
   };
 
   return (
-    <Background>
-      <Container>
-        <S_Background $bgColor="#161618">
-          <Slider sliderRef={sliderRef} />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              gap: "1rem",
-              padding: "2rem 0",
-            }}
-          >
-            <TestWrap>
-              <TestMovingBg>
-                {[...dummyNfts].splice(0, 6).map((nft) => (
-                  <MoveBgNftCard
-                    key={`home-bg-left-1-${nft.image}`}
-                    nft={nft}
-                    direction={"down"}
-                  />
-                ))}
-              </TestMovingBg>
-            </TestWrap>
-            <TestWrap>
-              <TestMovingBg>
-                {[...dummyNfts]
-                  .splice(7, 13)
-                  .reverse()
-                  .map((nft) => (
+    <>
+      <Index />
+      <Background>
+        <Container>
+          <S_Background $bgColor="#161618">
+            <Slider />
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                gap: "1rem",
+                padding: "2rem 0",
+              }}
+            >
+              <TestWrap>
+                <TestMovingBg>
+                  {[...dummyNfts].splice(0, 6).map((nft) => (
                     <MoveBgNftCard
-                      key={`home-bg-left-2-${nft.image}`}
-                      nft={nft}
-                      direction={"up"}
-                    />
-                  ))}
-              </TestMovingBg>
-            </TestWrap>
-            <RankingArea>
-              <RankingTitle>
-                <h2>NFT 랭킹</h2>
-                <h4>{getCurrentDate()} 기준</h4>
-              </RankingTitle>
-              <RankingBox>
-                <FilterWrap>
-                  <FilterItem>실시간</FilterItem>
-                  <FilterItem>7일</FilterItem>
-                  <FilterItem>30일</FilterItem>
-                </FilterWrap>
-                <ItemWrap>
-                  {isPending && <SkeletonUI />}
-                  {isSuccess &&
-                    nfts.length > 0 &&
-                    findTop10NumberOfSales(nfts).map((nft, index) => (
-                      <Top10NftCard
-                        key={`top10Nfts-${nft.nftId}`}
-                        nft={nft}
-                        index={index}
-                      />
-                    ))}
-                </ItemWrap>
-              </RankingBox>
-            </RankingArea>
-            <TestWrap>
-              <TestMovingBg>
-                {[...dummyNfts]
-                  .splice(0, 6)
-                  .reverse()
-                  .map((nft) => (
-                    <MoveBgNftCard
-                      key={`home-bg-right-1-${nft.image}`}
+                      key={`home-bg-left-1-${nft.image}`}
                       nft={nft}
                       direction={"down"}
                     />
                   ))}
-              </TestMovingBg>
-            </TestWrap>
-            <TestWrap>
-              <TestMovingBg>
-                {[...dummyNfts].splice(7, 13).map((nft) => (
-                  <MoveBgNftCard
-                    key={`home-bg-right-2-${nft.image}`}
-                    nft={nft}
-                    direction={"up"}
-                  />
-                ))}
-              </TestMovingBg>
-            </TestWrap>
+                </TestMovingBg>
+              </TestWrap>
+              <TestWrap>
+                <TestMovingBg>
+                  {[...dummyNfts]
+                    .splice(7, 13)
+                    .reverse()
+                    .map((nft) => (
+                      <MoveBgNftCard
+                        key={`home-bg-left-2-${nft.image}`}
+                        nft={nft}
+                        direction={"up"}
+                      />
+                    ))}
+                </TestMovingBg>
+              </TestWrap>
+              <RankingArea>
+                <RankingTitle>
+                  <h2>NFT 랭킹</h2>
+                  <h4>{getCurrentDate()} 기준</h4>
+                </RankingTitle>
+                <RankingBox>
+                  <FilterWrap>
+                    <FilterItem>실시간</FilterItem>
+                    <FilterItem>7일</FilterItem>
+                    <FilterItem>30일</FilterItem>
+                  </FilterWrap>
+                  <ItemWrap>
+                    {isPending && <SkeletonUI />}
+                    {isSuccess &&
+                      nfts.length > 0 &&
+                      findTop10NumberOfSales(nfts).map((nft, index) => (
+                        <Top10NftCard
+                          key={`top10Nfts-${nft.nftId}`}
+                          nft={nft}
+                          index={index}
+                        />
+                      ))}
+                  </ItemWrap>
+                </RankingBox>
+              </RankingArea>
+              <TestWrap>
+                <TestMovingBg>
+                  {[...dummyNfts]
+                    .splice(0, 6)
+                    .reverse()
+                    .map((nft) => (
+                      <MoveBgNftCard
+                        key={`home-bg-right-1-${nft.image}`}
+                        nft={nft}
+                        direction={"down"}
+                      />
+                    ))}
+                </TestMovingBg>
+              </TestWrap>
+              <TestWrap>
+                <TestMovingBg>
+                  {[...dummyNfts].splice(7, 13).map((nft) => (
+                    <MoveBgNftCard
+                      key={`home-bg-right-2-${nft.image}`}
+                      nft={nft}
+                      direction={"up"}
+                    />
+                  ))}
+                </TestMovingBg>
+              </TestWrap>
+            </div>
+          </S_Background>
+          <div style={{ marginTop: "-2rem" }}>
+            <FlexBox>
+              <TopPicksBox>
+                <BgTitle>
+                  TOP <br /> COLLECTOR
+                </BgTitle>
+                <MainTitle>
+                  <TopPickImgWrap>
+                    <LazyloadComponent>
+                      <img src={goodHand} alt="good-hand" />
+                    </LazyloadComponent>
+                  </TopPickImgWrap>
+                  <h2>TOP 컬렉터의 NFT</h2>
+                  <p>가장 인기있는 컬렉터의 NFT를 만나보세요</p>
+                </MainTitle>
+                <div style={{ marginTop: "4rem" }}>
+                  <ul
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    {isPendingCollection && <Spinner />}
+                    {isSuccessCollection &&
+                      collections.length > 0 &&
+                      findTopCollectorNfts(collections)
+                        .slice(topCollectorNftsIndex, topCollectorNftsIndex + 3)
+                        .map((nft) => (
+                          <TopCollectorNftCard
+                            key={`home-topCollectNfts-${nft.nftId}`}
+                            nft={nft}
+                          />
+                        ))}
+                  </ul>
+                  <ButtonArea>
+                    <ButtonBox onClick={refreshTopCollectorNfts}>
+                      <div>
+                        <i />✨
+                      </div>
+                      <p>다른 NFT 보기</p>
+                    </ButtonBox>
+                  </ButtonArea>
+                </div>
+              </TopPicksBox>
+              <HighestPriceBox>
+                <HighBgTitle>
+                  PREMIUM <br /> NFT
+                </HighBgTitle>
+                <MainTitle>
+                  <TopPickImgWrap>
+                    <LazyloadComponent>
+                      <img src={premiumCrown} alt="premiun-crown" />
+                    </LazyloadComponent>
+                  </TopPickImgWrap>
+                  <h2>100만원 이상으로 거래됐어요</h2>
+                  <p>우린 이걸 프리미엄이라고 불러요</p>
+                </MainTitle>
+                <div style={{ marginTop: "4rem" }}>
+                  <ul
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    {isPending && <Spinner />}
+                    {isSuccess &&
+                      nfts.length > 0 &&
+                      findNftsSoldExpensively(nfts)
+                        .slice(
+                          nftsSoldExpensivelyIndex,
+                          nftsSoldExpensivelyIndex + 1
+                        )
+                        .map((nft) => (
+                          <ExpensiveNftCard
+                            key={`expensive-nft-${nft.nftId}`}
+                            nft={nft}
+                          />
+                        ))}
+                  </ul>
+                  <ButtonArea>
+                    <ButtonBox onClick={refreshNftsSoldExpensively}>
+                      <div>
+                        <i />✨
+                      </div>
+                      <p>다른 NFT 보기</p>
+                    </ButtonBox>
+                  </ButtonArea>
+                </div>
+              </HighestPriceBox>
+            </FlexBox>
           </div>
-        </S_Background>
-        <div style={{ marginTop: "-2rem" }}>
-          <FlexBox>
-            <TopPicksBox>
-              <BgTitle>
-                TOP <br /> COLLECTOR
-              </BgTitle>
-              <MainTitle>
-                <TopPickImgWrap>
-                  <LazyloadComponent>
-                    <img src={goodHand} alt="good-hand" />
-                  </LazyloadComponent>
-                </TopPickImgWrap>
-                <h2>TOP 컬렉터의 NFT</h2>
-                <p>가장 인기있는 컬렉터의 NFT를 만나보세요</p>
-              </MainTitle>
-              <div style={{ marginTop: "4rem" }}>
-                <ul
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  {isPendingCollection && <Spinner />}
-                  {isSuccessCollection &&
-                    collections.length > 0 &&
-                    findTopCollectorNfts(collections)
-                      .slice(topCollectorNftsIndex, topCollectorNftsIndex + 3)
-                      .map((nft) => (
-                        <TopCollectorNftCard
-                          key={`home-topCollectNfts-${nft.nftId}`}
-                          nft={nft}
-                        />
-                      ))}
-                </ul>
-                <ButtonArea>
-                  <ButtonBox onClick={refreshTopCollectorNfts}>
-                    <div>
-                      <i />✨
-                    </div>
-                    <p>다른 NFT 보기</p>
-                  </ButtonBox>
-                </ButtonArea>
-              </div>
-            </TopPicksBox>
-            <HighestPriceBox>
-              <HighBgTitle>
-                PREMIUM <br /> NFT
-              </HighBgTitle>
-              <MainTitle>
-                <TopPickImgWrap>
-                  <LazyloadComponent>
-                    <img src={premiumCrown} alt="premiun-crown" />
-                  </LazyloadComponent>
-                </TopPickImgWrap>
-                <h2>100만원 이상으로 거래됐어요</h2>
-                <p>우린 이걸 프리미엄이라고 불러요</p>
-              </MainTitle>
-              <div style={{ marginTop: "4rem" }}>
-                <ul
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                  }}
-                >
-                  {isPending && <Spinner />}
-                  {isSuccess &&
-                    nfts.length > 0 &&
-                    findNftsSoldExpensively(nfts)
-                      .slice(
-                        nftsSoldExpensivelyIndex,
-                        nftsSoldExpensivelyIndex + 1
-                      )
-                      .map((nft) => (
-                        <ExpensiveNftCard
-                          key={`expensive-nft-${nft.nftId}`}
-                          nft={nft}
-                        />
-                      ))}
-                </ul>
-                <ButtonArea>
-                  <ButtonBox onClick={refreshNftsSoldExpensively}>
-                    <div>
-                      <i />✨
-                    </div>
-                    <p>다른 NFT 보기</p>
-                  </ButtonBox>
-                </ButtonArea>
-              </div>
-            </HighestPriceBox>
-          </FlexBox>
-        </div>
-      </Container>
-    </Background>
+        </Container>
+      </Background>
+    </>
   );
 }
 
@@ -286,6 +288,7 @@ const FlexBox = styled.div`
   flex-direction: row;
   justify-content: center;
   gap: 2rem;
+  margin-bottom: 2rem;
   @media (max-width: ${({ theme }) => theme.size.mobile}) {
     flex-direction: column;
     gap: 0;
@@ -343,7 +346,7 @@ const RankingTitle = styled.div`
     margin-left: 10px;
     font-size: 14px;
     font-weight: 500;
-    color: #6c707b;
+    color: #a1a2aa;
   }
 `;
 

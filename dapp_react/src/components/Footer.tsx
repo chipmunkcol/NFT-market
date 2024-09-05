@@ -38,7 +38,11 @@ export default function Footer() {
           <div>
             <ul>
               <li>
-                <a href="https://x.com/opensea" target="_blank">
+                <a
+                  href="https://x.com/opensea"
+                  aria-label="Go to opensea's twitter"
+                  target="_blank"
+                >
                   {/* <SvgWrap>
                     <TwitterSvg />
                   </SvgWrap> */}
@@ -50,7 +54,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://www.instagram.com/opensea/" target="_blank">
+                <a
+                  href="https://www.instagram.com/opensea/"
+                  aria-label="Go to opensea's Instagram"
+                  target="_blank"
+                >
                   {/* <SvgWrap>
                     <InstagramSvg />
                   </SvgWrap> */}
@@ -62,7 +70,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://discord.com/invite/opensea" target="_blank">
+                <a
+                  href="https://discord.com/invite/opensea"
+                  aria-label="Go to opensea's Discord"
+                  target="_blank"
+                >
                   {/* <SvgWrap>
                     <DiscordSvg />
                   </SvgWrap> */}
@@ -74,7 +86,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://www.youtube.com/c/OpenSeaTV " target="_blank">
+                <a
+                  href="https://www.youtube.com/c/OpenSeaTV"
+                  aria-label="Go to opensea's Youtube"
+                  target="_blank"
+                >
                   {/* <SvgWrap>
                     <YoutubeSvg />
                   </SvgWrap> */}
@@ -115,7 +131,7 @@ export default function Footer() {
               </LazyloadComponent>
             </LogoWrap>
           </div>
-          <h2>OpenSea</h2>
+          <h2>NFT Sea</h2>
           <p>
             The world’s first and largest digital <br />
             marketplace for crypto collectibles and <br />
