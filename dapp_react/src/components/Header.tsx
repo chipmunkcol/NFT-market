@@ -98,10 +98,7 @@ export default function Header() {
       if (!res.isConfirmed) return;
       const isMobile = /Mobi/i.test(window.navigator.userAgent);
       if (isMobile) {
-        window.open(
-          "https://metamask.app.link/dapp/nft-market-m271.vercel.app/",
-          "_blank"
-        );
+        window.open("https://metamask.app.link/dapp/", "_blank");
       } else {
         window.open(
           "https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=ko",

@@ -69,6 +69,11 @@ width: 100%;
 const Container = styled.div`
   padding: 2rem 0 0 0;
   user-select: none;
+  display: block;
+  
+  @media (max-width: ${({ theme }) => theme.size.mobile}) {
+    display: none;
+  }
 `;
 const Box = styled.div`
   width: 858px;
