@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import detectEthereumProvider from "@metamask/detect-provider";
 import styled from "styled-components";
 import goodHand from "../assets/images/good-hand.png";
@@ -71,6 +71,23 @@ function Home() {
       setNftsSoldExpensivelyIndex(0);
     }
   };
+
+  // mobile size check (480px)
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 480) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <>
@@ -193,7 +210,12 @@ function Home() {
                     {isSuccessCollection &&
                       collections.length > 0 &&
                       findTopCollectorNfts(collections)
-                        .slice(topCollectorNftsIndex, topCollectorNftsIndex + 3)
+                        .slice(
+                          topCollectorNftsIndex,
+                          isMobile
+                            ? topCollectorNftsIndex + 1
+                            : topCollectorNftsIndex + 3
+                        )
                         .map((nft) => (
                           <TopCollectorNftCard
                             key={`home-topCollectNfts-${nft.nftId}`}
