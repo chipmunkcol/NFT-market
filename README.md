@@ -1,4 +1,5 @@
-## [🐱‍🏍NFT 마켓플레이스](https://dztwi6z9vov5x.cloudfront.net/)
+## NFT 마켓플레이스
+배포 주소 : [https://dztwi6z9vov5x.cloudfront.net/](https://dztwi6z9vov5x.cloudfront.net/)
 
 ## 1. vite 사용 시 유의사항
 
