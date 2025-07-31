@@ -4,6 +4,7 @@ import styled from "styled-components";
 // import Discord from "../assets/images/discord.svg?react";
 // import Youtube from "../assets/images/youtube.svg?react";
 // import Tictoc from "../assets/images/tictok.svg?react";
+import logoOpensea from "../assets/images/favicon.ico";
 
 import Twitter from "../assets/images/twitter.png";
 import Instagram from "../assets/images/instagram.png";
@@ -124,10 +125,7 @@ export default function Footer() {
           <div>
             <LogoWrap>
               <LazyloadComponent>
-                <img
-                  src="https://opensea.io/static/images/logos/opensea-logo.svg?react"
-                  alt="logo"
-                />
+                <img src={logoOpensea} alt="logo" />
               </LazyloadComponent>
             </LogoWrap>
           </div>

@@ -16,6 +16,7 @@ import iconCart from "../assets/images/icon-cart.png";
 import iconProfileWh from "../assets/images/icon-profile-wh.png";
 import iconCartWh from "../assets/images/icon-cart-wh.png";
 import { GlobalContextType } from "../../type";
+import logoOpensea from "../assets/images/favicon.ico";
 
 export default function Header() {
   const { account, setAccount, setSigner, balance, setBalance } = useContext(
@@ -189,10 +190,7 @@ export default function Header() {
           <Link to={"/"}>
             <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
               <MainIconWrap>
-                <img
-                  src="https://opensea.io/static/images/logos/opensea-logo.svg"
-                  alt="logo"
-                ></img>
+                <img src={logoOpensea} alt="logo"></img>
               </MainIconWrap>
               <div style={{ fontSize: "21px", fontWeight: "900" }}>NFT Sea</div>
               <div
