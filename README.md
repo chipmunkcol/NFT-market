@@ -142,7 +142,7 @@ import { ReactComponent as IconEther } from './assets/ether.svg';
 | **단점** | ❌ 높은 가스비<br>❌ 느린 속도 | ❌ 보안 우려<br>❌ 중앙집권화 |
 | **활용** | 핵심 거래 로직 | 이미지 & 메타데이터 저장 |
 
-### 🖼️ 이미지 최적화: CloudFlare 도입
+### 🖼️ 이미지 최적화: AWS Lambda@edge 도입
 
 **문제점:**
 - IPFS 이미지 로딩 속도 지연
@@ -151,15 +151,15 @@ import { ReactComponent as IconEther } from './assets/ether.svg';
 **해결책:**
 ```mermaid
 graph LR
-    A[IPFS 원본] --> B[CloudFlare]
-    B --> C[자동 리사이징]
+    A[IPFS 원본] --> B[AWS S3]
+    B --> C[AWS Lambda@edge 리사이징 함수 배포]
     C --> D[웹 최적화 포맷]
     D --> E[전역 CDN 캐싱]
 ```
 
 **결과:**
 - 🚀 로딩 속도 개선
-- 📱 반응형 이미지 지원  
+- 📱 엣지 컴퓨팅 리소스로 리사이징
 - 🌍 글로벌 CDN 활용
 
 ## 🔧 개발 팁 및 해결책
@@ -411,58 +411,5 @@ async function handleSubmit() {
 
 </details>
 
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
-
-## 🤝 기여하기
-
-프로젝트 개선에 기여해주세요! 다음 단계를 따라주세요:
-
-1. **Fork** the Project
-2. **Feature Branch 생성** (`git checkout -b feature/AmazingFeature`)
-3. **변경사항 Commit** (`git commit -m 'Add some AmazingFeature'`)
-4. **Branch에 Push** (`git push origin feature/AmazingFeature`)
-5. **Pull Request 생성**
-
-### 🙋‍♂️ 기여 가이드라인
-
-- **이슈 제기**: 버그 발견이나 새로운 기능 제안
-- **코드 개선**: 성능 최적화나 코드 품질 개선
-- **문서화**: README나 코드 주석 개선
-- **테스트**: 테스트 케이스 추가
-
-## 💬 커뮤니티 & 문의
-
-| 구분 | 연락처 |
-|------|--------|
-| 📧 **이메일** | [이메일 주소] |
-| 💬 **Discord** | [Discord 링크] |
-| 🐦 **Twitter** | [Twitter 계정] |
-| 📱 **Telegram** | [Telegram 그룹] |
-
----
 
 <div align="center">
-
-**⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요! ⭐**
-
-![GitHub stars](https://img.shields.io/github/stars/username/nft-sea?style=social)
-![GitHub forks](https://img.shields.io/github/forks/username/nft-sea?style=social)
-![GitHub issues](https://img.shields.io/github/issues/username/nft-sea)
-
-**NFT Sea와 함께 Web3의 미래를 만들어가요! 🚀**
-
-</div>라이선스 하에 배포됩니다.
-
-## 🤝 기여하기
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📞 연락처
-
-프로젝트에 대한 문의사항이나 제안사항이 있으시면 언제든 연락주세요!
