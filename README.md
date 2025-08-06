@@ -15,7 +15,7 @@ Web3 기술을 활용한 탈중앙화 NFT 마켓플레이스
 *NFT 마켓플레이스*
 
 ![NFT 상세 페이지](https://github.com/user-attachments/assets/b1fbe172-f3c7-4e17-b29f-8c2c1dcd4f86)
-*NFT 상세 페이지*
+*NFT 민팅 페이지지*
 
 ![사용자 프로필](https://github.com/user-attachments/assets/5be5d315-104f-4223-8060-173326585e0c)
 *사용자 프로필*
