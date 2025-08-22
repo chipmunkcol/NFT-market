@@ -47,33 +47,6 @@ Web3 기술을 활용한 탈중앙화 NFT 마켓플레이스
 | **AWS S3** | 정적 파일 호스팅 |
 | **CloudFront** | CDN 및 배포 |
 
-
-## ⚡ 빠른 시작
-
-### 📋 필수 요구사항
-- ![Node.js](https://img.shields.io/badge/Node.js-16+-green) 
-- ![MetaMask](https://img.shields.io/badge/MetaMask-Wallet-orange)
-- 이더리움 테스트넷 토큰
-
-### 🔧 설치 및 실행
-
-1. **저장소 클론**
-```bash
-git clone [저장소-URL]
-cd nft-sea
-```
-
-2. **의존성 설치**
-```bash
-npm install
-npm install @svgr/rollup  # Vite용 SVG 설정
-```
-
-3. **개발 서버 실행**
-```bash
-npm run dev
-```
-
 ## 🏗️ 주요 기능
 
 <details>
