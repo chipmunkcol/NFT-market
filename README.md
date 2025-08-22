@@ -15,7 +15,7 @@ Web3 기술을 활용한 탈중앙화 NFT 마켓플레이스
 *NFT 마켓플레이스*
 
 ![NFT 상세 페이지](https://github.com/user-attachments/assets/b1fbe172-f3c7-4e17-b29f-8c2c1dcd4f86)
-*NFT 민팅 페이지지*
+*NFT 민팅 페이지*
 
 ![사용자 프로필](https://github.com/user-attachments/assets/5be5d315-104f-4223-8060-173326585e0c)
 *사용자 프로필*
@@ -72,39 +72,6 @@ npm install @svgr/rollup  # Vite용 SVG 설정
 3. **개발 서버 실행**
 ```bash
 npm run dev
-```
-
-### ⚙️ Vite SVG 설정
-
-**1단계:** `vite.config.ts`에 추가
-```typescript
-import svgr from "@svgr/rollup";
-
-export default defineConfig({
-  plugins: [react(), svgr()],
-});
-```
-
-**2단계:** `types.d.ts` 파일 생성
-```typescript
-declare module "*.svg" {
-  import React = require("react");
-  export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
-  const src: string;
-  export default src;
-}
-```
-
-**3단계:** `tsconfig.json`에 추가
-```json
-{
-  "include": ["src", "types.d.ts"]
-}
-```
-
-**사용 예시:**
-```typescript
-import { ReactComponent as IconEther } from './assets/ether.svg';
 ```
 
 ## 🏗️ 주요 기능
@@ -169,10 +136,40 @@ graph LR
 > **문제:** CRA와 달리 Vite에서는 SVG를 React 컴포넌트로 가져오기 위해 추가 설정 필요
 
 ```typescript
-// ❌ 잘못된 방법 (CRA 방식)
-import { ReactComponent as IconEther } from './assets/ether.svg';
-
 // ✅ 올바른 방법 (Vite + 설정 후)
+
+### ⚙️ Vite SVG 설정
+
+**1단계:** `vite.config.ts`에 추가
+```typescript
+import svgr from "@svgr/rollup";
+
+export default defineConfig({
+  plugins: [react(), svgr()],
+});
+```
+
+**2단계:** `types.d.ts` 파일 생성
+```typescript
+declare module "*.svg" {
+  import React = require("react");
+  export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  const src: string;
+  export default src;
+}
+```
+
+**3단계:** `tsconfig.json`에 추가
+```json
+{
+  "include": ["src", "types.d.ts"]
+}
+```
+
+**사용 예시:**
+```typescript
+import { ReactComponent as IconEther } from './assets/ether.svg';
+```
 import { ReactComponent as IconEther } from './assets/ether.svg';
 // 위 설정 섹션 참조
 ```
@@ -185,7 +182,7 @@ import { ReactComponent as IconEther } from './assets/ether.svg';
 // ❌ 문제가 있는 코드
 <Swiper thumbs={{swiper: thumbsSwiper}}>
 
-// ✅ 해결 방법
+// ✅ 해결 방법 (Git issue 참조)
 <Swiper 
   thumbs={{
     swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null
