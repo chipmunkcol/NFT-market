@@ -18,6 +18,7 @@ import {
 import { toastSwal } from "./swal";
 import { homeCollectionUrl, homeNftUrl } from "./variables.";
 
+// 2025/09/03 pinata gateway token 갱신
 export const getImageUrl = (imageIpfsHash: string) => {
   return `${
     import.meta.env.VITE_GATEWAY_URL
